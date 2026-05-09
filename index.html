@@ -42,7 +42,7 @@
   .chart-wrapper { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:visible; }
   .chart-inner { width:100%; }
 
-  .chart-header { display:flex; height:var(--header-h); border-bottom:1px solid var(--border); background:var(--surface); position:sticky; top:0; z-index:20; }
+  .chart-header { display:flex; height:var(--header-h); border-bottom:1px solid var(--border); background:var(--surface2); position:sticky; top:0; z-index:20; }
   .header-label { width:var(--label-w); flex-shrink:0; border-right:1px solid var(--border); display:flex; align-items:center; padding:0 18px; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); }
   .week-cell { flex:1; border-right:1px solid var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; min-width:0; }
   .week-num  { font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600; color:#333344; }
@@ -124,7 +124,7 @@
 
 <div class="chart-wrapper">
   <div class="chart-inner" id="chartInner">
-    <div class="chart-header" id="chartHeader"><div style="width:36px;flex-shrink:0;border-right:1px solid var(--border);background:var(--surface2)"></div><div class="header-label";>Feature</div></div>
+    <div class="chart-header" id="chartHeader"><div style="width:36px;flex-shrink:0;border-right:1px solid var(--border)"></div><div class="header-label";>Feature</div></div>
     <div id="chartRows"></div>
   </div>
   <div class="legend">

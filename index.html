@@ -24,14 +24,14 @@
   body { background:var(--bg); color:var(--text-primary); font-family:'IBM Plex Sans',sans-serif; min-height:100vh; padding:36px 32px; }
 
   .page-header { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
-  .page-title { font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px; }
-  .page-headline { font-size:34px; font-weight:300; color:var(--text-primary); letter-spacing:-0.02em; }
+  .page-title { font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:#f9d9c9; margin-bottom:6px; }
+  .page-headline { font-size:34px; font-weight:300; color:#1a1a2e; letter-spacing:-0.02em; }
   .header-right { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
 
-  .reset-btn { background:none; border:1px solid var(--border); color:var(--text-muted); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; padding:9px 16px; border-radius:6px; cursor:pointer; transition:all 0.15s; }
+  .reset-btn { background:#fff; border:1px solid var(--border); color:var(--text-muted); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; padding:9px 16px; border-radius:6px; cursor:pointer; transition:all 0.15s; }
   .reset-btn:hover { border-color:var(--text-muted); color:var(--text-primary); }
-  .toggle-btn { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; padding:9px 16px; border-radius:6px; cursor:pointer; transition:all 0.15s; border:1px solid var(--border); background:none; color:var(--text-muted); }
-  .toggle-btn.active { background:var(--text-primary); color:var(--surface); border-color:var(--text-primary); }
+  .toggle-btn { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; padding:9px 16px; border-radius:6px; cursor:pointer; transition:all 0.15s; border:1px solid var(--border); background:#fff; color:var(--text-muted); }
+  .toggle-btn.active { background:#fbeb85; color:var(--text-primary); border-color:#fbeb85; }
   .toggle-btn.saved { background:#0a8a5e; color:#fff; border-color:#0a8a5e; }
   .toggle-btn:hover { border-color:var(--text-muted); color:var(--text-primary); }
 
@@ -39,29 +39,34 @@
 
 
   .summary-wrapper { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:32px; }
-  .chart-wrapper { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:visible; }
+  .chart-wrapper { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
   .chart-inner { width:100%; }
 
   .chart-header { display:flex; height:var(--header-h); border-bottom:1px solid var(--border); background:var(--surface2); position:sticky; top:0; z-index:20; }
-  .header-label { width:var(--label-w); flex-shrink:0; border-right:1px solid var(--border); display:flex; align-items:center; padding:0 18px; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); }
+  .header-label { width:var(--label-w); flex-shrink:0; border-right:1px solid var(--border); display:flex; align-items:center; padding:0 6px; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#1a1a2e; }
   .week-cell { flex:1; border-right:1px solid var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; min-width:0; }
-  .week-num  { font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600; color:#333344; }
-  .week-date { font-family:'IBM Plex Mono',monospace; font-size:10px; color:#777788; text-align:center; }
+  .week-num  { font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600; color:#1a1a2e; }
+  .week-date { font-family:'IBM Plex Mono',monospace; font-size:10px; color:#1a1a2e; text-align:center; }
   .week-cell.wk-today { background:rgba(59,130,246,0.10); border-left:3px solid rgba(59,130,246,0.7); }
   .week-cell.wk-today .week-num  { color:#1d4ed8; font-weight:700; }
   .week-cell.wk-today .week-date { color:#1d4ed8; font-weight:700; }
 
   .release-row { display:flex; border-bottom:1px solid var(--border); transition:box-shadow 0.15s; }
-  .row-actions-col { width:36px; flex-shrink:0; border-right:1px solid var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; background:var(--surface); padding:4px 0; }
+  .row-actions-col { width:36px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; background:var(--surface); padding:4px 0; }
   .row-actions-col .delete-row-btn { opacity:0; transition:opacity 0.15s; }
   .row-actions-col:hover .delete-row-btn { opacity:1; }
+  .row-btn { width:22px; height:22px; border:none; border-radius:4px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:900; line-height:1; padding:0; transition:filter 0.15s; flex-shrink:0; }
+  .row-btn:hover { filter:brightness(0.85); }
+  .row-btn-add     { background:#981c76; color:#ed7028; }
+  .row-btn-delete  { background:#fbeb85; color:#ee5860; }
+  .row-btn-refresh { background:#1b417d; color:#40a0ad; }
   .release-row:last-child { border-bottom:none; }
   .release-row.row-dragging { opacity:0.5; }
   .release-row.row-drag-over { box-shadow:inset 0 3px 0 0 #dc3c78; }
   .release-label { cursor:grab; }
   .release-label:active { cursor:grabbing; }
-  .release-label { width:var(--label-w); flex-shrink:0; border-right:1px solid var(--border); display:flex; flex-direction:column; justify-content:center; padding:12px 18px; gap:4px; background:var(--surface); }
-  .release-version { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-muted); }
+  .release-label { width:var(--label-w); flex-shrink:0; border-right:1px solid var(--border); display:flex; flex-direction:column; justify-content:center; padding:12px 6px; gap:4px; background:var(--surface); }
+  .release-version { font-family:'IBM Plex Mono',monospace; font-size:11px; color:#adb6de; }
   .release-name { font-size:15px; font-weight:600; color:var(--text-primary); }
 
   .release-grid { position:relative; flex:1; display:flex; }
@@ -92,8 +97,8 @@
 
 
   .no-today-highlight .week-cell.wk-today { background:transparent; border-left:1px solid var(--border); }
-  .no-today-highlight .week-cell.wk-today .week-num  { color:#333344 !important; font-weight:600 !important; }
-  .no-today-highlight .week-cell.wk-today .week-date { color:#777788 !important; font-weight:400 !important; }
+  .no-today-highlight .week-cell.wk-today .week-num  { color:#1a1a2e !important; font-weight:600 !important; }
+  .no-today-highlight .week-cell.wk-today .week-date { color:#1a1a2e !important; font-weight:400 !important; }
   .no-today-highlight .release-grid-col.wk-today { background:transparent; }
 </style>
 </head>
@@ -104,14 +109,15 @@
     <div class="page-title">Release Planning</div>
     <div class="page-headline">Release Cycle Planner</div>
   </div>
-  <div class="header-right">
-    <div style="display:flex;flex-direction:column;gap:3px;">
-      <label style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted)">Start Date</label>
-      <input type="date" id="cycleStartInput" oninput="onDateChange()" style="background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:12px;padding:7px 10px;outline:none;color-scheme:light;cursor:pointer;">
+  <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;">
+    <label style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#f9d9c9;align-self:flex-start;">Start Date</label>
+    <div class="header-right" style="align-items:center;">
+      <input type="date" id="cycleStartInput" oninput="onDateChange()" style="background:#fff;border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:12px;padding:9px 10px;outline:none;color-scheme:light;cursor:pointer;height:38px;">
+      <button class="reset-btn" onclick="resetAll()">Reset</button>
+      <button class="toggle-btn" id="saveBtn" onclick="saveState()">Save</button>
+      <button class="toggle-btn" id="todayToggleBtn" onclick="toggleToday()">Current Week</button>
+      <button class="toggle-btn" id="overviewModeBtn" onclick="toggleOverviewMode()">Product</button>
     </div>
-    <button class="reset-btn" onclick="resetAll()">&#8634; Reset</button>
-    <button class="toggle-btn" id="saveBtn" onclick="saveState()">&#128190; Save</button>
-    <button class="toggle-btn" id="todayToggleBtn" onclick="toggleToday()">&#9711; Current Week</button>
   </div>
 </div>
 
@@ -124,7 +130,7 @@
 
 <div class="chart-wrapper">
   <div class="chart-inner" id="chartInner">
-    <div class="chart-header" id="chartHeader"><div style="width:36px;flex-shrink:0;border-right:1px solid var(--border)"></div><div class="header-label";>Feature</div></div>
+    <div class="chart-header" id="chartHeader"><div style="width:36px;flex-shrink:0;"></div><div class="header-label";>Feature</div></div>
     <div id="chartRows"></div>
   </div>
   <div class="legend">
@@ -133,11 +139,11 @@
     <div class="legend-item"><div class="legend-swatch" style="background:var(--data-bg)"></div>Data</div>
     <div class="legend-item"><div class="legend-swatch" style="background:var(--engineering-bg)"></div>Engineering</div>
     <div class="legend-item"><div class="legend-swatch" style="background:var(--launch-bg)"></div>Product Launch</div>
-    <div class="legend-item" style="margin-left:8px"><div style="width:20px;height:20px;border-radius:50%;background:rgba(40,120,80,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#287850" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>Signoff</div>
-    <div class="legend-item"><div style="width:20px;height:20px;border-radius:50%;background:rgba(240,60,0,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f03c00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg></div>Staging</div>
-    <div class="legend-item"><div style="width:20px;height:20px;border-radius:50%;background:rgba(240,60,0,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f03c00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></div>Release</div>
-    <div class="legend-item"><div style="width:20px;height:20px;border-radius:50%;background:rgba(220,180,240,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8c64c8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12v0c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z"/></svg></div>Announcement</div>
-    <div class="legend-item"><div style="width:20px;height:20px;border-radius:50%;background:rgba(160,180,240,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5070c8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>Handoff</div>
+    <div class="legend-item" style="margin-left:8px"><div style="width:20px;height:20px;border-radius:50%;background:#4c77bc;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#b8c69a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>Signoff</div>
+    <div class="legend-item"><div style="width:20px;height:20px;border-radius:50%;background:#fbeb85;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ee5860" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg></div>Staging</div>
+    <div class="legend-item"><div style="width:20px;height:20px;border-radius:50%;background:#fbeb85;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ee5860" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></div>Release</div>
+    <div class="legend-item"><div style="width:20px;height:20px;border-radius:50%;background:#e5b7fd;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ee6327" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12v0c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z"/></svg></div>Announcement</div>
+    <div class="legend-item"><div style="width:20px;height:20px;border-radius:50%;background:#adb6de;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffe3c3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>Handoff</div>
   </div>
 </div>
 
@@ -151,6 +157,7 @@ let   WEEK_W       = 60;
 let   TODAY_WEEK   = null;
 let   cycleStartDate = null;
 let   todayVisible = false;
+let   overviewMode = 'full'; // 'full' or 'strategy-launch'
 
 const DEFAULT_RELEASE_NAMES = [
   'Bookkeeping Superview + Onboarding Vice + My Work Queue',
@@ -161,7 +168,13 @@ const DEFAULT_RELEASE_NAMES = [
   'Creator FinIQ',
   'Centralized Doc Center'
 ];
-const VERSION_NUMBERS = ['v3.0','v3.1','v3.2','v3.3','v3.4','v3.5','v3.6'];
+const VERSION_NUMBERS_BASE = ['v3.0','v3.1','v3.2','v3.3','v3.4','v3.5','v3.6'];
+function getVersionNumber(r) {
+  if (r < VERSION_NUMBERS_BASE.length) return VERSION_NUMBERS_BASE[r];
+  var minor = r % 10;
+  var major = 3 + Math.floor(r / 10);
+  return 'v' + major + '.' + minor;
+}
 let releaseNames = [...DEFAULT_RELEASE_NAMES];
 
 const TEAM_DEFS = [
@@ -219,11 +232,11 @@ const DEFAULT_MILESTONES = [
 const IC_CHECK  = '#287850';
 const IC_FILE   = '#2d2d3a';
 const IC_ROCKET = '#f03c00';
-const SVG_CHECK  = '<div style="width:28px;height:28px;border-radius:50%;background:rgba(40,120,80,0.15);display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#287850" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>';
-const SVG_PACKAGE = '<div style="width:28px;height:28px;border-radius:50%;background:rgba(240,60,0,0.12);display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f03c00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg></div>';
-const SVG_SEND = '<div style="width:28px;height:28px;border-radius:50%;background:rgba(240,60,0,0.12);display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f03c00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></div>';
-const SVG_USERS = '<div style="width:28px;height:28px;border-radius:50%;background:rgba(160,180,240,0.25);display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5070c8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>';
-const SVG_MEGAPHONE = '<div style="width:28px;height:28px;border-radius:50%;background:rgba(220,180,240,0.25);display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8c64c8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12v0c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11v0c-.11.7-.72 1.22-1.43 1.22H17"/><path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98v0C9.52 4.9 9 5.52 9 6.23V7"/><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z"/></svg></div>';
+const SVG_CHECK  = '<div style="width:28px;height:28px;border-radius:50%;background:#4c77bc;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8c69a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>';
+const SVG_PACKAGE = '<div style="width:28px;height:28px;border-radius:50%;background:#fbeb85;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ee5860" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg></div>';
+const SVG_SEND = '<div style="width:28px;height:28px;border-radius:50%;background:#fbeb85;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ee5860" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></div>';
+const SVG_USERS = '<div style="width:28px;height:28px;border-radius:50%;background:#adb6de;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffe3c3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>';
+const SVG_MEGAPHONE = '<div style="width:28px;height:28px;border-radius:50%;background:#e5b7fd;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ee6327" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12v0c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11v0c-.11.7-.72 1.22-1.43 1.22H17"/><path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98v0C9.52 4.9 9 5.52 9 6.23V7"/><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z"/></svg></div>';
 const MILESTONE_ICONS = [SVG_CHECK, SVG_CHECK, SVG_PACKAGE, SVG_SEND, SVG_MEGAPHONE, SVG_MEGAPHONE, SVG_USERS, SVG_CHECK, SVG_USERS, SVG_USERS, SVG_USERS];
 
 let milestoneState = [];
@@ -376,7 +389,7 @@ function buildRows() {
 
     const lbl = document.createElement('div');
     lbl.className = 'release-label';
-    lbl.innerHTML = '<div class="release-version">' + VERSION_NUMBERS[r] + '</div>' +
+    lbl.innerHTML = '<div class="release-version">' + getVersionNumber(r) + '</div>' +
       '<div class="release-name" id="release-name-' + r + '" contenteditable="true" spellcheck="false">' + releaseNames[r] + '</div>';
     var nameEl = lbl.querySelector('.release-name');
     nameEl.addEventListener('blur', (function(ri) { return function() { releaseNames[ri] = this.textContent.trim(); }; })(r));
@@ -392,17 +405,23 @@ function buildRows() {
     actCol.className = 'row-actions-col';
     (function(ri) {
       var addBtn = document.createElement('button');
-      addBtn.className = 'delete-row-btn';
+      addBtn.className = 'delete-row-btn row-btn row-btn-add';
       addBtn.innerHTML = '+';
-      addBtn.title = 'Insert release above';
-      addBtn.addEventListener('click', function(e) { e.stopPropagation(); insertRelease(ri); });
+      addBtn.title = 'Insert release below';
+      addBtn.addEventListener('click', function(e) { e.stopPropagation(); insertRelease(ri + 1); });
       var delBtn = document.createElement('button');
-      delBtn.className = 'delete-row-btn';
+      delBtn.className = 'delete-row-btn row-btn row-btn-delete';
       delBtn.innerHTML = '&minus;';
       delBtn.title = 'Delete release';
       delBtn.addEventListener('click', function(e) { e.stopPropagation(); deleteRelease(ri); });
+      var refreshBtn = document.createElement('button');
+      refreshBtn.className = 'delete-row-btn row-btn row-btn-refresh';
+      refreshBtn.innerHTML = '&#8634;';
+      refreshBtn.title = 'Reset this row to default';
+      refreshBtn.addEventListener('click', function(e) { e.stopPropagation(); resetRow(ri); });
       actCol.appendChild(addBtn);
       actCol.appendChild(delBtn);
+      actCol.appendChild(refreshBtn);
     })(r);
 
     row.appendChild(actCol);
@@ -642,12 +661,19 @@ function onMilestoneDrag(e) {
   }
 }
 function stopMilestoneDrag() {
-  if (mDragSt) { mDragSt.bar.classList.remove('dragging'); mDragSt = null; }
+  if (mDragSt) {
+    var r = mDragSt.r;
+    mDragSt.bar.classList.remove('dragging');
+    // Update canonical so next rocket drag starts from current positions
+    if (canonicalBarState[r]) canonicalBarState[r] = deepCopyBarState(barState[r]);
+    if (canonicalMilestoneState[r]) canonicalMilestoneState[r] = deepCopyMilestoneState(milestoneState[r]);
+    mDragSt = null;
+  }
   document.removeEventListener('mousemove', onMilestoneDrag);
   document.removeEventListener('mouseup', stopMilestoneDrag);
   buildHeader();
   buildRows();
-  buildSummary(); // rerun collision detection after drop
+  buildSummary();
 }
 
 var selectedR = null, selectedTi = null, selectedSi = null;
@@ -671,7 +697,8 @@ function selectBar(r, ti, si) {
 }
 
 function showEmptyDetail() {
-  document.getElementById('detailPanel').innerHTML = '<div class="detail-empty"><span class="arrow">&#8593;</span>Click any team bar to see week-by-week details</div>';
+  var dp = document.getElementById('detailPanel');
+  if (dp) dp.innerHTML = '<div class="detail-empty"><span class="arrow">&#8593;</span>Click any team bar to see week-by-week details</div>';
 }
 
 function renderDetail(r, ti, si) {
@@ -693,7 +720,8 @@ function renderDetail(r, ti, si) {
     html += '<div class="detail-week' + (isRel?' is-rel':'') + '"><div class="detail-week-num" style="color:' + (isRel?'var(--release-color)':color) + '99">' + wkLabel + '</div><div class="detail-week-title">' + d.title + '</div><div class="detail-week-body">' + d.body + '</div>' + mTag + '</div>';
   }
 
-  document.getElementById('detailPanel').innerHTML =
+  var dp2 = document.getElementById('detailPanel');
+  if (dp2) dp2.innerHTML =
     '<div class="detail-header"><div><div class="detail-team-name"><div class="detail-team-dot" style="background:' + color + '"></div>' + subName + ' \u2014 ' + releaseNames[r] + '</div><div class="detail-subtitle">' + (cycleStartDate ? weekDateRange(state.startWeek) + ' \u2192 ' + weekDateRange(state.endWeek) : 'Weeks ' + state.startWeek + '\u2013' + state.endWeek) + ' \u00b7 ' + numWeeks + ' weeks active</div></div>' +
     '<button class="detail-close" onclick="selectBar(' + r + ',' + ti + ',' + selectedSi + ')">&#10005; Close</button></div>' +
     '<div class="detail-weeks" style="grid-template-columns:repeat(' + numWeeks + ',1fr)">' + html + '</div>';
@@ -704,6 +732,14 @@ function toggleToday() {
   document.getElementById('todayToggleBtn').classList.toggle('active', todayVisible);
   document.getElementById('chartInner').classList.toggle('no-today-highlight', !todayVisible);
   buildHeader(); buildRows();
+}
+
+function toggleOverviewMode() {
+  overviewMode = overviewMode === 'full' ? 'strategy-launch' : 'full';
+  var btn = document.getElementById('overviewModeBtn');
+  btn.classList.toggle('active', overviewMode === 'strategy-launch');
+  btn.textContent = overviewMode === 'full' ? 'Product' : 'Release Cycle';
+  buildSummary();
 }
 
 function onDateChange() {
@@ -729,6 +765,65 @@ function saveState() {
   setTimeout(function() { btn.textContent = '\ud83d\udcbe Save'; btn.classList.remove('saved'); }, 1800);
 }
 
+function exportState() {
+  const state = {
+    schemaVersion: 38,
+    numReleases: NUM_RELEASES,
+    cycleStartDate: document.getElementById('cycleStartInput').value,
+    releaseNames: [...releaseNames],
+    barState: barState.map(function(row) { return row.map(function(b) {
+      return b.isGroup ? { isGroup:true, subBars: b.subBars.map(function(sb) { return { startWeek:sb.startWeek, endWeek:sb.endWeek }; }) } : { startWeek:b.startWeek, endWeek:b.endWeek };
+    }); }),
+    milestoneState: milestoneState.map(function(row) { return row.map(function(m) { return { week:m.week }; }); })
+  };
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'release-planner-state.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function importState(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const state = JSON.parse(e.target.result);
+      if (!state.numReleases || !state.releaseNames || !state.barState) {
+        alert('Import failed: file does not look like a valid export.');
+        return;
+      }
+      NUM_RELEASES = state.numReleases;
+      releaseNames = state.releaseNames;
+      if (state.cycleStartDate) {
+        document.getElementById('cycleStartInput').value = state.cycleStartDate;
+        cycleStartDate = new Date(state.cycleStartDate + 'T12:00:00');
+      }
+      barState = state.barState;
+      milestoneState = state.milestoneState || [];
+      for (var rr = 0; rr < NUM_RELEASES; rr++) {
+        if (!milestoneState[rr]) milestoneState[rr] = DEFAULT_MILESTONES.map(function(m) { return { week: m.week }; });
+      }
+      canonicalBarState = [];
+      canonicalMilestoneState = [];
+      for (var rr = 0; rr < NUM_RELEASES; rr++) {
+        if (barState[rr]) canonicalBarState[rr] = deepCopyBarState(barState[rr]);
+        if (milestoneState[rr]) canonicalMilestoneState[rr] = deepCopyMilestoneState(milestoneState[rr]);
+      }
+      computeTodayWeek(); buildHeader(); buildRows(); buildSummary();
+      localStorage.setItem('releaseGanttState', JSON.stringify(state));
+      const btn = document.getElementById('importBtn');
+      if (btn) { btn.textContent = '✓ Imported'; btn.classList.add('saved'); setTimeout(function(){ btn.textContent = '↑ Import'; btn.classList.remove('saved'); }, 2000); }
+    } catch(err) {
+      alert('Import failed: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
 function loadState() {
   try {
     const raw = localStorage.getItem('releaseGanttState');
@@ -743,10 +838,11 @@ function loadState() {
       if (valid) barState = state.barState;
     }
     if (state.milestoneState) milestoneState = state.milestoneState;
-    // Sync canonical from loaded state
+    // Canonical state uses template bar widths (not saved positions) so rocket drag always restores full-size bars
     canonicalBarState = [];
     canonicalMilestoneState = [];
     for (var rr = 0; rr < (NUM_RELEASES || 7); rr++) {
+      // Canonical = saved bar state (preserves user-resized durations); rocket drag shifts from here
       if (barState[rr]) { canonicalBarState[rr] = deepCopyBarState(barState[rr]); }
       if (milestoneState[rr]) { canonicalMilestoneState[rr] = deepCopyMilestoneState(milestoneState[rr]); }
     }
@@ -769,11 +865,11 @@ function buildSummary() {
   hdr.style.cssText = 'display:flex;height:40px;border-bottom:1px solid var(--border);background:var(--surface2);';
 
   var hdrAc = document.createElement('div');
-  hdrAc.style.cssText = 'width:36px;flex-shrink:0;border-right:1px solid var(--border);';
+  hdrAc.style.cssText = 'width:36px;flex-shrink:0;';
   hdr.appendChild(hdrAc);
 
   var hdrLbl = document.createElement('div');
-  hdrLbl.style.cssText = 'width:var(--label-w);flex-shrink:0;border-right:1px solid var(--border);display:flex;align-items:center;padding:0 14px;font-family:monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);';
+  hdrLbl.style.cssText = 'width:var(--label-w);flex-shrink:0;display:flex;align-items:center;padding:0 14px;font-family:monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#1a1a2e;';
   hdrLbl.textContent = 'Overview';
   hdr.appendChild(hdrLbl);
 
@@ -784,7 +880,7 @@ function buildSummary() {
     wc.style.cssText = 'flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;';
     if (cycleStartDate) {
       var wd2 = document.createElement('span');
-      wd2.style.cssText = 'font-family:monospace;font-size:10px;color:#777788;';
+      wd2.style.cssText = 'font-family:monospace;font-size:10px;color:#1a1a2e;';
       wd2.textContent = weekDate(w);
       wc.appendChild(wd2);
     }
@@ -804,7 +900,7 @@ function buildSummary() {
 
   // Label col spacer
   var rrLbl = document.createElement('div');
-  rrLbl.style.cssText = 'width:var(--label-w);flex-shrink:0;border-right:1px solid var(--border);background:var(--surface);';
+  rrLbl.style.cssText = 'width:var(--label-w);flex-shrink:0;background:var(--surface);';
   rocketRow.appendChild(rrLbl);
 
   // Week cols with rocket counts
@@ -820,7 +916,7 @@ function buildSummary() {
     var rrCell = document.createElement('div');
     rrCell.style.cssText = 'flex:1;display:flex;align-items:center;justify-content:center;min-width:0;';
     if (releaseWeeks2[ww2]) {
-      rrCell.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#f03c00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg><span style="font-family:monospace;font-size:9px;color:#f03c00;font-weight:600;margin-left:1px">(' + releaseWeeks2[ww2] + ')</span>';
+      rrCell.innerHTML = '<div style="width:18px;height:18px;border-radius:50%;background:#fbeb85;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ee5860" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></div><span style="font-family:monospace;font-size:9px;color:#1a1a2e;font-weight:600;margin-left:2px">' + releaseWeeks2[ww2] + '</span>';
     }
     rrGrid.appendChild(rrCell);
   }
@@ -843,16 +939,16 @@ function buildSummary() {
     });
 
     var row = document.createElement('div');
-    row.style.cssText = 'display:flex;height:28px;'; // no border-bottom
+    row.style.cssText = 'display:flex;height:28px;';
 
     // Action col
     var ac = document.createElement('div');
     ac.style.cssText = 'width:36px;flex-shrink:0;background:var(--surface);height:28px;';
     row.appendChild(ac);
 
-    // Label col — empty, no text
+    // Label col — empty, no text, no right border
     var lbl = document.createElement('div');
-    lbl.style.cssText = 'width:var(--label-w);flex-shrink:0;border-right:1px solid var(--border);background:var(--surface);';
+    lbl.style.cssText = 'width:var(--label-w);flex-shrink:0;background:var(--surface);';
     row.appendChild(lbl);
 
     // Grid
@@ -864,22 +960,58 @@ function buildSummary() {
       grid.appendChild(gc);
     }
 
-    // Bar with "v3.x | Release Name" format
-    var sbar = document.createElement('div');
-    var leftPct  = weekToX(earliest);
-    var widthPct = (latest - earliest + 1) / TOTAL_WEEKS * 100;
-    sbar.style.cssText =
-      'position:absolute;top:50%;transform:translateY(-50%);height:24px;border-radius:5px;' +
-      'left:calc(' + leftPct + '% + 2px);' +
-      'width:calc(' + widthPct + '% - 6px);' +
-      'background:' + RELEASE_COLORS[r % RELEASE_COLORS.length] + ';' +
-      'display:flex;align-items:center;padding:0 10px;overflow:hidden;pointer-events:none;';
+    var rowColor = RELEASE_COLORS[r % RELEASE_COLORS.length];
 
-    var slabel = document.createElement('span');
-    slabel.style.cssText = 'font-family:monospace;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#fff;white-space:nowrap;';
-    slabel.textContent = VERSION_NUMBERS[r] + ' | ' + releaseNames[r];
-    sbar.appendChild(slabel);
-    grid.appendChild(sbar);
+    if (overviewMode === 'full') {
+      // Single bar spanning full release
+      var sbar = document.createElement('div');
+      var leftPct  = weekToX(earliest);
+      var widthPct = (latest - earliest + 1) / TOTAL_WEEKS * 100;
+      sbar.style.cssText =
+        'position:absolute;top:50%;transform:translateY(-50%);height:24px;border-radius:5px;' +
+        'left:calc(' + leftPct + '% + 2px);' +
+        'width:calc(' + widthPct + '% - 6px);' +
+        'background:' + rowColor + ';' +
+        'display:flex;align-items:center;padding:0 10px;overflow:hidden;pointer-events:none;';
+      var slabel = document.createElement('span');
+      slabel.style.cssText = 'font-family:monospace;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#fff;white-space:nowrap;';
+      slabel.textContent = getVersionNumber(r) + ' | ' + releaseNames[r];
+      sbar.appendChild(slabel);
+      grid.appendChild(sbar);
+    } else {
+      // Product mode: two inline bars, both same color, both showing version | release name
+      var strategyTi = TEAM_DEFS.findIndex(function(t){ return t.id === 'strategy'; });
+      var launchTi   = TEAM_DEFS.findIndex(function(t){ return t.id === 'launch'; });
+
+      [strategyTi, launchTi].forEach(function(ti) {
+        if (ti === -1) return;
+        var bState = barState[r][ti];
+        var bStart = 999, bEnd = 0;
+        if (bState.isGroup) {
+          bState.subBars.forEach(function(sb) {
+            if (sb.startWeek < bStart) bStart = sb.startWeek;
+            if (sb.endWeek   > bEnd)   bEnd   = sb.endWeek;
+          });
+        } else {
+          bStart = bState.startWeek; bEnd = bState.endWeek;
+        }
+        if (bStart > bEnd) return;
+        var lp = weekToX(bStart);
+        var wp = (bEnd - bStart + 1) / TOTAL_WEEKS * 100;
+        var sb2 = document.createElement('div');
+        sb2.style.cssText =
+          'position:absolute;top:50%;transform:translateY(-50%);height:24px;border-radius:5px;' +
+          'left:calc(' + lp + '% + 2px);' +
+          'width:calc(' + wp + '% - 4px);' +
+          'background:' + rowColor + ';' +
+          'display:flex;align-items:center;padding:0 10px;overflow:hidden;pointer-events:none;';
+        var sl2 = document.createElement('span');
+        sl2.style.cssText = 'font-family:monospace;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#fff;white-space:nowrap;';
+        sl2.textContent = getVersionNumber(r) + ' | ' + releaseNames[r];
+        sb2.appendChild(sl2);
+        grid.appendChild(sb2);
+      });
+    }
 
     row.appendChild(grid);
     cont.appendChild(row);
@@ -974,11 +1106,23 @@ function deleteRelease(r) {
 
 function resetAll() {
   localStorage.removeItem('releaseGanttState');
+  NUM_RELEASES = DEFAULT_RELEASE_NAMES.length;
   releaseNames = [...DEFAULT_RELEASE_NAMES];
   initBarState(); selectedR = null; selectedTi = null; selectedSi = null;
   document.getElementById('cycleStartInput').value = '2026-05-03';
   cycleStartDate = new Date('2026-05-03T12:00:00');
-  computeTodayWeek(); buildReleaseInputs(); computeWeekW(); buildHeader(); buildRows(); showEmptyDetail();
+  computeTodayWeek(); buildReleaseInputs(); computeWeekW(); buildHeader(); buildRows(); buildSummary(); showEmptyDetail();
+}
+
+function resetRow(r) {
+  barState[r] = TEAM_DEFS.map(function(t) {
+    if (t.subBars) return { isGroup:true, subBars: t.subBars.map(function(sb) { return { startWeek:sb.startWeek, endWeek:sb.endWeek }; }) };
+    return { startWeek:t.startWeek, endWeek:t.endWeek };
+  });
+  milestoneState[r] = DEFAULT_MILESTONES.map(function(m) { return { week: m.week }; });
+  canonicalBarState[r] = deepCopyBarState(barState[r]);
+  canonicalMilestoneState[r] = deepCopyMilestoneState(milestoneState[r]);
+  buildRows(); buildSummary();
 }
 
 function computeWeekW() {
@@ -998,6 +1142,13 @@ function init() {
 window.addEventListener('resize', function() {
   computeWeekW(); buildHeader(); buildRows(); buildSummary();
 });
+
+
+// ── Preloaded state (baked in from export) ───────────────────────────────────
+(function() {
+  var preloaded = {"schemaVersion": 38, "numReleases": 8, "cycleStartDate": "2026-05-11", "releaseNames": ["Bookkeeping Superview + Onboarding Vice + My Work Queue", "Tax Recommendation Engine", "Ticketing / Comms", "Data Cleanup", "Gusto Embedded", "Centralized Doc Center", "Self Serve Sign Up", "Creator FinIQ"], "barState": [[{"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 1}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 1}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 2}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 2}, {"startWeek": 3, "endWeek": 3}, {"startWeek": 4, "endWeek": 4}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 2, "endWeek": 3}, {"startWeek": 4, "endWeek": 5}]}], [{"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 1}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 2}, {"startWeek": 3, "endWeek": 4}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 1}, {"startWeek": 4, "endWeek": 5}]}, {"isGroup": true, "subBars": [{"startWeek": 3, "endWeek": 3}, {"startWeek": 4, "endWeek": 7}, {"startWeek": 8, "endWeek": 8}, {"startWeek": 9, "endWeek": 9}]}, {"isGroup": true, "subBars": [{"startWeek": 4, "endWeek": 6}, {"startWeek": 7, "endWeek": 8}, {"startWeek": 9, "endWeek": 10}]}], [{"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 1}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 2}, {"startWeek": 3, "endWeek": 4}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 2}, {"startWeek": 3, "endWeek": 5}, {"startWeek": 6, "endWeek": 7}]}, {"isGroup": true, "subBars": [{"startWeek": 3, "endWeek": 3}, {"startWeek": 4, "endWeek": 7}, {"startWeek": 8, "endWeek": 8}, {"startWeek": 9, "endWeek": 9}]}, {"isGroup": true, "subBars": [{"startWeek": 4, "endWeek": 6}, {"startWeek": 7, "endWeek": 8}, {"startWeek": 9, "endWeek": 10}]}], [{"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 1}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 2}, {"startWeek": 3, "endWeek": 4}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 2}, {"startWeek": 3, "endWeek": 5}, {"startWeek": 6, "endWeek": 7}]}, {"isGroup": true, "subBars": [{"startWeek": 3, "endWeek": 3}, {"startWeek": 4, "endWeek": 7}, {"startWeek": 8, "endWeek": 8}, {"startWeek": 9, "endWeek": 9}]}, {"isGroup": true, "subBars": [{"startWeek": 4, "endWeek": 6}, {"startWeek": 7, "endWeek": 8}, {"startWeek": 9, "endWeek": 10}]}], [{"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 2}, {"startWeek": 3, "endWeek": 4}]}, {"isGroup": true, "subBars": [{"startWeek": 3, "endWeek": 4}, {"startWeek": 5, "endWeek": 6}, {"startWeek": 7, "endWeek": 8}]}, {"isGroup": true, "subBars": [{"startWeek": 5, "endWeek": 6}, {"startWeek": 7, "endWeek": 9}, {"startWeek": 10, "endWeek": 11}]}, {"isGroup": true, "subBars": [{"startWeek": 7, "endWeek": 7}, {"startWeek": 8, "endWeek": 11}, {"startWeek": 12, "endWeek": 12}, {"startWeek": 13, "endWeek": 13}]}, {"isGroup": true, "subBars": [{"startWeek": 8, "endWeek": 10}, {"startWeek": 11, "endWeek": 12}, {"startWeek": 13, "endWeek": 14}]}], [{"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 2}, {"startWeek": 3, "endWeek": 4}]}, {"isGroup": true, "subBars": [{"startWeek": 3, "endWeek": 4}, {"startWeek": 5, "endWeek": 6}, {"startWeek": 7, "endWeek": 8}]}, {"isGroup": true, "subBars": [{"startWeek": 5, "endWeek": 6}, {"startWeek": 7, "endWeek": 9}, {"startWeek": 10, "endWeek": 11}]}, {"isGroup": true, "subBars": [{"startWeek": 7, "endWeek": 7}, {"startWeek": 8, "endWeek": 11}, {"startWeek": 12, "endWeek": 12}, {"startWeek": 13, "endWeek": 13}]}, {"isGroup": true, "subBars": [{"startWeek": 8, "endWeek": 10}, {"startWeek": 11, "endWeek": 12}, {"startWeek": 13, "endWeek": 14}]}], [{"isGroup": true, "subBars": [{"startWeek": 5, "endWeek": 6}, {"startWeek": 7, "endWeek": 8}]}, {"isGroup": true, "subBars": [{"startWeek": 7, "endWeek": 8}, {"startWeek": 9, "endWeek": 10}, {"startWeek": 11, "endWeek": 12}]}, {"isGroup": true, "subBars": [{"startWeek": 9, "endWeek": 10}, {"startWeek": 11, "endWeek": 13}, {"startWeek": 14, "endWeek": 15}]}, {"isGroup": true, "subBars": [{"startWeek": 11, "endWeek": 11}, {"startWeek": 12, "endWeek": 15}, {"startWeek": 16, "endWeek": 16}, {"startWeek": 17, "endWeek": 17}]}, {"isGroup": true, "subBars": [{"startWeek": 12, "endWeek": 14}, {"startWeek": 15, "endWeek": 16}, {"startWeek": 17, "endWeek": 18}]}], [{"isGroup": true, "subBars": [{"startWeek": 5, "endWeek": 6}, {"startWeek": 7, "endWeek": 8}]}, {"isGroup": true, "subBars": [{"startWeek": 7, "endWeek": 8}, {"startWeek": 9, "endWeek": 10}, {"startWeek": 11, "endWeek": 12}]}, {"isGroup": true, "subBars": [{"startWeek": 9, "endWeek": 10}, {"startWeek": 11, "endWeek": 13}, {"startWeek": 14, "endWeek": 15}]}, {"isGroup": true, "subBars": [{"startWeek": 11, "endWeek": 11}, {"startWeek": 12, "endWeek": 15}, {"startWeek": 16, "endWeek": 16}, {"startWeek": 17, "endWeek": 17}]}, {"isGroup": true, "subBars": [{"startWeek": 12, "endWeek": 14}, {"startWeek": 15, "endWeek": 16}, {"startWeek": 17, "endWeek": 18}]}]], "milestoneState": [[{"week": 1}, {"week": 1}, {"week": 2}, {"week": 4}, {"week": 1}, {"week": 3}, {"week": 1}, {"week": 5}, {"week": 1}, {"week": 1}, {"week": 1}], [{"week": 1}, {"week": 2}, {"week": 7}, {"week": 9}, {"week": 5}, {"week": 8}, {"week": 6}, {"week": 10}, {"week": 1}, {"week": 3}, {"week": 1}], [{"week": 1}, {"week": 2}, {"week": 7}, {"week": 9}, {"week": 5}, {"week": 8}, {"week": 6}, {"week": 10}, {"week": 1}, {"week": 3}, {"week": 1}], [{"week": 1}, {"week": 2}, {"week": 7}, {"week": 9}, {"week": 5}, {"week": 8}, {"week": 6}, {"week": 10}, {"week": 1}, {"week": 3}, {"week": 1}], [{"week": 4}, {"week": 6}, {"week": 11}, {"week": 13}, {"week": 9}, {"week": 12}, {"week": 10}, {"week": 14}, {"week": 3}, {"week": 7}, {"week": 5}], [{"week": 4}, {"week": 6}, {"week": 11}, {"week": 13}, {"week": 9}, {"week": 12}, {"week": 10}, {"week": 14}, {"week": 3}, {"week": 7}, {"week": 5}], [{"week": 8}, {"week": 10}, {"week": 15}, {"week": 17}, {"week": 13}, {"week": 16}, {"week": 14}, {"week": 18}, {"week": 7}, {"week": 11}, {"week": 9}], [{"week": 8}, {"week": 10}, {"week": 15}, {"week": 17}, {"week": 13}, {"week": 16}, {"week": 14}, {"week": 18}, {"week": 7}, {"week": 11}, {"week": 9}]]};
+  localStorage.setItem('releaseGanttState', JSON.stringify(preloaded));
+})();
 
 init();
 </script>

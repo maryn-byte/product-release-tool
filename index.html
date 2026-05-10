@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Feature Planner</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Gloock&family=Mooli&family=Mooli&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Gloock&family=Mooli&display=swap');
 
   :root {
     --bg: #40a285; --surface: #ffffff; --surface2: #bde4c9; --border: #d8d0c8;
@@ -13,11 +13,10 @@
     --strategy-color: #dc5050; --strategy-bg: rgba(220,80,80,0.90);
     --design-color: #dc3c78;   --design-bg: rgba(220,60,120,0.90);
     --engineering-color: #3c64b4; --engineering-bg: rgba(60,100,180,0.90);
-    --qa-color: #3c64b4;       --qa-bg: rgba(60,100,180,0.90);
     --launch-color: #3ca0a0;   --launch-bg: rgba(60,160,160,0.90);
     --data-color: #8c1464;     --data-bg: rgba(140,20,100,0.90);
     --release-color: #dc5050;
-    --bar-h: 22px; --header-h: 40px; --label-w: 220px;
+    --bar-h: 22px; --header-h: 40px; --label-w: 270px;
   }
 
   * { box-sizing:border-box; margin:0; padding:0; }
@@ -36,19 +35,19 @@
   .toggle-btn:hover { border-color:var(--text-muted); color:var(--text-primary); }
   .icon-action-btn { width:34px; height:34px; border:1px solid var(--border); background:#fff; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-muted); transition:all 0.15s; flex-shrink:0; }
   #saveBtn { background:#f29ec6; border-color:#f29ec6; color:#1a1a2e; }
-  #resetBtn { background:#aeb8dd; border-color:#aeb8dd; color:#1a1a2e; }
+  #resetBtn { background:hsl(53,95%,75%); border-color:hsl(53,95%,75%); color:#1a1a2e; }
   .icon-action-btn:hover { border-color:var(--text-muted); color:var(--text-primary); }
   .icon-action-btn.saved { background:#0a8a5e; color:#fff; border-color:#0a8a5e; }
   .mode-btn { font-family:'Mooli',sans-serif; font-size:13px; letter-spacing:0.04em; padding:8px 14px; border-radius:6px; cursor:pointer; border:1px solid var(--border); background:#fff; color:var(--text-muted); transition:all 0.15s; }
   .mode-btn:hover { border-color:var(--text-muted); color:var(--text-primary); }
-  .mode-btn.active { background:#fbeb85; color:var(--text-primary); border-color:#fbeb85; }
+  .mode-btn.active { background:#e5b7ff; color:var(--text-primary); border-color:#e5b7ff; }
 
 
 
 
   .summary-wrapper { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:32px; }
-  .chart-wrapper { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
-  .chart-inner { width:100%; }
+  .chart-wrapper { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:visible; }
+  .chart-inner { width:100%; border-radius:12px; overflow:hidden; }
 
   .chart-header { display:flex; height:var(--header-h); border-bottom:1px solid var(--border); background:var(--surface2); position:sticky; top:0; z-index:20; }
   .header-label { width:var(--label-w); flex-shrink:0; display:flex; align-items:center; padding:0 6px; font-family:'Gloock',serif; font-size:18px; font-weight:400; color:#1a1a2e; }
@@ -102,12 +101,25 @@
   .legend-item { display:flex; align-items:center; gap:7px; font-size:11px; color:var(--text-muted); font-family:'Mooli',sans-serif; }
   .legend-swatch { width:22px; height:10px; border-radius:3px; }
 
+  .detail-panel { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-top:20px; }
+  .detail-empty { display:flex; align-items:center; gap:10px; padding:24px 20px; font-family:'Mooli',sans-serif; font-size:13px; color:var(--text-dim); }
+  .detail-empty .arrow { font-size:18px; }
+  .detail-header { display:flex; align-items:flex-start; justify-content:space-between; padding:14px 20px 10px; border-bottom:1px solid var(--border); background:var(--surface2); }
+  .detail-team-name { display:flex; align-items:center; gap:8px; font-family:'Gloock',serif; font-size:16px; color:var(--text-primary); }
+  .detail-team-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+  .detail-subtitle { font-family:'Mooli',sans-serif; font-size:11px; color:var(--text-muted); margin-top:4px; }
+  .detail-close { background:none; border:1px solid var(--border); border-radius:6px; cursor:pointer; font-family:'Mooli',sans-serif; font-size:11px; color:var(--text-muted); padding:5px 10px; transition:all 0.15s; flex-shrink:0; }
+  .detail-close:hover { border-color:var(--text-muted); color:var(--text-primary); }
+  .detail-weeks { display:grid; gap:0; overflow-x:auto; }
+  .detail-week { padding:12px 14px; border-right:1px solid var(--border); min-width:160px; }
+  .detail-week:last-child { border-right:none; }
+  .detail-week.is-rel { background:rgba(220,80,80,0.05); }
+  .detail-week-num { font-family:'Mooli',sans-serif; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:5px; }
+  .detail-week-title { font-family:'Gloock',serif; font-size:13px; color:var(--text-primary); margin-bottom:6px; }
+  .detail-week-body { font-family:'Mooli',sans-serif; font-size:11px; color:var(--text-muted); line-height:1.55; }
+  .milestone-tag { display:inline-block; font-family:'Mooli',sans-serif; font-size:9px; font-weight:600; letter-spacing:0.06em; padding:3px 7px; border-radius:4px; margin-top:8px; text-transform:uppercase; }
+  .bar.selected { box-shadow:0 0 0 2px #fff, 0 0 0 4px #4d78be; }
 
-
-  .no-today-highlight .week-cell.wk-today { background:transparent; border-left:1px solid var(--border); }
-  .no-today-highlight .week-cell.wk-today .week-num  { color:#1a1a2e !important; font-weight:600 !important; }
-  .no-today-highlight .week-cell.wk-today .week-date { color:#1a1a2e !important; font-weight:400 !important; }
-  .no-today-highlight .release-grid-col.wk-today { background:transparent; }
 </style>
 </head>
 <body>
@@ -128,31 +140,54 @@
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-5.1L1 10"/></svg>
       </button>
     </div>
-    <div style="display:flex;gap:6px;">
-      <button class="mode-btn active" id="modeBtn-full" onclick="setOverviewMode('full')">Features</button>
-      <button class="mode-btn" id="modeBtn-product" onclick="setOverviewMode('product')">Product</button>
-      <button class="mode-btn" id="modeBtn-design" onclick="setOverviewMode('design')">Design</button>
-      <button class="mode-btn" id="modeBtn-data" onclick="setOverviewMode('data')">Data</button>
-      <button class="mode-btn" id="modeBtn-engineering" onclick="setOverviewMode('engineering')">Engineering</button>
-    </div>
   </div>
 </div>
 
 
+<div id="pipelineFilterBar" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;min-height:30px;align-items:center;justify-content:flex-end;"></div>
+
+<div class="summary-wrapper" style="margin-bottom:20px;min-height:60px;">
+  <div id="pipelineRows"></div>
+</div>
+
+<div class="summary-wrapper" style="margin-bottom:20px;">
+  <div id="capacityRows"></div>
+</div>
+
+<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:16px;">
+  <div id="overviewModeButtons" style="display:flex;gap:6px;align-items:center;">
+    <button id="overviewToggleBtn" onclick="toggleOverviewPanel()" title="Toggle overview" style="background:none;border:none;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;padding:0 2px;opacity:0.6;transition:opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">
+      <svg id="eyeIconOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    </button>
+    <button class="mode-btn active" id="modeBtn-full" onclick="setOverviewMode('full')">All</button>
+    <button class="mode-btn" id="modeBtn-product" onclick="setOverviewMode('product')">Product</button>
+    <button class="mode-btn" id="modeBtn-design" onclick="setOverviewMode('design')">Design</button>
+    <button class="mode-btn" id="modeBtn-data" onclick="setOverviewMode('data')">Data</button>
+    <button class="mode-btn" id="modeBtn-engineering" onclick="setOverviewMode('engineering')">Engineering</button>
+  </div>
+</div>
+
+<div id="overviewPanel">
 <div class="summary-wrapper">
   <div class="summary-inner" id="summaryInner">
     <div id="summaryRows"></div>
   </div>
 </div>
+</div>
 
-<div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px;">
-  <button class="mode-btn active" id="detailViewBtn-overview" onclick="setDetailView('overview')">Overview</button>
-  <button class="mode-btn" id="detailViewBtn-details" onclick="setDetailView('details')">Details</button>
+<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:16px;margin-top:20px;">
+  <button id="overviewToggleBtnClosed" onclick="toggleOverviewPanel()" title="Show overview" style="display:none;background:none;border:none;cursor:pointer;color:var(--text-muted);align-items:center;padding:0 2px;opacity:0.6;transition:opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">
+    <svg id="eyeIconClosed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+  </button>
+  <div style="display:flex;gap:6px;">
+    <button class="mode-btn active" id="detailViewBtn-overview" onclick="setDetailView('overview')">Overview</button>
+    <button class="mode-btn" id="detailViewBtn-details" onclick="setDetailView('details')">Details</button>
+  </div>
 </div>
 
 <div class="chart-wrapper">
   <div class="chart-inner" id="chartInner">
-    <div class="chart-header" id="chartHeader"><div style="width:36px;flex-shrink:0;"></div><div class="header-label";>Feature</div></div>
+    <div class="chart-header" id="chartHeader"><div style="width:36px;flex-shrink:0;"></div><div class="header-label">Feature</div></div>
     <div id="chartRows"></div>
   </div>
   <div class="legend">
@@ -171,26 +206,59 @@
 
 <div id="globalTooltip" style="display:none;position:fixed;background:#1a1a2e;color:#fff;font-size:12px;padding:6px 12px;border-radius:6px;pointer-events:none;z-index:9999;box-shadow:0 2px 10px rgba(0,0,0,0.3);font-family:Mooli,sans-serif;white-space:nowrap;"></div>
 
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-empty"><span class="arrow">&#8593;</span>Switch to Details view and click any team bar to see week-by-week details</div>
+</div>
+
 <script>
 const TOTAL_WEEKS  = 18;
 const RELEASE_WEEK = 14;
-let NUM_RELEASES = 7;
+let NUM_RELEASES = 19;
 let   WEEK_W       = 60;
 let   TODAY_WEEK   = null;
 let   cycleStartDate = null;
 let   overviewMode = 'full'; // 'full', 'strategy', 'design', 'data', 'engineering', 'launch'
 let   detailView = 'overview'; // 'details' or 'overview'
+let   selectedSummaryWeek = null; // highlighted column in summary header
+let   overviewVisible = true;
+
+function toggleOverviewPanel() {
+  overviewVisible = !overviewVisible;
+  var panel = document.getElementById('overviewPanel');
+  var modeBtns = document.getElementById('overviewModeButtons');
+  var openBtn = document.getElementById('overviewToggleBtn');
+  var closedBtn = document.getElementById('overviewToggleBtnClosed');
+  if (panel) panel.style.display = overviewVisible ? '' : 'none';
+  if (modeBtns) modeBtns.style.display = overviewVisible ? 'flex' : 'none';
+  if (openBtn) openBtn.style.display = overviewVisible ? 'flex' : 'none';
+  if (closedBtn) closedBtn.style.display = overviewVisible ? 'none' : 'flex';
+}
+
+const DEFAULT_RESOURCES = { engineers: [''], designer: '', needsDataEng: false, needsBiAnalyst: false, users: [] };
+let resourceState = [];
 
 const DEFAULT_RELEASE_NAMES = [
-  'Bookkeeping Superview + Onboarding Vice + My Work Queue',
-  'Tax Recommendation Engine',
+  'Core Data Quality Strengthening',
+  'Resource Management',
+  'Employee Work Queue',
+  'Tight V6 Adoption',
+  'Bookkeeper Super View',
+  'Onboarding Architecture Refactor',
+  'Onboarding Workflows Dashboard',
+  'Social OAuth',
+  'MVP: Activate Affiliates',
+  'Data Warehouse — HubSpot Emails(+) Store',
+  'Data Warehouse — Tight Data Store',
+  'Client Health Dashboard',
   'Gusto Embedded',
+  'Tax Recommendation Engine',
+  'Data Cleanup',
   'Ticketing / Comms',
+  'Centralized Doc Center',
   'Self Serve Sign Up',
-  'Creator FinIQ',
-  'Centralized Doc Center'
+  'Creator Financial IQ'
 ];
-const VERSION_NUMBERS_BASE = ['v3.0','v3.1','v3.2','v3.3','v3.4','v3.5','v3.6'];
+const VERSION_NUMBERS_BASE = ['v3.0','v3.1','v3.2','v3.3','v3.4','v3.5','v3.6','v3.7','v3.8','v3.9','v3.10','v3.11','v3.12','v3.13','v3.14','v3.15','v3.16','v3.17','v3.18'];
 function getVersionNumber(r) {
   if (r < VERSION_NUMBERS_BASE.length) return VERSION_NUMBERS_BASE[r];
   var minor = r % 10;
@@ -232,7 +300,7 @@ const TEAM_DEFS = [
     subBars:[
       { id:'launch-prep', name:'Prep', startWeek:8,  endWeek:10 },
       { id:'launch-qa',   name:'QA',   startWeek:11, endWeek:12 },
-      { id:'launch-uat',  name:'UAT',  startWeek:13, endWeek:14 }
+      { id:'launch-uat',  name:'UAT',  startWeek:13, endWeek:13 }
     ]
   }
 ];
@@ -292,6 +360,8 @@ function initBarState() {
     });
   }
   initMilestoneState();
+  resourceState = [];
+  for (let r = 0; r < NUM_RELEASES; r++) resourceState[r] = Object.assign({}, DEFAULT_RESOURCES);
   canonicalBarState = [];
   canonicalMilestoneState = [];
   for (let r = 0; r < NUM_RELEASES; r++) { syncCanonical(r); }
@@ -330,12 +400,6 @@ const TEAM_DETAILS = {
     { title:'Integration & Code to Staging',   body:'Integration focus. Code to Staging marks Dev Complete. No new features after this point.', milestone:'Code to Staging' },
     { title:'QA & UAT + Release Tollgate',     body:'Product runs QA & UAT in collaboration with Engineering. Hold the Release Tollgate go/no-go decision.', milestone:'Tollgate' },
     { title:'Release, Cooldown & Bug Fixes',   body:'Code to production. Monitor closely. Bug fixes as they arise. Tech debt and documentation. Retrospective.', milestone:'Release Day' }
-  ]},
-  qa: { weeks: [
-    { title:'Test Plan & Regression Suite', body:'Review approved designs and acceptance criteria. Write the full test plan. Build out the regression suite.', milestone:'Test Plan' },
-    { title:'Functional Testing',           body:'Execute functional test cases. Log bugs, prioritize by severity, work closely with Engineering.', milestone:null },
-    { title:'Regression & UAT Support',     body:'Run full regression suite. Support Product in QA & UAT.', milestone:null },
-    { title:'Release Sign-off',             body:'Final validation pass. Confirm all critical bugs resolved. Issue formal QA sign-off.', milestone:'QA Sign-off' }
   ]},
   launch: { weeks: [
     { title:'Release Brief for Launch',    body:'Review what is shipping. Draft the internal release brief. Begin drafting release notes.', milestone:'Release Brief' },
@@ -387,9 +451,7 @@ function computeTodayWeek() {
   TODAY_WEEK = (diffWeeks >= 0 && diffWeeks < TOTAL_WEEKS) ? diffWeeks + 1 : null;
 }
 
-function weekClass(w) {
-  return '';
-}
+function weekClass(w) { return ''; }
 
 function buildReleaseInputs() { /* replaced by inline editing */ }
 
@@ -416,15 +478,197 @@ function buildRows() {
     const row = document.createElement('div');
     row.className = 'release-row';
     // minHeight set dynamically after milestone collision detection
-    row.setAttribute('draggable', 'false');  // label handles drag
+    row.setAttribute('draggable', 'true');
+    // Row drag-and-drop reordering
+    (function(ri) {
+      row.addEventListener('dragstart', function(e) {
+        rowDragSrc = ri;
+        row.classList.add('row-dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      row.addEventListener('dragend', function() {
+        row.classList.remove('row-dragging');
+        document.querySelectorAll('.release-row').forEach(function(rr) { rr.classList.remove('row-drag-over'); });
+        rowDragSrc = null;
+      });
+      row.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        document.querySelectorAll('.release-row').forEach(function(rr) { rr.classList.remove('row-drag-over'); });
+        if (rowDragSrc !== null && rowDragSrc !== ri) row.classList.add('row-drag-over');
+      });
+      row.addEventListener('drop', function(e) { onRowDrop(e, ri); });
+    })(r);
 
     const lbl = document.createElement('div');
     lbl.className = 'release-label';
-    lbl.innerHTML = '<div class="release-version">' + getVersionNumber(r) + '</div>' +
-      '<div class="release-name" id="release-name-' + r + '" contenteditable="true" spellcheck="false">' + releaseNames[r] + '</div>';
+    lbl.addEventListener('dragstart', function(e) { e.stopPropagation(); });
+    lbl.setAttribute('draggable', 'false');
+    lbl.innerHTML = '<div class="release-name" id="release-name-' + r + '" contenteditable="true" spellcheck="false">' + releaseNames[r] + '</div>';
     var nameEl = lbl.querySelector('.release-name');
     nameEl.addEventListener('blur', (function(ri) { return function() { releaseNames[ri] = this.textContent.trim(); }; })(r));
     nameEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); this.blur(); } });
+
+    // Resource inputs
+    var res = resourceState[r] || (resourceState[r] = Object.assign({}, DEFAULT_RESOURCES));
+    if (!Array.isArray(res.engineers)) res.engineers = [''];
+
+    var ENGINEERS = ['Anton','Brian','David','Jason','Kevin','Tim'];
+    var DESIGNERS_OPTS = ['Farhan','Maria','Not needed'];
+    var INPUT_CSS = 'font-family:Mooli,sans-serif;font-size:10px;color:var(--text-primary);background:#fff;border:1px solid var(--border);border-radius:3px;padding:2px 3px;outline:none;cursor:pointer;';
+    var LBL_CSS   = 'font-family:Mooli,sans-serif;font-size:8px;color:#9999aa;text-transform:uppercase;letter-spacing:0.06em;line-height:1;white-space:nowrap;margin-bottom:0;';
+
+    function stopProp(el) {
+      el.addEventListener('mousedown', function(e){ e.stopPropagation(); });
+      el.addEventListener('click',     function(e){ e.stopPropagation(); });
+    }
+    function makeSelect(options, val, onChange, width) {
+      var sel = document.createElement('select');
+      sel.style.cssText = INPUT_CSS + (width ? 'width:' + width + ';' : 'flex:1;min-width:0;');
+      var blank = document.createElement('option'); blank.value=''; blank.textContent='—';
+      if (!val) blank.selected = true;
+      sel.appendChild(blank);
+      options.forEach(function(o) {
+        var opt = document.createElement('option'); opt.value=o; opt.textContent=o;
+        if (o === val) opt.selected = true;
+        sel.appendChild(opt);
+      });
+      sel.addEventListener('change', function(){ onChange(this.value); buildCapacity(); });
+      stopProp(sel);
+      return sel;
+    }
+    function makeCheckRow(labelText, checked, key) {
+      var wrap = document.createElement('div');
+      wrap.style.cssText = 'display:flex;align-items:center;gap:4px;margin-top:1px;';
+      var cb = document.createElement('input'); cb.type='checkbox'; cb.checked=!!checked;
+      cb.style.cssText = 'cursor:pointer;accent-color:#4d78be;width:11px;height:11px;flex-shrink:0;';
+      var lbl3 = document.createElement('span');
+      lbl3.style.cssText = 'font-family:Mooli,sans-serif;font-size:10px;color:var(--text-primary);';
+      lbl3.textContent = labelText;
+      cb.addEventListener('change', function(){ resourceState[r][key] = this.checked; buildCapacity(); });
+      stopProp(cb);
+      wrap.appendChild(cb); wrap.appendChild(lbl3);
+      return wrap;
+    }
+
+    var resWrap = document.createElement('div');
+    resWrap.style.cssText = 'margin-top:6px;display:flex;flex-direction:row;gap:8px;align-items:flex-start;';
+
+    // Left column: Dev, DES, Tetra, Matt
+    var leftCol = document.createElement('div');
+    leftCol.style.cssText = 'display:flex;flex-direction:column;gap:3px;';
+
+    // Engineers section — closure-safe via IIFE for renderEngineers
+    var engSection = document.createElement('div');
+    engSection.id = 'eng-section-' + r;
+
+    (function(engSec, resRef) {
+      function renderEngineers() {
+        engSec.innerHTML = '';
+        var entries = resRef.engineers.length > 0 ? resRef.engineers : [''];
+        entries.forEach(function(engVal, ei) {
+          (function(idx) {
+            var row2 = document.createElement('div');
+            row2.style.cssText = 'display:flex;align-items:center;gap:3px;';
+            var lbl3 = document.createElement('span');
+            lbl3.style.cssText = LBL_CSS;
+            lbl3.textContent = 'Dev';
+            var sel = makeSelect(ENGINEERS, resRef.engineers[idx] || '', function(v){ if (resRef.engineers.length === 0) resRef.engineers = ['']; resRef.engineers[idx] = v; }, '60px');
+            row2.appendChild(lbl3); row2.appendChild(sel);
+            if (idx > 0) {
+              var rmBtn = document.createElement('button');
+              rmBtn.textContent = '×';
+              rmBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:12px;font-weight:400;color:#aaa;padding:0 2px;line-height:1;flex-shrink:0;';
+              rmBtn.addEventListener('click', function(e){ e.stopPropagation(); resRef.engineers.splice(idx, 1); renderEngineers(); });
+              stopProp(rmBtn);
+              row2.appendChild(rmBtn);
+            } else {
+              // + button to right of Dev dropdown on first row
+              var addEngBtn = document.createElement('button');
+              addEngBtn.textContent = '+';
+              addEngBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-family:Mooli,sans-serif;font-size:8px;color:var(--text-muted);padding:1px 5px;flex-shrink:0;';
+              addEngBtn.addEventListener('click', function(e){ e.stopPropagation(); resRef.engineers.push(''); renderEngineers(); });
+              stopProp(addEngBtn);
+              row2.appendChild(addEngBtn);
+            }
+            engSec.appendChild(row2);
+          })(ei);
+        });
+      }
+      renderEngineers();
+    })(engSection, res);
+
+    leftCol.appendChild(engSection);
+
+    // Designer dropdown (Farhan, Maria, Not needed)
+    var desRow = document.createElement('div');
+    desRow.style.cssText = 'display:flex;align-items:center;gap:3px;';
+    var desLbl = document.createElement('span');
+    desLbl.style.cssText = LBL_CSS;
+    desLbl.textContent = 'DES';
+    var desVal = res.designer || '';
+    var desSel = makeSelect(DESIGNERS_OPTS, desVal, function(v){ res.designer = v; }, '60px');
+    desRow.appendChild(desLbl); desRow.appendChild(desSel);
+    leftCol.appendChild(desRow);
+
+    // Checkboxes — no word "needed"
+    leftCol.appendChild(makeCheckRow('Tetra', res.needsDataEng,   'needsDataEng'));
+    leftCol.appendChild(makeCheckRow('Matt',  res.needsBiAnalyst, 'needsBiAnalyst'));
+
+    resWrap.appendChild(leftCol);
+
+    // Right column: Users section (sits beside Dev, not below Matt)
+    var USERS_OPTS = ['Creator Accountants','Historical Cleanup','Tax','Payroll','Customer Success','Sales','Marketing','Managers','Customers','Engineering','Data'];
+    if (!Array.isArray(res.users)) res.users = [];
+    var userSection = document.createElement('div');
+    userSection.id = 'user-section-' + r;
+    userSection.style.cssText = 'display:flex;flex-direction:column;gap:3px;';
+    (function(userSec, resRef) {
+      function renderUsers() {
+        userSec.innerHTML = '';
+        // Always show at least one row (with blank selection)
+        var entries = resRef.users.length > 0 ? resRef.users : [''];
+        entries.forEach(function(uVal, ui) {
+          (function(idx) {
+            var uRow = document.createElement('div');
+            uRow.style.cssText = 'display:flex;align-items:center;gap:3px;';
+            var uLbl = document.createElement('span');
+            uLbl.style.cssText = LBL_CSS;
+            uLbl.textContent = 'User';
+            var uSel = makeSelect(USERS_OPTS, resRef.users[idx] || '', function(v){
+              if (resRef.users.length === 0) resRef.users = [''];
+              resRef.users[idx] = v;
+            }, '60px');
+            uRow.appendChild(uLbl); uRow.appendChild(uSel);
+            if (idx === 0) {
+              // + button to right of first User dropdown
+              var addUserBtn = document.createElement('button');
+              addUserBtn.textContent = '+';
+              addUserBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-family:Mooli,sans-serif;font-size:8px;color:var(--text-muted);padding:1px 5px;flex-shrink:0;';
+              addUserBtn.addEventListener('click', function(e){ e.stopPropagation(); resRef.users.push(''); renderUsers(); });
+              stopProp(addUserBtn);
+              uRow.appendChild(addUserBtn);
+            } else {
+              var rmUserBtn = document.createElement('button');
+              rmUserBtn.textContent = '×';
+              rmUserBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:12px;font-weight:400;color:#aaa;padding:0 2px;line-height:1;flex-shrink:0;';
+              rmUserBtn.addEventListener('click', function(e){
+                e.stopPropagation();
+                resRef.users.splice(idx, 1);
+                renderUsers();
+              });
+              stopProp(rmUserBtn);
+              uRow.appendChild(rmUserBtn);
+            }
+            userSec.appendChild(uRow);
+          })(ui);
+        });
+      }
+      renderUsers();
+    })(userSection, res);
+    resWrap.appendChild(userSection);
+
+    lbl.appendChild(resWrap);
 
 
     // Actions column
@@ -561,6 +805,7 @@ function buildRows() {
             bar.appendChild(lh); bar.appendChild(rh);
             let didMove = false;
             bar.addEventListener('mousedown', function(e) { if (e.target.classList.contains('resize-handle')) return; didMove = false; startDrag(e, r, ti, function() { didMove = true; }, si); });
+            bar.addEventListener('click', (function(rr,tii,sii){ return function(e) { if (!didMove && !e.target.classList.contains('resize-handle')) selectBar(rr, tii, sii); }; })(r, ti, si));
             bc.appendChild(bar);
           });
         } else {
@@ -576,6 +821,7 @@ function buildRows() {
           bar.appendChild(lh); bar.appendChild(rh);
           let didMove = false;
           bar.addEventListener('mousedown', function(e) { if (e.target.classList.contains('resize-handle')) return; didMove = false; startDrag(e, r, ti, function() { didMove = true; }); });
+          bar.addEventListener('click', (function(rr,tii){ return function(e) { if (!didMove && !e.target.classList.contains('resize-handle')) selectBar(rr, tii, undefined); }; })(r, ti));
           bc.appendChild(bar);
         }
       });
@@ -825,7 +1071,7 @@ function selectBar(r, ti, si) {
 
 function showEmptyDetail() {
   var dp = document.getElementById('detailPanel');
-  if (dp) dp.innerHTML = '<div class="detail-empty"><span class="arrow">&#8593;</span>Click any team bar to see week-by-week details</div>';
+  if (dp) dp.innerHTML = '<div class="detail-empty"><span class="arrow">&#8593;</span>Click any team bar above to see week-by-week details</div>';
 }
 
 function renderDetail(r, ti, si) {
@@ -835,12 +1081,15 @@ function renderDetail(r, ti, si) {
   const color = cv(team.colorVar);
   const numWeeks = state.endWeek - state.startWeek + 1;
   const subName = (si !== undefined && si !== null && team.subBars) ? team.subBars[si].name : team.name;
+  // Use actual release milestone week for this row (not hardcoded RELEASE_WEEK)
+  var RELEASE_MI = DEFAULT_MILESTONES.findIndex(function(m){ return m.id === 'release'; });
+  var actualReleaseWeek = (milestoneState[r] && milestoneState[r][RELEASE_MI]) ? milestoneState[r][RELEASE_MI].week : RELEASE_WEEK;
 
   let html = '';
   for (let i = 0; i < numWeeks; i++) {
     const absW = state.startWeek + i;
     const d = dets[i] || { title:'\u2014', body:'No activity scheduled.', milestone:null };
-    const isRel = absW === RELEASE_WEEK;
+    const isRel = absW === actualReleaseWeek;
     const dateRange = cycleStartDate ? weekDateRange(absW) : ('Week ' + (i+1));
     const wkLabel = isRel ? (dateRange + ' \u00b7 RELEASE') : dateRange;
     const mTag = d.milestone ? '<div class="milestone-tag" style="background:' + color + '20;color:' + color + '">\u25c6 ' + d.milestone + '</div>' : '';
@@ -1025,6 +1274,10 @@ function setDetailView(view) {
     overviewBarStateAtLastLeave = overviewBarState.map(function(row) {
       return row.map(function(b) { return { startWeek:b.startWeek, endWeek:b.endWeek }; });
     });
+    // Clear selection and reset detail panel
+    selectedR = null; selectedTi = null; selectedSi = null;
+    var dp = document.getElementById('detailPanel');
+    if (dp) { dp.style.display = 'none'; }
   } else if (view === 'details' && detailView === 'overview') {
     // Snapshot overview state as it is NOW (user may have changed bars)
     // Then restore details — per-team: restore saved if unchanged, redistribute if changed
@@ -1033,6 +1286,9 @@ function setDetailView(view) {
     overviewBarStateAtLastLeave = overviewBarState.map(function(row) {
       return row.map(function(b) { return { startWeek:b.startWeek, endWeek:b.endWeek }; });
     });
+    // Show detail panel with empty state
+    var dp = document.getElementById('detailPanel');
+    if (dp) { dp.style.display = ''; showEmptyDetail(); }
   }
   detailView = view;
   ['overview','details'].forEach(function(v) {
@@ -1050,14 +1306,15 @@ function onDateChange() {
 
 function saveState() {
   const state = {
-    schemaVersion: 38,
+    schemaVersion: 44,
     numReleases: NUM_RELEASES,
     cycleStartDate: document.getElementById('cycleStartInput').value,
     releaseNames: [...releaseNames],
     barState: barState.map(function(row) { return row.map(function(b) {
       return b.isGroup ? { isGroup:true, subBars: b.subBars.map(function(sb) { return { startWeek:sb.startWeek, endWeek:sb.endWeek }; }) } : { startWeek:b.startWeek, endWeek:b.endWeek };
     }); }),
-    milestoneState: milestoneState.map(function(row) { return row.map(function(m) { return { week:m.week }; }); })
+    milestoneState: milestoneState.map(function(row) { return row.map(function(m) { return { week:m.week }; }); }),
+    resourceState: resourceState.map(function(r) { return { engineers: (r.engineers||[]).slice(), designer: r.designer||'', needsDataEng: !!r.needsDataEng, needsBiAnalyst: !!r.needsBiAnalyst, users: (r.users||[]).slice() }; })
   };
   localStorage.setItem('releaseGanttState', JSON.stringify(state));
   const btn = document.getElementById('saveBtn');
@@ -1070,7 +1327,7 @@ function loadState() {
     const raw = localStorage.getItem('releaseGanttState');
     if (!raw) return false;
     const state = JSON.parse(raw);
-    if (!state.schemaVersion || state.schemaVersion < 38) { localStorage.removeItem('releaseGanttState'); return false; }
+    if (!state.schemaVersion || state.schemaVersion < 44) { localStorage.removeItem('releaseGanttState'); return false; }
     if (state.numReleases) NUM_RELEASES = state.numReleases;
     if (state.cycleStartDate) { document.getElementById('cycleStartInput').value = state.cycleStartDate; cycleStartDate = new Date(state.cycleStartDate + 'T12:00:00'); }
     if (state.releaseNames) releaseNames = state.releaseNames;
@@ -1079,6 +1336,16 @@ function loadState() {
       if (valid) barState = state.barState;
     }
     if (state.milestoneState) milestoneState = state.milestoneState;
+    if (state.resourceState) {
+      resourceState = state.resourceState.map(function(r) {
+        var merged = Object.assign({}, DEFAULT_RESOURCES, r);
+        if (!Array.isArray(merged.users)) merged.users = [];
+        return merged;
+      });
+    } else {
+      resourceState = [];
+      for (var rr2 = 0; rr2 < NUM_RELEASES; rr2++) resourceState[rr2] = Object.assign({}, DEFAULT_RESOURCES);
+    }
     // Canonical state uses template bar widths (not saved positions) so rocket drag always restores full-size bars
     canonicalBarState = [];
     canonicalMilestoneState = [];
@@ -1092,6 +1359,380 @@ function loadState() {
 }
 
 
+
+// ── Pipeline calendar ─────────────────────────────────────────────────────────
+var pipelineUserFilter = null; // null = show all
+
+function buildPipeline() {
+  var cont = document.getElementById('pipelineRows');
+  if (!cont) return;
+  cont.innerHTML = '';
+
+  var RELEASE_MI = DEFAULT_MILESTONES.findIndex(function(m){ return m.id === 'release'; });
+  var ALL_USERS = ['Creator Accountants','Historical Cleanup','Tax','Payroll','Customer Success','Sales','Marketing','Managers','Customers','Engineering','Data'];
+
+  // Render filter buttons into the external bar
+  var filterBar = document.getElementById('pipelineFilterBar');
+  if (filterBar) {
+    filterBar.innerHTML = '';
+    // "All" button
+    var allBtn = document.createElement('button');
+    allBtn.textContent = 'All';
+    var allActive = pipelineUserFilter === null;
+    allBtn.style.cssText = 'font-family:Mooli,sans-serif;font-size:10px;letter-spacing:0.04em;padding:4px 10px;border-radius:5px;cursor:pointer;border:1px solid ' + (allActive ? '#e5b7ff' : 'var(--border)') + ';background:' + (allActive ? '#e5b7ff' : '#fff') + ';color:var(--text-primary);transition:all 0.15s;';
+    allBtn.addEventListener('click', function() { pipelineUserFilter = null; buildPipeline(); });
+    filterBar.appendChild(allBtn);
+    ALL_USERS.forEach(function(u) {
+      var btn = document.createElement('button');
+      btn.textContent = u;
+      var isActive = pipelineUserFilter === u;
+      btn.style.cssText = 'font-family:Mooli,sans-serif;font-size:10px;letter-spacing:0.04em;padding:4px 10px;border-radius:5px;cursor:pointer;border:1px solid ' + (isActive ? '#e5b7ff' : 'var(--border)') + ';background:' + (isActive ? '#e5b7ff' : '#fff') + ';color:var(--text-primary);transition:all 0.15s;';
+      btn.addEventListener('click', function() {
+        pipelineUserFilter = (pipelineUserFilter === u) ? null : u;
+        buildPipeline();
+      });
+      filterBar.appendChild(btn);
+    });
+  }
+
+  // Collect release entries per week
+  var releaseByWeek = {};
+  for (var w = 1; w <= TOTAL_WEEKS; w++) releaseByWeek[w] = [];
+  for (var r = 0; r < NUM_RELEASES; r++) {
+    var ms = milestoneState[r][RELEASE_MI];
+    if (!ms || ms.week < 1 || ms.week > TOTAL_WEEKS) continue;
+    releaseByWeek[ms.week].push({ featureName: releaseNames[r], miIcon: MILESTONE_ICONS[RELEASE_MI] || '', releaseIndex: r });
+  }
+
+  // Header — Pipeline title + column labels
+  var hdr = document.createElement('div');
+  hdr.style.cssText = 'display:flex;align-items:center;height:40px;background:var(--surface2);border-bottom:1px solid var(--border);';
+  var hdrSpacer = document.createElement('div');
+  hdrSpacer.style.cssText = 'width:36px;flex-shrink:0;';
+  hdr.appendChild(hdrSpacer);
+  var hdrTitle = document.createElement('div');
+  hdrTitle.style.cssText = 'font-family:Gloock,serif;font-size:18px;font-weight:400;color:#1a1a2e;width:var(--label-w);flex-shrink:0;padding:0 6px;';
+  hdrTitle.textContent = 'Pipeline';
+  hdr.appendChild(hdrTitle);
+  var hdrReleases = document.createElement('div');
+  hdrReleases.style.cssText = 'flex:1;font-family:Mooli,sans-serif;font-size:10px;color:#1a1a2e;text-transform:uppercase;letter-spacing:0.08em;padding:0 10px;';
+  hdrReleases.textContent = 'Releases';
+  hdr.appendChild(hdrReleases);
+  var hdrEngReleases = document.createElement('div');
+  hdrEngReleases.style.cssText = 'flex:1;font-family:Mooli,sans-serif;font-size:10px;color:#1a1a2e;text-transform:uppercase;letter-spacing:0.08em;padding:0 10px;';
+  hdrEngReleases.textContent = 'Engineering Releases';
+  hdr.appendChild(hdrEngReleases);
+  cont.appendChild(hdr);
+
+  // Filter and bucket releases
+  var activeWeeks = [];
+  for (var w = 1; w <= TOTAL_WEEKS; w++) {
+    var allEntries = releaseByWeek[w];
+    if (!allEntries.length) continue;
+
+    // Apply user filter
+    var filtered = pipelineUserFilter
+      ? allEntries.filter(function(ev) {
+          var res = resourceState[ev.releaseIndex] || {};
+          return Array.isArray(res.users) && res.users.indexOf(pipelineUserFilter) !== -1;
+        })
+      : allEntries;
+
+    if (!filtered.length) continue;
+
+    // Split into main (non-Eng/Data) and side (Engineering or Data)
+    var mainEntries = filtered.filter(function(ev) {
+      var res = resourceState[ev.releaseIndex] || {};
+      var u = Array.isArray(res.users) ? res.users : [];
+      return u.indexOf('Engineering') === -1 && u.indexOf('Data') === -1;
+    });
+    var sideEntries = filtered.filter(function(ev) {
+      var res = resourceState[ev.releaseIndex] || {};
+      var u = Array.isArray(res.users) ? res.users : [];
+      return u.indexOf('Engineering') !== -1 || u.indexOf('Data') !== -1;
+    });
+
+    activeWeeks.push({ week: w, main: mainEntries, side: sideEntries });
+  }
+
+  if (activeWeeks.length === 0) {
+    var empty = document.createElement('div');
+    empty.style.cssText = 'padding:16px 48px;font-family:Mooli,sans-serif;font-size:12px;color:#9999aa;';
+    empty.textContent = pipelineUserFilter ? 'No releases affect ' + pipelineUserFilter + '.' : 'No releases scheduled yet.';
+    cont.appendChild(empty);
+    return;
+  }
+
+  function makeEntryList(entries) {
+    var col = document.createElement('div');
+    col.style.cssText = 'flex:1;display:flex;flex-direction:column;';
+    entries.forEach(function(ev) {
+      var subRow = document.createElement('div');
+      subRow.style.cssText = 'display:flex;align-items:center;gap:5px;padding:2px 10px;min-height:24px;';
+      var iconWrap = document.createElement('div');
+      var iconHtml = ev.miIcon
+        .replace('width:22px;height:22px;', 'width:16px;height:16px;')
+        .replace('width="12" height="12"', 'width="9" height="9"');
+      iconWrap.innerHTML = iconHtml;
+      subRow.appendChild(iconWrap);
+      var lbl = document.createElement('span');
+      lbl.style.cssText = 'font-family:Mooli,sans-serif;font-size:11px;color:var(--text-primary);';
+      lbl.textContent = ev.featureName;
+      subRow.appendChild(lbl);
+      col.appendChild(subRow);
+    });
+    return col;
+  }
+
+  activeWeeks.forEach(function(item) {
+    var w = item.week;
+    var dateLabel = cycleStartDate ? weekDate(w) : 'Wk ' + w;
+
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;border-top:1px solid var(--border);min-height:36px;';
+
+    var sp = document.createElement('div');
+    sp.style.cssText = 'width:36px;flex-shrink:0;background:var(--surface);';
+    row.appendChild(sp);
+
+    var dateCol = document.createElement('div');
+    dateCol.style.cssText = 'width:var(--label-w);flex-shrink:0;background:var(--surface);display:flex;align-items:center;padding:8px 6px;';
+    var dateSpan = document.createElement('span');
+    dateSpan.style.cssText = 'font-family:Mooli,sans-serif;font-size:13px;font-weight:600;color:var(--text-primary);';
+    dateSpan.textContent = dateLabel;
+    dateCol.appendChild(dateSpan);
+    row.appendChild(dateCol);
+
+    // Col 2: main releases (non-Eng/Data)
+    var mainCol = makeEntryList(item.main);
+    row.appendChild(mainCol);
+
+    // Col 3: side releases (Engineering or Data) — no border, no header
+    var sideCol = makeEntryList(item.side);
+    row.appendChild(sideCol);
+
+    cont.appendChild(row);
+  });
+
+  var sp2 = document.createElement('div');
+  sp2.style.cssText = 'height:11px;border-top:1px solid var(--border);';
+  cont.appendChild(sp2);
+}
+
+// ── Capacity chart ────────────────────────────────────────────────────────────
+function buildCapacity() {
+  var cont = document.getElementById('capacityRows');
+  if (!cont) return;
+  cont.innerHTML = '';
+
+  var LABEL_W = 'var(--label-w)';
+
+  // People rows: engineers, designers, fixed data/bi
+  var ALL_ENGINEERS = ['Anton','Brian','David','Jason','Kevin','Tim'];
+  var ALL_DESIGNERS = ['Farhan','Maria'];
+  var FIXED_PEOPLE  = [
+    { name:'Tetra', role:'data' },
+    { name:'Matt',  role:'bi'   }
+  ];
+
+  // For a given release row r, get the weeks that a team's bars cover
+  function teamWeeks(r, teamId) {
+    var ti = TEAM_DEFS.findIndex(function(t){ return t.id === teamId; });
+    if (ti === -1) return {};
+    var covered = {};
+    // In overview mode use the collapsed overview bar span; in details use actual sub-bars
+    if (detailView === 'overview' && overviewBarState[r] && overviewBarState[r][ti]) {
+      var ov = overviewBarState[r][ti];
+      for (var w = ov.startWeek; w <= ov.endWeek; w++) covered[w] = true;
+      return covered;
+    }
+    var bSt = barState[r][ti];
+    if (bSt.isGroup) {
+      bSt.subBars.forEach(function(sb) {
+        for (var w = sb.startWeek; w <= sb.endWeek; w++) covered[w] = true;
+      });
+    } else {
+      for (var w = bSt.startWeek; w <= bSt.endWeek; w++) covered[w] = true;
+    }
+    return covered;
+  }
+
+  // Count per person per week
+  // engineers -> engineering weeks; designers -> design weeks; tetra/matt -> data weeks
+  function countForPerson(name, role) {
+    var counts = {};
+    for (var w = 1; w <= TOTAL_WEEKS; w++) counts[w] = 0;
+    for (var r = 0; r < NUM_RELEASES; r++) {
+      var res = resourceState[r];
+      if (!res) continue;
+      var teamId = (role === 'engineer') ? 'engineering' : (role === 'designer') ? 'design' : 'data';
+      var weeks = teamWeeks(r, teamId);
+      var assigned = false;
+      if (role === 'engineer') {
+        assigned = Array.isArray(res.engineers) && res.engineers.indexOf(name) !== -1;
+      } else if (role === 'designer') {
+        assigned = res.designer === name;
+      } else if (role === 'data' || role === 'bi') {
+        assigned = (role === 'data') ? !!res.needsDataEng : !!res.needsBiAnalyst;
+      }
+      if (assigned) {
+        Object.keys(weeks).forEach(function(w) { counts[parseInt(w)]++; });
+      }
+    }
+    return counts;
+  }
+
+  // Colour scale: dynamic — find max count across all people/weeks, then interpolate
+  // Base colour #e5b6ff (darkest), white (lightest)
+  var maxCount = 0;
+  var allPeopleForMax = [];
+  ALL_ENGINEERS.forEach(function(n){ allPeopleForMax.push({ name:n, role:'engineer' }); });
+  ALL_DESIGNERS.forEach(function(n){ allPeopleForMax.push({ name:n, role:'designer' }); });
+  FIXED_PEOPLE.forEach(function(p){ allPeopleForMax.push({ name:p.name, role:p.role }); });
+  allPeopleForMax.forEach(function(p) {
+    var c = countForPerson(p.name, p.role);
+    Object.keys(c).forEach(function(w){ if (c[w] > maxCount) maxCount = c[w]; });
+  });
+  if (maxCount < 1) maxCount = 1;
+
+  function cellBg(count) {
+    if (count === 0) return '#fff';
+    // Interpolate from white (#fff) to #e5b6ff based on count/maxCount
+    var t = count / maxCount;
+    var r = Math.round(255 + (229 - 255) * t);
+    var g = Math.round(255 + (182 - 255) * t);
+    var b = Math.round(255 + (255 - 255) * t);
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
+  function cellColor(count) {
+    return count / maxCount >= 0.5 ? '#4a1a6e' : '#4a1a6e';
+  }
+
+  // Build a lookup: person -> week -> [featureNames]
+  function featureNamesForPerson(name, role) {
+    var lookup = {};
+    for (var r = 0; r < NUM_RELEASES; r++) {
+      var res = resourceState[r];
+      if (!res) continue;
+      var teamId = (role === 'engineer') ? 'engineering' : (role === 'designer') ? 'design' : 'data';
+      var weeks = teamWeeks(r, teamId);
+      var assigned = false;
+      if (role === 'engineer') assigned = Array.isArray(res.engineers) && res.engineers.indexOf(name) !== -1;
+      else if (role === 'designer') assigned = res.designer === name;
+      else if (role === 'data') assigned = !!res.needsDataEng;
+      else if (role === 'bi') assigned = !!res.needsBiAnalyst;
+      if (assigned) {
+        Object.keys(weeks).forEach(function(w) {
+          var ww = parseInt(w);
+          if (!lookup[ww]) lookup[ww] = [];
+          lookup[ww].push(releaseNames[r]);
+        });
+      }
+    }
+    return lookup;
+  }
+
+  // Header row
+  var hdr = document.createElement('div');
+  hdr.style.cssText = 'display:flex;height:40px;border-bottom:1px solid var(--border);background:var(--surface2);';
+  var hdrSpacer = document.createElement('div');
+  hdrSpacer.style.cssText = 'width:36px;flex-shrink:0;';
+  hdr.appendChild(hdrSpacer);
+  var hdrLbl = document.createElement('div');
+  hdrLbl.style.cssText = 'width:' + LABEL_W + ';flex-shrink:0;display:flex;align-items:center;padding:0 6px;font-family:Gloock,serif;font-size:18px;font-weight:400;color:#1a1a2e;';
+  hdrLbl.textContent = 'Capacity';
+  hdr.appendChild(hdrLbl);
+  var hdrGrid = document.createElement('div');
+  hdrGrid.style.cssText = 'flex:1;display:flex;';
+  for (var w = 1; w <= TOTAL_WEEKS; w++) {
+    var wc = document.createElement('div');
+    wc.style.cssText = 'flex:1;display:flex;align-items:center;justify-content:center;min-width:0;';
+    var wd = document.createElement('span');
+    wd.style.cssText = 'font-family:Mooli,sans-serif;font-size:10px;color:#1a1a2e;';
+    wd.textContent = cycleStartDate ? weekDate(w) : w;
+    wc.appendChild(wd);
+    hdrGrid.appendChild(wc);
+  }
+  hdr.appendChild(hdrGrid);
+  cont.appendChild(hdr);
+
+  // Build all people rows
+  var people = [];
+  ALL_ENGINEERS.forEach(function(n){ people.push({ name:n, role:'engineer', group:'Devs' }); });
+  ALL_DESIGNERS.forEach(function(n){ people.push({ name:n, role:'designer', group:'Design' }); });
+  FIXED_PEOPLE.forEach(function(p){ people.push({ name:p.name, role:p.role, group:p.role === 'data' ? 'Data' : 'BI' }); });
+
+  var prevGroup = null;
+  people.forEach(function(person) {
+    var counts = countForPerson(person.name, person.role);
+    var featureNames = featureNamesForPerson(person.name, person.role);
+
+    // Per-role circle colour
+    var circleColor = person.role === 'engineer' ? '#adb6de'
+                    : person.role === 'designer'  ? '#f29ec6'
+                    : person.role === 'data'       ? '#f4af97'
+                    : '#fad063'; // bi
+
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;height:28px;border-top:1px solid var(--border);';
+
+    if (person.group !== prevGroup && prevGroup !== null) {
+      row.style.borderTop = '2px solid var(--border)';
+    }
+    prevGroup = person.group;
+
+    var spacer = document.createElement('div');
+    spacer.style.cssText = 'width:36px;flex-shrink:0;background:var(--surface);';
+    row.appendChild(spacer);
+
+    var lbl = document.createElement('div');
+    lbl.style.cssText = 'width:' + LABEL_W + ';flex-shrink:0;background:var(--surface);display:flex;align-items:center;padding:0 6px;';
+    var nameSpan = document.createElement('span');
+    nameSpan.style.cssText = 'font-family:Mooli,sans-serif;font-size:12px;color:var(--text-primary);';
+    nameSpan.textContent = person.name;
+    lbl.appendChild(nameSpan);
+    row.appendChild(lbl);
+
+    var grid = document.createElement('div');
+    grid.style.cssText = 'flex:1;display:flex;background:var(--surface);';
+    for (var w = 1; w <= TOTAL_WEEKS; w++) {
+      var c = counts[w] || 0;
+      var cell = document.createElement('div');
+      cell.style.cssText = 'flex:1;display:flex;align-items:center;justify-content:center;min-width:0;';
+      if (c > 0) {
+        var t = maxCount > 1 ? (c - 1) / (maxCount - 1) : 1;
+        // Interpolate circle size 14px (count=1) to 20px (count=max)
+        var size = Math.round(14 + t * 6);
+        var circle = document.createElement('div');
+        circle.style.cssText = 'width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:' + circleColor + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:' + (0.55 + t * 0.45).toFixed(2) + ';';
+        var txt = document.createElement('span');
+        txt.style.cssText = 'font-family:Mooli,sans-serif;font-size:9px;font-weight:700;color:#1a1a2e;line-height:1;';
+        txt.textContent = c;
+        circle.appendChild(txt);
+        cell.appendChild(circle);
+        (function(week) {
+          var names = featureNames[week] || [];
+          cell.style.cursor = 'default';
+          cell.addEventListener('mouseenter', function(e){
+            var tt=document.getElementById('globalTooltip');
+            tt.innerHTML = names.map(function(n){ return '<div>' + n + '</div>'; }).join('');
+            tt.style.display='block'; tt.style.left=(e.clientX+12)+'px'; tt.style.top=(e.clientY-28)+'px';
+          });
+          cell.addEventListener('mousemove',  function(e){ var tt=document.getElementById('globalTooltip'); tt.style.left=(e.clientX+12)+'px'; tt.style.top=(e.clientY-28)+'px'; });
+          cell.addEventListener('mouseleave', function(){ document.getElementById('globalTooltip').style.display='none'; });
+        })(w);
+      }
+      grid.appendChild(cell);
+    }
+    row.appendChild(grid);
+    cont.appendChild(row);
+  });
+
+  // Spacer
+  var sp = document.createElement('div');
+  sp.style.cssText = 'display:flex;height:11px;border-top:1px solid var(--border);';
+  cont.appendChild(sp);
+}
 
 // ── Summary bar chart ─────────────────────────────────────────────────────────
 function buildSummary() {
@@ -1118,13 +1759,22 @@ function buildSummary() {
   hdrGrid.style.cssText = 'flex:1;display:flex;';
   for (var w = 1; w <= TOTAL_WEEKS; w++) {
     var wc = document.createElement('div');
-    wc.style.cssText = 'flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;';
+    var isSelected = (w === selectedSummaryWeek);
+    wc.style.cssText = 'flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;cursor:pointer;transition:background 0.1s;' +
+      (isSelected ? 'background:rgba(77,120,190,0.18);' : '');
     if (cycleStartDate) {
       var wd2 = document.createElement('span');
-      wd2.style.cssText = 'font-family:Mooli,sans-serif;font-size:10px;color:#1a1a2e;';
+      wd2.style.cssText = 'font-family:Mooli,sans-serif;font-size:10px;color:#1a1a2e;pointer-events:none;' +
+        (isSelected ? 'font-weight:700;color:#4d78be;' : '');
       wd2.textContent = weekDate(w);
       wc.appendChild(wd2);
     }
+    (function(week) {
+      wc.addEventListener('click', function() {
+        selectedSummaryWeek = (selectedSummaryWeek === week) ? null : week;
+        buildSummary();
+      });
+    })(w);
     hdrGrid.appendChild(wc);
   }
   hdr.appendChild(hdrGrid);
@@ -1162,7 +1812,8 @@ function buildSummary() {
   });
   for (var ww2 = 1; ww2 <= TOTAL_WEEKS; ww2++) {
     var rrCell = document.createElement('div');
-    rrCell.style.cssText = 'flex:1;display:flex;align-items:center;justify-content:center;min-width:0;';
+    rrCell.style.cssText = 'flex:1;display:flex;align-items:center;justify-content:center;min-width:0;' +
+      (ww2 === selectedSummaryWeek ? 'background:rgba(77,120,190,0.10);' : '');
     if (releaseWeeks2[ww2]) {
       rrCell.innerHTML = '<div style="width:18px;height:18px;border-radius:50%;background:#fbeb85;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ee5860" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></div><span style="font-family:Mooli,sans-serif;font-size:9px;color:#1a1a2e;font-weight:600;margin-left:2px">' + releaseWeeks2[ww2] + '</span>';
       (function(w) {
@@ -1255,7 +1906,7 @@ for (var r = 0; r < NUM_RELEASES; r++) {
     grid.style.cssText = 'position:relative;flex:1;display:flex;background:var(--surface);';
     for (var ww = 1; ww <= TOTAL_WEEKS; ww++) {
       var gc = document.createElement('div');
-      gc.style.cssText = 'flex:1;min-width:0;';
+      gc.style.cssText = 'flex:1;min-width:0;' + (ww === selectedSummaryWeek ? 'background:rgba(77,120,190,0.10);' : '');
       grid.appendChild(gc);
     }
 
@@ -1273,40 +1924,8 @@ for (var r = 0; r < NUM_RELEASES; r++) {
         'background:' + rowColor + ';pointer-events:none;';
       grid.appendChild(sbar);
 
-      // Milestone icons on overview bar - only those within visible range
-      (function(rr) {
-        milestoneState[rr].forEach(function(ms, mi) {
-          var w = ms.week;
-          if (w < 1 || w > TOTAL_WEEKS) return;
-          var lp = weekToX(w);
-          var mEl = document.createElement('div');
-          var centerPct = (lp + (0.5 / TOTAL_WEEKS * 100));
-          mEl.style.cssText =
-            'position:absolute;top:50%;transform:translate(-50%,-50%);' +
-            'left:calc(' + centerPct + '%);z-index:5;pointer-events:all;cursor:default;';
-          mEl.innerHTML = miniIcon(MILESTONE_ICONS[mi]);
-          // Tooltip with same info as feature box
-          var tip = DEFAULT_MILESTONES[mi] ? DEFAULT_MILESTONES[mi].tooltip : '';
-          if (tip) {
-            mEl.addEventListener('mouseenter', function(e) {
-              var tt = document.getElementById('globalTooltip');
-              tt.textContent = tip;
-              tt.style.display = 'block';
-              tt.style.left = (e.clientX + 12) + 'px';
-              tt.style.top  = (e.clientY - 28) + 'px';
-            });
-            mEl.addEventListener('mousemove', function(e) {
-              var tt = document.getElementById('globalTooltip');
-              tt.style.left = (e.clientX + 12) + 'px';
-              tt.style.top  = (e.clientY - 28) + 'px';
-            });
-            mEl.addEventListener('mouseleave', function() {
-              document.getElementById('globalTooltip').style.display = 'none';
-            });
-          }
-          grid.appendChild(mEl);
-        });
-      })(r);
+      // No milestone icons in Features overview mode
+
 
 
 
@@ -1349,6 +1968,8 @@ for (var r = 0; r < NUM_RELEASES; r++) {
   spacerRow.style.cssText = 'display:flex;height:11px;border-top:1px solid var(--border);';
   cont.appendChild(spacerRow);
 
+  buildCapacity();
+  buildPipeline();
 }
 
 // ── Row reorder drag ──────────────────────────────────────────────────────────
@@ -1372,6 +1993,7 @@ function onRowDrop(e, targetR) {
   moveItem(overviewBarState,           src, targetR);
   moveItem(savedDetailBarState,        src, targetR);
   moveItem(overviewBarStateAtLastLeave, src, targetR);
+  moveItem(resourceState,              src, targetR);
 
   rowDragSrc = null;
   buildRows();
@@ -1402,6 +2024,7 @@ function insertRelease(at) {
   overviewBarState.splice(at, 0, computeOverviewBars(at));
   savedDetailBarState.splice(at, 0, deepCopyOneLevelBarState(d.bars));
   overviewBarStateAtLastLeave.splice(at, 0, computeOverviewBars(at).map(function(b){ return { startWeek:b.startWeek, endWeek:b.endWeek }; }));
+  resourceState.splice(at, 0, Object.assign({}, DEFAULT_RESOURCES));
   if (selectedR !== null && selectedR >= at) selectedR++;
   buildRows(); buildSummary(); buildHeader();
 }
@@ -1417,6 +2040,7 @@ function deleteRelease(r) {
   overviewBarState.splice(r, 1);
   savedDetailBarState.splice(r, 1);
   overviewBarStateAtLastLeave.splice(r, 1);
+  resourceState.splice(r, 1);
   if (selectedR === r) { selectedR = null; selectedTi = null; selectedSi = null; showEmptyDetail(); }
   else if (selectedR > r) selectedR--;
   buildRows(); buildSummary(); buildHeader();
@@ -1427,8 +2051,16 @@ function resetAll() {
   NUM_RELEASES = DEFAULT_RELEASE_NAMES.length;
   releaseNames = [...DEFAULT_RELEASE_NAMES];
   initBarState(); overviewBarState = []; savedDetailBarState = []; overviewBarStateAtLastLeave = []; selectedR = null; selectedTi = null; selectedSi = null;
+  setDefaultResources();
   document.getElementById('cycleStartInput').value = '2026-05-03';
   cycleStartDate = new Date('2026-05-03T12:00:00');
+  detailView = 'overview';
+  ['overview','details'].forEach(function(v) {
+    var btn = document.getElementById('detailViewBtn-' + v);
+    if (btn) btn.classList.toggle('active', v === 'overview');
+  });
+  var dp = document.getElementById('detailPanel');
+  if (dp) dp.style.display = 'none';
   computeTodayWeek(); buildReleaseInputs(); computeWeekW(); buildHeader();
   initOverviewBarState();
   savedDetailBarState = barState.map(function(row) { return deepCopyOneLevelBarState(row); });
@@ -1458,16 +2090,70 @@ function computeWeekW() {
   WEEK_W = (inner.offsetWidth - labelW) / TOTAL_WEEKS;
 }
 
+function setDefaultResources() {
+  resourceState = [
+    // 0: Core Data Quality Strengthening — dev: Tim, Brian; design: not needed; users: Engineering
+    { engineers: ['Tim','Brian'], designer: 'Not needed', needsDataEng: false, needsBiAnalyst: false, users: ['Engineering'] },
+    // 1: Resource Management — dev: Tim; design: Maria; users: Creator Accountants, Historical Cleanup, Tax, Payroll, Customer Success, Sales
+    { engineers: ['Tim'], designer: 'Maria', needsDataEng: false, needsBiAnalyst: false, users: ['Creator Accountants','Historical Cleanup','Tax','Payroll','Customer Success','Sales'] },
+    // 2: Employee Work Queue — dev: Anton; design: Maria; users: Creator Accountants, Historical Cleanup, Tax, Payroll, Customer Success, Sales
+    { engineers: ['Anton'], designer: 'Maria', needsDataEng: false, needsBiAnalyst: false, users: ['Creator Accountants','Historical Cleanup','Tax','Payroll','Customer Success','Sales'] },
+    // 3: Tight V6 Adoption — dev: Anton; design: not needed; users: Engineering
+    { engineers: ['Anton'], designer: 'Not needed', needsDataEng: false, needsBiAnalyst: false, users: ['Engineering'] },
+    // 4: Bookkeeper Super View — dev: Anton; design: Maria; users: Historical Cleanup, Creator Accountants
+    { engineers: ['Anton'], designer: 'Maria', needsDataEng: false, needsBiAnalyst: false, users: ['Historical Cleanup','Creator Accountants'] },
+    // 5: Onboarding Architecture Refactor — dev: David; design: not needed; users: Engineering
+    { engineers: ['David'], designer: 'Not needed', needsDataEng: false, needsBiAnalyst: false, users: ['Engineering'] },
+    // 6: Onboarding Workflows Dashboard — dev: David; design: Farhan; users: (none specified)
+    { engineers: ['David'], designer: 'Farhan', needsDataEng: false, needsBiAnalyst: false, users: [] },
+    // 7: Social OAuth — dev: Kevin, Jason; tetra; users: Data
+    { engineers: ['Kevin','Jason'], designer: '', needsDataEng: true, needsBiAnalyst: false, users: ['Data'] },
+    // 8: MVP: Activate Affiliates — dev: David; design: Anton (note: Anton listed as designer); users: Marketing, Customers
+    { engineers: ['David'], designer: 'Anton', needsDataEng: false, needsBiAnalyst: false, users: ['Marketing','Customers'] },
+    // 9: Data Warehouse — HubSpot Emails(+) Store — tetra; users: Data
+    { engineers: [], designer: '', needsDataEng: true, needsBiAnalyst: false, users: ['Data'] },
+    // 10: Data Warehouse — Tight Data Store — tetra; users: Data
+    { engineers: [], designer: '', needsDataEng: true, needsBiAnalyst: false, users: ['Data'] },
+    // 11: Client Health Dashboard — matt; users: Managers
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: true, users: ['Managers'] },
+    // 12: Gusto Embedded — no team assigned; users: Payroll, Customers
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: ['Payroll','Customers'] },
+    // 13: Tax Recommendation Engine — no team assigned; users: Tax, Customers
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: ['Tax','Customers'] },
+    // 14: Data Cleanup — no team assigned; users: Data, Engineering
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: ['Data','Engineering'] },
+    // 15: Ticketing / Comms — no team assigned; users: Creator Accountants, Historical Cleanup, Payroll, Tax, Customers
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: ['Creator Accountants','Historical Cleanup','Payroll','Tax','Customers'] },
+    // 16: Centralized Doc Center — no team assigned; users: Creator Accountants, Historical Cleanup, Payroll, Tax, Customers
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: ['Creator Accountants','Historical Cleanup','Payroll','Tax','Customers'] },
+    // 17: Self Serve Sign Up — no team assigned; users: Customers
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: ['Customers'] },
+    // 18: Creator Financial IQ — no team assigned; users: Customers
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: ['Customers'] }
+  ];
+  // Pad with blanks if NUM_RELEASES somehow exceeds 19
+  while (resourceState.length < NUM_RELEASES) {
+    resourceState.push(Object.assign({}, DEFAULT_RESOURCES));
+  }
+}
+
 function init() {
   initBarState();
   const hasSaved = loadState();
-  if (!hasSaved) { document.getElementById('cycleStartInput').value = '2026-05-03'; cycleStartDate = new Date('2026-05-03T12:00:00'); }
+  if (!hasSaved) {
+    document.getElementById('cycleStartInput').value = '2026-05-03';
+    cycleStartDate = new Date('2026-05-03T12:00:00');
+    setDefaultResources();
+  }
   initOverviewBarState();
   savedDetailBarState = barState.map(function(row) { return deepCopyOneLevelBarState(row); });
   overviewBarStateAtLastLeave = overviewBarState.map(function(row) {
     return row.map(function(b) { return { startWeek:b.startWeek, endWeek:b.endWeek }; });
   });
   buildReleaseInputs(); computeWeekW(); computeTodayWeek(); buildHeader(); buildRows(); buildSummary();
+  // Detail panel starts hidden (default view is overview)
+  var dp = document.getElementById('detailPanel');
+  if (dp) dp.style.display = 'none';
 }
 
 window.addEventListener('resize', function() {
@@ -1477,7 +2163,122 @@ window.addEventListener('resize', function() {
 
 // ── Preloaded state (baked in from export) ───────────────────────────────────
 (function() {
-  var preloaded = {"schemaVersion": 38, "numReleases": 8, "cycleStartDate": "2026-05-11", "releaseNames": ["Bookkeeping Superview + Onboarding Vice + My Work Queue", "Tax Recommendation Engine", "Ticketing / Comms", "Data Cleanup", "Gusto Embedded", "Centralized Doc Center", "Self Serve Sign Up", "Creator FinIQ"], "barState": [[{"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 1}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 1}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 2}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 2}, {"startWeek": 3, "endWeek": 3}, {"startWeek": 4, "endWeek": 4}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 2, "endWeek": 3}, {"startWeek": 4, "endWeek": 5}]}], [{"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 1}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 2}, {"startWeek": 3, "endWeek": 4}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 1}, {"startWeek": 4, "endWeek": 5}]}, {"isGroup": true, "subBars": [{"startWeek": 3, "endWeek": 3}, {"startWeek": 4, "endWeek": 7}, {"startWeek": 8, "endWeek": 8}, {"startWeek": 9, "endWeek": 9}]}, {"isGroup": true, "subBars": [{"startWeek": 4, "endWeek": 6}, {"startWeek": 7, "endWeek": 8}, {"startWeek": 9, "endWeek": 10}]}], [{"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 1}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 2}, {"startWeek": 3, "endWeek": 4}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 2}, {"startWeek": 3, "endWeek": 5}, {"startWeek": 6, "endWeek": 7}]}, {"isGroup": true, "subBars": [{"startWeek": 3, "endWeek": 3}, {"startWeek": 4, "endWeek": 7}, {"startWeek": 8, "endWeek": 8}, {"startWeek": 9, "endWeek": 9}]}, {"isGroup": true, "subBars": [{"startWeek": 4, "endWeek": 6}, {"startWeek": 7, "endWeek": 8}, {"startWeek": 9, "endWeek": 10}]}], [{"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 1}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 1}, {"startWeek": 1, "endWeek": 2}, {"startWeek": 3, "endWeek": 4}]}, {"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 2}, {"startWeek": 3, "endWeek": 5}, {"startWeek": 6, "endWeek": 7}]}, {"isGroup": true, "subBars": [{"startWeek": 3, "endWeek": 3}, {"startWeek": 4, "endWeek": 7}, {"startWeek": 8, "endWeek": 8}, {"startWeek": 9, "endWeek": 9}]}, {"isGroup": true, "subBars": [{"startWeek": 4, "endWeek": 6}, {"startWeek": 7, "endWeek": 8}, {"startWeek": 9, "endWeek": 10}]}], [{"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 2}, {"startWeek": 3, "endWeek": 4}]}, {"isGroup": true, "subBars": [{"startWeek": 3, "endWeek": 4}, {"startWeek": 5, "endWeek": 6}, {"startWeek": 7, "endWeek": 8}]}, {"isGroup": true, "subBars": [{"startWeek": 5, "endWeek": 6}, {"startWeek": 7, "endWeek": 9}, {"startWeek": 10, "endWeek": 11}]}, {"isGroup": true, "subBars": [{"startWeek": 7, "endWeek": 7}, {"startWeek": 8, "endWeek": 11}, {"startWeek": 12, "endWeek": 12}, {"startWeek": 13, "endWeek": 13}]}, {"isGroup": true, "subBars": [{"startWeek": 8, "endWeek": 10}, {"startWeek": 11, "endWeek": 12}, {"startWeek": 13, "endWeek": 14}]}], [{"isGroup": true, "subBars": [{"startWeek": 1, "endWeek": 2}, {"startWeek": 3, "endWeek": 4}]}, {"isGroup": true, "subBars": [{"startWeek": 3, "endWeek": 4}, {"startWeek": 5, "endWeek": 6}, {"startWeek": 7, "endWeek": 8}]}, {"isGroup": true, "subBars": [{"startWeek": 5, "endWeek": 6}, {"startWeek": 7, "endWeek": 9}, {"startWeek": 10, "endWeek": 11}]}, {"isGroup": true, "subBars": [{"startWeek": 7, "endWeek": 7}, {"startWeek": 8, "endWeek": 11}, {"startWeek": 12, "endWeek": 12}, {"startWeek": 13, "endWeek": 13}]}, {"isGroup": true, "subBars": [{"startWeek": 8, "endWeek": 10}, {"startWeek": 11, "endWeek": 12}, {"startWeek": 13, "endWeek": 14}]}], [{"isGroup": true, "subBars": [{"startWeek": 5, "endWeek": 6}, {"startWeek": 7, "endWeek": 8}]}, {"isGroup": true, "subBars": [{"startWeek": 7, "endWeek": 8}, {"startWeek": 9, "endWeek": 10}, {"startWeek": 11, "endWeek": 12}]}, {"isGroup": true, "subBars": [{"startWeek": 9, "endWeek": 10}, {"startWeek": 11, "endWeek": 13}, {"startWeek": 14, "endWeek": 15}]}, {"isGroup": true, "subBars": [{"startWeek": 11, "endWeek": 11}, {"startWeek": 12, "endWeek": 15}, {"startWeek": 16, "endWeek": 16}, {"startWeek": 17, "endWeek": 17}]}, {"isGroup": true, "subBars": [{"startWeek": 12, "endWeek": 14}, {"startWeek": 15, "endWeek": 16}, {"startWeek": 17, "endWeek": 18}]}], [{"isGroup": true, "subBars": [{"startWeek": 5, "endWeek": 6}, {"startWeek": 7, "endWeek": 8}]}, {"isGroup": true, "subBars": [{"startWeek": 7, "endWeek": 8}, {"startWeek": 9, "endWeek": 10}, {"startWeek": 11, "endWeek": 12}]}, {"isGroup": true, "subBars": [{"startWeek": 9, "endWeek": 10}, {"startWeek": 11, "endWeek": 13}, {"startWeek": 14, "endWeek": 15}]}, {"isGroup": true, "subBars": [{"startWeek": 11, "endWeek": 11}, {"startWeek": 12, "endWeek": 15}, {"startWeek": 16, "endWeek": 16}, {"startWeek": 17, "endWeek": 17}]}, {"isGroup": true, "subBars": [{"startWeek": 12, "endWeek": 14}, {"startWeek": 15, "endWeek": 16}, {"startWeek": 17, "endWeek": 18}]}]], "milestoneState": [[{"week": 1}, {"week": 1}, {"week": 2}, {"week": 4}, {"week": 1}, {"week": 3}, {"week": 1}, {"week": 5}, {"week": 1}, {"week": 1}, {"week": 1}], [{"week": 1}, {"week": 2}, {"week": 7}, {"week": 9}, {"week": 5}, {"week": 8}, {"week": 6}, {"week": 10}, {"week": 1}, {"week": 3}, {"week": 1}], [{"week": 1}, {"week": 2}, {"week": 7}, {"week": 9}, {"week": 5}, {"week": 8}, {"week": 6}, {"week": 10}, {"week": 1}, {"week": 3}, {"week": 1}], [{"week": 1}, {"week": 2}, {"week": 7}, {"week": 9}, {"week": 5}, {"week": 8}, {"week": 6}, {"week": 10}, {"week": 1}, {"week": 3}, {"week": 1}], [{"week": 4}, {"week": 6}, {"week": 11}, {"week": 13}, {"week": 9}, {"week": 12}, {"week": 10}, {"week": 14}, {"week": 3}, {"week": 7}, {"week": 5}], [{"week": 4}, {"week": 6}, {"week": 11}, {"week": 13}, {"week": 9}, {"week": 12}, {"week": 10}, {"week": 14}, {"week": 3}, {"week": 7}, {"week": 5}], [{"week": 8}, {"week": 10}, {"week": 15}, {"week": 17}, {"week": 13}, {"week": 16}, {"week": 14}, {"week": 18}, {"week": 7}, {"week": 11}, {"week": 9}], [{"week": 8}, {"week": 10}, {"week": 15}, {"week": 17}, {"week": 13}, {"week": 16}, {"week": 14}, {"week": 18}, {"week": 7}, {"week": 11}, {"week": 9}]]};
+  // Only inject if no saved state exists at schema 40+
+  if (localStorage.getItem('releaseGanttState')) {
+    try {
+      var existing = JSON.parse(localStorage.getItem('releaseGanttState'));
+      if (existing.schemaVersion >= 44) return;
+    } catch(e) {}
+  }
+  var def = function(sw, ew) { return {startWeek:sw, endWeek:ew}; };
+
+  // Default template: release at week 13, UAT 1 week
+  var defaultBars = [
+    {isGroup:true, subBars:[def(1,2),def(3,4)]},
+    {isGroup:true, subBars:[def(3,4),def(5,6),def(7,8)]},
+    {isGroup:true, subBars:[def(5,6),def(7,9),def(10,11)]},
+    {isGroup:true, subBars:[def(7,7),def(8,11),def(12,12),def(13,13)]},
+    {isGroup:true, subBars:[def(8,10),def(11,12),def(13,13)]}
+  ];
+  var defaultMS = [
+    {week:4},{week:6},{week:11},{week:13},{week:9},{week:12},{week:10},{week:14},{week:3},{week:7},{week:5}
+  ];
+
+  // Early template: release at week 4 (shift -9 from default, clamp to 1, hidden if <1)
+  var earlyBars = [
+    {isGroup:true, subBars:[def(1,1),def(1,1)]},
+    {isGroup:true, subBars:[def(1,1),def(1,1),def(1,1)]},
+    {isGroup:true, subBars:[def(1,1),def(1,1),def(1,2)]},
+    {isGroup:true, subBars:[def(1,1),def(1,2),def(3,3),def(4,4)]},
+    {isGroup:true, subBars:[def(1,1),def(2,3),def(4,4)]}
+  ];
+  var earlyMS = [
+    {week:-1},{week:-1},{week:2},{week:4},{week:-1},{week:3},{week:1},{week:5},{week:-1},{week:-1},{week:-1}
+  ];
+
+  // Week-9 release template (shift -4 from default, clamp to 1, hidden if <1)
+  var midBars = [
+    {isGroup:true, subBars:[def(1,1),def(1,1)]},
+    {isGroup:true, subBars:[def(1,1),def(1,2),def(3,4)]},
+    {isGroup:true, subBars:[def(1,2),def(3,5),def(6,7)]},
+    {isGroup:true, subBars:[def(3,3),def(4,7),def(8,8),def(9,9)]},
+    {isGroup:true, subBars:[def(4,6),def(7,8),def(9,9)]}
+  ];
+  var midMS = [
+    {week:-1},{week:2},{week:7},{week:9},{week:5},{week:8},{week:6},{week:10},{week:-1},{week:3},{week:1}
+  ];
+
+  // Week-17 release template (shift +4 from default)
+  var lateBars = [
+    {isGroup:true, subBars:[def(5,6),def(7,8)]},
+    {isGroup:true, subBars:[def(7,8),def(9,10),def(11,12)]},
+    {isGroup:true, subBars:[def(9,10),def(11,13),def(14,15)]},
+    {isGroup:true, subBars:[def(11,11),def(12,15),def(16,16),def(17,17)]},
+    {isGroup:true, subBars:[def(12,14),def(15,16),def(17,17)]}
+  ];
+  var lateMS = [
+    {week:8},{week:10},{week:15},{week:17},{week:13},{week:16},{week:14},{week:18},{week:7},{week:11},{week:9}
+  ];
+
+  var n = 19;
+  var barState = [], milestoneState = [];
+  for (var i = 0; i < n; i++) {
+    var template, msTemplate;
+    if (i < 12) { template = earlyBars; msTemplate = earlyMS; }
+    else if (i === 12 || i === 13 || i === 14) { template = midBars; msTemplate = midMS; }
+    else if (i === 17 || i === 18) { template = lateBars; msTemplate = lateMS; }
+    else { template = defaultBars; msTemplate = defaultMS; }
+    barState.push(JSON.parse(JSON.stringify(template)));
+    milestoneState.push(JSON.parse(JSON.stringify(msTemplate)));
+  }
+  var preloaded = {
+    schemaVersion: 44,
+    cycleStartDate: '2026-05-11',
+    releaseNames: [
+      'Core Data Quality Strengthening',
+      'Resource Management',
+      'Employee Work Queue',
+      'Tight V6 Adoption',
+      'Bookkeeper Super View',
+      'Onboarding Architecture Refactor',
+      'Onboarding Workflows Dashboard',
+      'Social OAuth',
+      'MVP: Activate Affiliates',
+      'Data Warehouse \u2014 HubSpot Emails(+) Store',
+      'Data Warehouse \u2014 Tight Data Store',
+      'Client Health Dashboard',
+      'Gusto Embedded',
+      'Tax Recommendation Engine',
+      'Data Cleanup',
+      'Ticketing / Comms',
+      'Centralized Doc Center',
+      'Self Serve Sign Up',
+      'Creator Financial IQ'
+    ],
+    barState: barState,
+    milestoneState: milestoneState,
+    resourceState: [
+      {engineers:['Tim','Brian'],   designer:'Not needed', needsDataEng:false, needsBiAnalyst:false, users:['Engineering']},
+      {engineers:['Tim'],           designer:'Maria',       needsDataEng:false, needsBiAnalyst:false, users:['Creator Accountants','Historical Cleanup','Tax','Payroll','Customer Success','Sales']},
+      {engineers:['Anton'],         designer:'Maria',       needsDataEng:false, needsBiAnalyst:false, users:['Creator Accountants','Historical Cleanup','Tax','Payroll','Customer Success','Sales']},
+      {engineers:['Anton'],         designer:'Not needed',  needsDataEng:false, needsBiAnalyst:false, users:['Engineering']},
+      {engineers:['Anton'],         designer:'Maria',       needsDataEng:false, needsBiAnalyst:false, users:['Historical Cleanup','Creator Accountants']},
+      {engineers:['David'],         designer:'Not needed',  needsDataEng:false, needsBiAnalyst:false, users:['Engineering']},
+      {engineers:['David'],         designer:'Farhan',      needsDataEng:false, needsBiAnalyst:false, users:[]},
+      {engineers:['Kevin','Jason'],  designer:'',            needsDataEng:true,  needsBiAnalyst:false, users:['Data']},
+      {engineers:['David'],         designer:'Anton',       needsDataEng:false, needsBiAnalyst:false, users:['Marketing','Customers']},
+      {engineers:[],                designer:'',            needsDataEng:true,  needsBiAnalyst:false, users:['Data']},
+      {engineers:[],                designer:'',            needsDataEng:true,  needsBiAnalyst:false, users:['Data']},
+      {engineers:[],                designer:'',            needsDataEng:false, needsBiAnalyst:true,  users:['Managers']},
+      {engineers:[],                designer:'',            needsDataEng:false, needsBiAnalyst:false, users:['Payroll','Customers']},
+      {engineers:[],                designer:'',            needsDataEng:false, needsBiAnalyst:false, users:['Tax','Customers']},
+      {engineers:[],                designer:'',            needsDataEng:false, needsBiAnalyst:false, users:['Data','Engineering']},
+      {engineers:[],                designer:'',            needsDataEng:false, needsBiAnalyst:false, users:['Creator Accountants','Historical Cleanup','Payroll','Tax','Customers']},
+      {engineers:[],                designer:'',            needsDataEng:false, needsBiAnalyst:false, users:['Creator Accountants','Historical Cleanup','Payroll','Tax','Customers']},
+      {engineers:[],                designer:'',            needsDataEng:false, needsBiAnalyst:false, users:['Customers']},
+      {engineers:[],                designer:'',            needsDataEng:false, needsBiAnalyst:false, users:['Customers']}
+    ]
+  };
   localStorage.setItem('releaseGanttState', JSON.stringify(preloaded));
 })();
 

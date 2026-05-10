@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Release Cycle Planner</title>
+<title>Feature Planner</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Gloock&family=Mooli&family=Mooli&display=swap');
 
   :root {
     --bg: #40a285; --surface: #ffffff; --surface2: #bde4c9; --border: #d8d0c8;
@@ -17,23 +17,31 @@
     --launch-color: #3ca0a0;   --launch-bg: rgba(60,160,160,0.90);
     --data-color: #8c1464;     --data-bg: rgba(140,20,100,0.90);
     --release-color: #dc5050;
-    --bar-h: 22px; --header-h: 60px; --label-w: 220px;
+    --bar-h: 22px; --header-h: 40px; --label-w: 220px;
   }
 
   * { box-sizing:border-box; margin:0; padding:0; }
-  body { background:var(--bg); color:var(--text-primary); font-family:'IBM Plex Sans',sans-serif; min-height:100vh; padding:36px 32px; }
+  body { background:var(--bg); color:var(--text-primary); font-family:'Mooli',sans-serif; min-height:100vh; padding:36px 32px; }
 
   .page-header { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
-  .page-title { font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:#f9d9c9; margin-bottom:6px; }
-  .page-headline { font-size:34px; font-weight:300; color:#1a1a2e; letter-spacing:-0.02em; }
+  .page-title { font-family:'Mooli',sans-serif; font-size:12px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:#f9d9c9; margin-bottom:6px; }
+  .page-headline { font-size:34px; font-weight:400; color:#1a1a2e; letter-spacing:-0.02em; font-family:'Gloock',serif; }
   .header-right { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
 
-  .reset-btn { background:#fff; border:1px solid var(--border); color:var(--text-muted); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; padding:9px 16px; border-radius:6px; cursor:pointer; transition:all 0.15s; }
+  .reset-btn { background:#fff; border:1px solid var(--border); color:var(--text-muted); font-family:'Mooli',sans-serif; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; padding:9px 16px; border-radius:6px; cursor:pointer; transition:all 0.15s; }
   .reset-btn:hover { border-color:var(--text-muted); color:var(--text-primary); }
-  .toggle-btn { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; padding:9px 16px; border-radius:6px; cursor:pointer; transition:all 0.15s; border:1px solid var(--border); background:#fff; color:var(--text-muted); }
+  .toggle-btn { font-family:'Mooli',sans-serif; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; padding:9px 16px; border-radius:6px; cursor:pointer; transition:all 0.15s; border:1px solid var(--border); background:#fff; color:var(--text-muted); }
   .toggle-btn.active { background:#fbeb85; color:var(--text-primary); border-color:#fbeb85; }
   .toggle-btn.saved { background:#0a8a5e; color:#fff; border-color:#0a8a5e; }
   .toggle-btn:hover { border-color:var(--text-muted); color:var(--text-primary); }
+  .icon-action-btn { width:34px; height:34px; border:1px solid var(--border); background:#fff; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-muted); transition:all 0.15s; flex-shrink:0; }
+  #saveBtn { background:#f29ec6; border-color:#f29ec6; color:#1a1a2e; }
+  #resetBtn { background:#aeb8dd; border-color:#aeb8dd; color:#1a1a2e; }
+  .icon-action-btn:hover { border-color:var(--text-muted); color:var(--text-primary); }
+  .icon-action-btn.saved { background:#0a8a5e; color:#fff; border-color:#0a8a5e; }
+  .mode-btn { font-family:'Mooli',sans-serif; font-size:13px; letter-spacing:0.04em; padding:8px 14px; border-radius:6px; cursor:pointer; border:1px solid var(--border); background:#fff; color:var(--text-muted); transition:all 0.15s; }
+  .mode-btn:hover { border-color:var(--text-muted); color:var(--text-primary); }
+  .mode-btn.active { background:#fbeb85; color:var(--text-primary); border-color:#fbeb85; }
 
 
 
@@ -43,10 +51,10 @@
   .chart-inner { width:100%; }
 
   .chart-header { display:flex; height:var(--header-h); border-bottom:1px solid var(--border); background:var(--surface2); position:sticky; top:0; z-index:20; }
-  .header-label { width:var(--label-w); flex-shrink:0; border-right:1px solid var(--border); display:flex; align-items:center; padding:0 6px; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#1a1a2e; }
-  .week-cell { flex:1; border-right:1px solid var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; min-width:0; }
-  .week-num  { font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600; color:#1a1a2e; }
-  .week-date { font-family:'IBM Plex Mono',monospace; font-size:10px; color:#1a1a2e; text-align:center; }
+  .header-label { width:var(--label-w); flex-shrink:0; display:flex; align-items:center; padding:0 6px; font-family:'Gloock',serif; font-size:18px; font-weight:400; color:#1a1a2e; }
+  .week-cell { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; min-width:0; }
+  .week-num  { font-family:'Mooli',sans-serif; font-size:13px; font-weight:600; color:#1a1a2e; }
+  .week-date { font-family:'Mooli',sans-serif; font-size:10px; color:#1a1a2e; text-align:center; }
   .week-cell.wk-today { background:rgba(59,130,246,0.10); border-left:3px solid rgba(59,130,246,0.7); }
   .week-cell.wk-today .week-num  { color:#1d4ed8; font-weight:700; }
   .week-cell.wk-today .week-date { color:#1d4ed8; font-weight:700; }
@@ -55,22 +63,22 @@
   .row-actions-col { width:36px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; background:var(--surface); padding:4px 0; }
   .row-actions-col .delete-row-btn { opacity:0; transition:opacity 0.15s; }
   .row-actions-col:hover .delete-row-btn { opacity:1; }
-  .row-btn { width:22px; height:22px; border:none; border-radius:4px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:900; line-height:1; padding:0; transition:filter 0.15s; flex-shrink:0; }
+  .row-btn { width:17px; height:17px; border:none; border-radius:3px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:900; line-height:1; padding:0; transition:filter 0.15s; flex-shrink:0; }
   .row-btn:hover { filter:brightness(0.85); }
   .row-btn-add     { background:#981c76; color:#ed7028; }
   .row-btn-delete  { background:#fbeb85; color:#ee5860; }
-  .row-btn-refresh { background:#1b417d; color:#40a0ad; }
+  .row-btn-refresh { background:#aeb7df; color:#fff; }
   .release-row:last-child { border-bottom:none; }
   .release-row.row-dragging { opacity:0.5; }
   .release-row.row-drag-over { box-shadow:inset 0 3px 0 0 #dc3c78; }
-  .release-label { cursor:grab; }
-  .release-label:active { cursor:grabbing; }
-  .release-label { width:var(--label-w); flex-shrink:0; border-right:1px solid var(--border); display:flex; flex-direction:column; justify-content:center; padding:12px 6px; gap:4px; background:var(--surface); }
-  .release-version { font-family:'IBM Plex Mono',monospace; font-size:11px; color:#adb6de; }
-  .release-name { font-size:15px; font-weight:600; color:var(--text-primary); }
+  .summary-drag-over { box-shadow:inset 0 -3px 0 0 #dc3c78; }
+  .release-label { cursor:default; }
+  .release-label { width:var(--label-w); flex-shrink:0; display:flex; flex-direction:column; justify-content:center; padding:12px 6px; gap:4px; background:var(--surface); }
+  .release-version { font-family:'Mooli',sans-serif; font-size:11px; color:#adb6de; }
+  .release-name { font-size:15px; font-weight:400; color:var(--text-primary); font-family:'Gloock',serif; }
 
   .release-grid { position:relative; flex:1; display:flex; }
-  .release-grid-col { flex:1; border-right:1px solid var(--border); min-width:0; }
+  .release-grid-col { flex:1; min-width:0; }
   .release-grid-col.wk-today { background:rgba(59,130,246,0.06); }
   .bars-container { position:absolute; top:0; left:0; right:0; bottom:0; pointer-events:none; }
 
@@ -79,19 +87,19 @@
   .bar:active { cursor:grabbing; }
   .bar.dragging { z-index:100; filter:brightness(0.85); cursor:grabbing; }
 
-  .bar-label { font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:600; letter-spacing:0.06em; white-space:nowrap; text-transform:uppercase; pointer-events:none; color:#fff; }
+  .bar-label { font-family:'Mooli',sans-serif; font-size:8px; font-weight:600; letter-spacing:0.06em; white-space:nowrap; text-transform:uppercase; pointer-events:none; color:#fff; }
 
   .resize-handle { position:absolute; top:0; bottom:0; width:6px; cursor:ew-resize; z-index:10; }
   .resize-handle.left  { left:0; border-radius:5px 0 0 5px; }
   .resize-handle.right { right:0; border-radius:0 5px 5px 0; }
 
-  .milestone-marker { position:absolute; width:28px; height:28px; cursor:grab; pointer-events:all; user-select:none; transition:filter 0.15s; z-index:4; display:flex; align-items:center; justify-content:center; }
+  .milestone-marker { position:absolute; width:22px; height:22px; cursor:grab; pointer-events:all; user-select:none; transition:filter 0.15s; z-index:4; display:flex; align-items:center; justify-content:center; }
   .milestone-marker:hover { filter:brightness(0.75); }
   .milestone-marker:active { cursor:grabbing; }
   .milestone-marker.dragging { z-index:100; filter:brightness(0.5); cursor:grabbing; }
 
   .legend { display:flex; gap:20px; padding:14px 20px; border-top:1px solid var(--border); flex-wrap:wrap; align-items:center; }
-  .legend-item { display:flex; align-items:center; gap:7px; font-size:11px; color:var(--text-muted); font-family:'IBM Plex Mono',monospace; }
+  .legend-item { display:flex; align-items:center; gap:7px; font-size:11px; color:var(--text-muted); font-family:'Mooli',sans-serif; }
   .legend-swatch { width:22px; height:10px; border-radius:3px; }
 
 
@@ -106,17 +114,26 @@
 
 <div class="page-header">
   <div>
-    <div class="page-title">Release Planning</div>
-    <div class="page-headline">Release Cycle Planner</div>
+    <div class="page-title">LET'S GO</div>
+    <div class="page-headline">Feature Planner</div>
   </div>
-  <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;">
-    <label style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#f9d9c9;align-self:flex-start;">Start Date</label>
-    <div class="header-right" style="align-items:center;">
-      <input type="date" id="cycleStartInput" oninput="onDateChange()" style="background:#fff;border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:12px;padding:9px 10px;outline:none;color-scheme:light;cursor:pointer;height:38px;">
-      <button class="reset-btn" onclick="resetAll()">Reset</button>
-      <button class="toggle-btn" id="saveBtn" onclick="saveState()">Save</button>
-      <button class="toggle-btn" id="todayToggleBtn" onclick="toggleToday()">Current Week</button>
-      <button class="toggle-btn" id="overviewModeBtn" onclick="toggleOverviewMode()">Product</button>
+  <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <label style="font-family:Mooli,sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#f9d9c9;">Start Date</label>
+      <input type="date" id="cycleStartInput" oninput="onDateChange()" style="background:#fff;border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:Mooli,sans-serif;font-size:12px;padding:7px 10px;outline:none;color-scheme:light;cursor:pointer;height:34px;">
+      <button class="icon-action-btn" onclick="saveState()" id="saveBtn" title="Save">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      </button>
+      <button class="icon-action-btn" id="resetBtn" onclick="resetAll()" title="Reset">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-5.1L1 10"/></svg>
+      </button>
+    </div>
+    <div style="display:flex;gap:6px;">
+      <button class="mode-btn active" id="modeBtn-full" onclick="setOverviewMode('full')">Features</button>
+      <button class="mode-btn" id="modeBtn-product" onclick="setOverviewMode('product')">Product</button>
+      <button class="mode-btn" id="modeBtn-design" onclick="setOverviewMode('design')">Design</button>
+      <button class="mode-btn" id="modeBtn-data" onclick="setOverviewMode('data')">Data</button>
+      <button class="mode-btn" id="modeBtn-engineering" onclick="setOverviewMode('engineering')">Engineering</button>
     </div>
   </div>
 </div>
@@ -126,6 +143,11 @@
   <div class="summary-inner" id="summaryInner">
     <div id="summaryRows"></div>
   </div>
+</div>
+
+<div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px;">
+  <button class="mode-btn active" id="detailViewBtn-overview" onclick="setDetailView('overview')">Overview</button>
+  <button class="mode-btn" id="detailViewBtn-details" onclick="setDetailView('details')">Details</button>
 </div>
 
 <div class="chart-wrapper">
@@ -147,7 +169,7 @@
   </div>
 </div>
 
-<div id="globalTooltip" style="display:none;position:fixed;background:#1a1a2e;color:#fff;font-size:12px;padding:6px 12px;border-radius:6px;pointer-events:none;z-index:9999;box-shadow:0 2px 10px rgba(0,0,0,0.3);font-family:sans-serif;white-space:nowrap;"></div>
+<div id="globalTooltip" style="display:none;position:fixed;background:#1a1a2e;color:#fff;font-size:12px;padding:6px 12px;border-radius:6px;pointer-events:none;z-index:9999;box-shadow:0 2px 10px rgba(0,0,0,0.3);font-family:Mooli,sans-serif;white-space:nowrap;"></div>
 
 <script>
 const TOTAL_WEEKS  = 18;
@@ -156,8 +178,8 @@ let NUM_RELEASES = 7;
 let   WEEK_W       = 60;
 let   TODAY_WEEK   = null;
 let   cycleStartDate = null;
-let   todayVisible = false;
-let   overviewMode = 'full'; // 'full' or 'strategy-launch'
+let   overviewMode = 'full'; // 'full', 'strategy', 'design', 'data', 'engineering', 'launch'
+let   detailView = 'overview'; // 'details' or 'overview'
 
 const DEFAULT_RELEASE_NAMES = [
   'Bookkeeping Superview + Onboarding Vice + My Work Queue',
@@ -229,14 +251,11 @@ const DEFAULT_MILESTONES = [
   { id:'handoff-4',   name:'Handoff',      week:5,  tooltip:'Handoff to Data' }
 ];
 
-const IC_CHECK  = '#287850';
-const IC_FILE   = '#2d2d3a';
-const IC_ROCKET = '#f03c00';
-const SVG_CHECK  = '<div style="width:28px;height:28px;border-radius:50%;background:#4c77bc;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8c69a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>';
-const SVG_PACKAGE = '<div style="width:28px;height:28px;border-radius:50%;background:#fbeb85;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ee5860" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg></div>';
-const SVG_SEND = '<div style="width:28px;height:28px;border-radius:50%;background:#fbeb85;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ee5860" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></div>';
-const SVG_USERS = '<div style="width:28px;height:28px;border-radius:50%;background:#adb6de;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffe3c3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>';
-const SVG_MEGAPHONE = '<div style="width:28px;height:28px;border-radius:50%;background:#e5b7fd;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ee6327" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12v0c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11v0c-.11.7-.72 1.22-1.43 1.22H17"/><path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98v0C9.52 4.9 9 5.52 9 6.23V7"/><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z"/></svg></div>';
+const SVG_CHECK  = '<div style="width:22px;height:22px;border-radius:50%;background:#4c77bc;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#b8c69a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>';
+const SVG_PACKAGE = '<div style="width:22px;height:22px;border-radius:50%;background:#fbeb85;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ee5860" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg></div>';
+const SVG_SEND = '<div style="width:22px;height:22px;border-radius:50%;background:#fbeb85;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ee5860" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></div>';
+const SVG_USERS = '<div style="width:22px;height:22px;border-radius:50%;background:#adb6de;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffe3c3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>';
+const SVG_MEGAPHONE = '<div style="width:22px;height:22px;border-radius:50%;background:#e5b7fd;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ee6327" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12v0c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11v0c-.11.7-.72 1.22-1.43 1.22H17"/><path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98v0C9.52 4.9 9 5.52 9 6.23V7"/><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z"/></svg></div>';
 const MILESTONE_ICONS = [SVG_CHECK, SVG_CHECK, SVG_PACKAGE, SVG_SEND, SVG_MEGAPHONE, SVG_MEGAPHONE, SVG_USERS, SVG_CHECK, SVG_USERS, SVG_USERS, SVG_USERS];
 
 let milestoneState = [];
@@ -330,6 +349,19 @@ const TEAM_DETAILS = {
 };
 
 function cv(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+// Blend a CSS rgba() color toward white by `fraction` (0=original, 1=white)
+function lightenColor(cssColor, fraction) {
+  var m = cssColor.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)/);
+  if (!m) return cssColor;
+  var r = parseInt(m[1]), g = parseInt(m[2]), b = parseInt(m[3]);
+  var a = m[4] !== undefined ? parseFloat(m[4]) : 1;
+  r = Math.round(r + (255 - r) * fraction);
+  g = Math.round(g + (255 - g) * fraction);
+  b = Math.round(b + (255 - b) * fraction);
+  return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+}
+
 function weekToX(w) { return ((w - 1) / TOTAL_WEEKS * 100); }
 
 function weekDate(w) {
@@ -356,8 +388,7 @@ function computeTodayWeek() {
 }
 
 function weekClass(w) {
-  if (!todayVisible) return '';
-  return (TODAY_WEEK !== null && w === TODAY_WEEK) ? ' wk-today' : '';
+  return '';
 }
 
 function buildReleaseInputs() { /* replaced by inline editing */ }
@@ -371,7 +402,7 @@ function buildHeader() {
     const c = document.createElement('div');
     c.className = 'week-cell' + weekClass(w);
     const ds = cycleStartDate ? weekDate(w) : '';
-    c.innerHTML = '<span class="week-num">' + w + '</span>' + (ds ? '<span class="week-date">' + ds + '</span>' : '');
+    c.innerHTML = ds ? '<span class="week-date">' + ds + '</span>' : '<span class="week-num">' + w + '</span>';
     hdr.appendChild(c);
   }
 }
@@ -394,11 +425,7 @@ function buildRows() {
     var nameEl = lbl.querySelector('.release-name');
     nameEl.addEventListener('blur', (function(ri) { return function() { releaseNames[ri] = this.textContent.trim(); }; })(r));
     nameEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); this.blur(); } });
-    lbl.setAttribute('draggable', 'true');
-    lbl.addEventListener('dragstart', function(e) { startRowDrag(e, r, row); });
-    lbl.addEventListener('dragend',   function(e) { stopRowDrag(e, row); });
-    row.addEventListener('dragover',  function(e) { onRowDragOver(e, r, row); });
-    row.addEventListener('drop',      function(e) { onRowDrop(e, r); });
+
 
     // Actions column
     var actCol = document.createElement('div');
@@ -440,20 +467,17 @@ function buildRows() {
     bc.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;';
 
     // Milestones — detect column collisions and auto-stack into sub-rows
-    var weekOccupied = {};  // week -> count of icons already placed
-    milestoneState.forEach(function(rowMs) {
-      // reset for each release row
-    });
-    weekOccupied = {};
-    milestoneState[r].forEach(function(ms) { weekOccupied[ms.week] = 0; });
+    var weekOccupied = {};
+    milestoneState[r].forEach(function(ms) { if (ms.week >= 1) weekOccupied[ms.week] = 0; });
 
     var hasSubRow = false;
     var mRowAssignment = milestoneState[r].map(function(mState) {
       var w = mState.week;
+      if (w < 1) return -1; // hidden
       var count = weekOccupied[w] || 0;
       weekOccupied[w] = count + 1;
       if (count > 0) hasSubRow = true;
-      return count; // 0 = top row, 1 = sub-row
+      return count;
     });
 
     // Adjust row height dynamically
@@ -462,6 +486,7 @@ function buildRows() {
     row.style.minHeight = dynamicRowH + 'px';
 
     milestoneState[r].forEach(function(mState, mi) {
+      if (mState.week < 1) return; // hidden - don't render
       const mbar = document.createElement('div');
       mbar.className = 'milestone-marker';
       mbar.id = 'mbar-' + r + '-' + mi;
@@ -489,46 +514,72 @@ function buildRows() {
       bc.appendChild(mbar);
     });
 
-    // Team bars
-    TEAM_DEFS.forEach(function(team, ti) {
-      const state = barState[r][ti];
-      const topY = 8 + milestoneAreaH + ti * (22 + 4);
-
-      if (team.subBars) {
-        team.subBars.forEach(function(subDef, si) {
-          const subState = state.subBars[si];
-          const bar = document.createElement('div');
-          bar.className = 'bar';
-          bar.id = 'bar-' + r + '-' + ti + '-' + si;
-          bar.style.background = cv(team.bgVar);
-          bar.style.top = topY + 'px';
-          setBarPos(bar, subState);
-          const lh = document.createElement('div'); lh.className = 'resize-handle left';  lh.addEventListener('mousedown', function(e) { startResize(e, r, ti, 'left', si); });
-          const rh = document.createElement('div'); rh.className = 'resize-handle right'; rh.addEventListener('mousedown', function(e) { startResize(e, r, ti, 'right', si); });
-          bar.innerHTML = '<span class="bar-label">' + subDef.name + '</span>';
-          bar.appendChild(lh); bar.appendChild(rh);
-          let didMove = false;
-          bar.addEventListener('mousedown', function(e) { if (e.target.classList.contains('resize-handle')) return; didMove = false; startDrag(e, r, ti, function() { didMove = true; }, si); });
-
-          bc.appendChild(bar);
-        });
-      } else {
-        const bar = document.createElement('div');
+    // Team bars — overview mode: one bar per team; details mode: sub-bars
+    if (detailView === 'overview') {
+      if (!overviewBarState[r]) overviewBarState[r] = computeOverviewBars(r);
+      TEAM_DEFS.forEach(function(team, ti) {
+        var ovState = overviewBarState[r][ti];
+        var topY = 8 + milestoneAreaH + ti * (22 + 4);
+        var bar = document.createElement('div');
         bar.className = 'bar';
-        bar.id = 'bar-' + r + '-' + ti;
+        bar.id = 'bar-ov-' + r + '-' + ti;
         bar.style.background = cv(team.bgVar);
         bar.style.top = topY + 'px';
-        setBarPos(bar, state);
-        const lh = document.createElement('div'); lh.className = 'resize-handle left';  lh.addEventListener('mousedown', function(e) { startResize(e, r, ti, 'left'); });
-        const rh = document.createElement('div'); rh.className = 'resize-handle right'; rh.addEventListener('mousedown', function(e) { startResize(e, r, ti, 'right'); });
+        setBarPos(bar, ovState);
+        var lh = document.createElement('div'); lh.className = 'resize-handle left';
+        var rh = document.createElement('div'); rh.className = 'resize-handle right';
         bar.innerHTML = '<span class="bar-label">' + team.name + '</span>';
         bar.appendChild(lh); bar.appendChild(rh);
-        let didMove = false;
-        bar.addEventListener('mousedown', function(e) { if (e.target.classList.contains('resize-handle')) return; didMove = false; startDrag(e, r, ti, function() { didMove = true; }); });
-
+        (function(rr, tii) {
+          lh.addEventListener('mousedown', function(e) { startOverviewResize(e, rr, tii, 'left'); });
+          rh.addEventListener('mousedown', function(e) { startOverviewResize(e, rr, tii, 'right'); });
+          bar.addEventListener('mousedown', function(e) {
+            if (e.target.classList.contains('resize-handle')) return;
+            startOverviewDrag(e, rr, tii);
+          });
+        })(r, ti);
         bc.appendChild(bar);
-      }
-    });
+      });
+    } else {
+      TEAM_DEFS.forEach(function(team, ti) {
+        const state = barState[r][ti];
+        const topY = 8 + milestoneAreaH + ti * (22 + 4);
+
+        if (team.subBars) {
+          team.subBars.forEach(function(subDef, si) {
+            const subState = state.subBars[si];
+            const bar = document.createElement('div');
+            bar.className = 'bar';
+            bar.id = 'bar-' + r + '-' + ti + '-' + si;
+            var baseColor = cv(team.bgVar);
+            bar.style.background = lightenColor(baseColor, si * 0.15);
+            bar.style.top = topY + 'px';
+            setBarPos(bar, subState);
+            const lh = document.createElement('div'); lh.className = 'resize-handle left';  lh.addEventListener('mousedown', function(e) { startResize(e, r, ti, 'left', si); });
+            const rh = document.createElement('div'); rh.className = 'resize-handle right'; rh.addEventListener('mousedown', function(e) { startResize(e, r, ti, 'right', si); });
+            bar.innerHTML = '<span class="bar-label">' + subDef.name + '</span>';
+            bar.appendChild(lh); bar.appendChild(rh);
+            let didMove = false;
+            bar.addEventListener('mousedown', function(e) { if (e.target.classList.contains('resize-handle')) return; didMove = false; startDrag(e, r, ti, function() { didMove = true; }, si); });
+            bc.appendChild(bar);
+          });
+        } else {
+          const bar = document.createElement('div');
+          bar.className = 'bar';
+          bar.id = 'bar-' + r + '-' + ti;
+          bar.style.background = cv(team.bgVar);
+          bar.style.top = topY + 'px';
+          setBarPos(bar, state);
+          const lh = document.createElement('div'); lh.className = 'resize-handle left';  lh.addEventListener('mousedown', function(e) { startResize(e, r, ti, 'left'); });
+          const rh = document.createElement('div'); rh.className = 'resize-handle right'; rh.addEventListener('mousedown', function(e) { startResize(e, r, ti, 'right'); });
+          bar.innerHTML = '<span class="bar-label">' + team.name + '</span>';
+          bar.appendChild(lh); bar.appendChild(rh);
+          let didMove = false;
+          bar.addEventListener('mousedown', function(e) { if (e.target.classList.contains('resize-handle')) return; didMove = false; startDrag(e, r, ti, function() { didMove = true; }); });
+          bc.appendChild(bar);
+        }
+      });
+    }
 
     grid.appendChild(bc);
     row.appendChild(grid);
@@ -601,6 +652,57 @@ function stopResize() {
   document.removeEventListener('mouseup', stopResize);
 }
 
+// ── Overview bar drag & resize ────────────────────────────────────────────────
+var ovDragSt = null;
+function startOverviewDrag(e, r, ti) {
+  e.preventDefault();
+  if (!overviewBarState[r]) return;
+  var bar = document.getElementById('bar-ov-' + r + '-' + ti);
+  if (!bar) return;
+  bar.classList.add('dragging');
+  var st = overviewBarState[r][ti];
+  ovDragSt = { r:r, ti:ti, bar:bar, sx:e.clientX, os:st.startWeek, dur:st.endWeek - st.startWeek };
+  document.addEventListener('mousemove', onOverviewDrag);
+  document.addEventListener('mouseup', stopOverviewDrag);
+}
+function onOverviewDrag(e) {
+  if (!ovDragSt) return;
+  var delta = Math.round((e.clientX - ovDragSt.sx) / WEEK_W);
+  var st = overviewBarState[ovDragSt.r][ovDragSt.ti];
+  st.startWeek = Math.max(1, Math.min(TOTAL_WEEKS - ovDragSt.dur, ovDragSt.os + delta));
+  st.endWeek = st.startWeek + ovDragSt.dur;
+  setBarPos(ovDragSt.bar, st);
+}
+function stopOverviewDrag() {
+  if (ovDragSt) { ovDragSt.bar.classList.remove('dragging'); ovDragSt = null; buildSummary(); }
+  document.removeEventListener('mousemove', onOverviewDrag);
+  document.removeEventListener('mouseup', stopOverviewDrag);
+}
+
+var ovResSt = null;
+function startOverviewResize(e, r, ti, side) {
+  e.preventDefault(); e.stopPropagation();
+  if (!overviewBarState[r]) return;
+  var bar = document.getElementById('bar-ov-' + r + '-' + ti);
+  var st = overviewBarState[r][ti];
+  ovResSt = { r:r, ti:ti, bar:bar, side:side, sx:e.clientX, os:st.startWeek, oe:st.endWeek };
+  document.addEventListener('mousemove', onOverviewResize);
+  document.addEventListener('mouseup', stopOverviewResize);
+}
+function onOverviewResize(e) {
+  if (!ovResSt) return;
+  var delta = Math.round((e.clientX - ovResSt.sx) / WEEK_W);
+  var st = overviewBarState[ovResSt.r][ovResSt.ti];
+  if (ovResSt.side === 'left') st.startWeek = Math.max(1, Math.min(st.endWeek, ovResSt.os + delta));
+  else st.endWeek = Math.max(st.startWeek, Math.min(TOTAL_WEEKS, ovResSt.oe + delta));
+  setBarPos(ovResSt.bar, st);
+}
+function stopOverviewResize() {
+  if (ovResSt) { ovResSt = null; buildSummary(); }
+  document.removeEventListener('mousemove', onOverviewResize);
+  document.removeEventListener('mouseup', stopOverviewResize);
+}
+
 var mDragSt = null;
 function startMilestoneDrag(e, r, mi, onMove) {
   e.preventDefault();
@@ -609,13 +711,15 @@ function startMilestoneDrag(e, r, mi, onMove) {
   bar.classList.add('dragging');
   var RELEASE_MI = DEFAULT_MILESTONES.findIndex(function(m){return m.id==='release';});
   // Snapshot original positions at drag start for release milestone
-  var origBars = null, origMilestones = null;
+  var origBars = null, origMilestones = null, origOverviewBars = null;
   if (mi === RELEASE_MI) {
     // Use canonical (pre-drag) positions so bars always restore to full size
     origBars = deepCopyBarState(canonicalBarState[r] || barState[r]);
     origMilestones = deepCopyMilestoneState(canonicalMilestoneState[r] || milestoneState[r]);
+    // Snapshot overview bars too for live update in overview mode
+    origOverviewBars = (overviewBarState[r] || []).map(function(b){ return { startWeek:b.startWeek, endWeek:b.endWeek }; });
   }
-  mDragSt = { r:r, mi:mi, bar:bar, sx:e.clientX, ow:milestoneState[r][mi].week, onMove:onMove, origBars:origBars, origMilestones:origMilestones };
+  mDragSt = { r:r, mi:mi, bar:bar, sx:e.clientX, ow:milestoneState[r][mi].week, onMove:onMove, origBars:origBars, origMilestones:origMilestones, origOverviewBars:origOverviewBars };
   document.addEventListener('mousemove', onMilestoneDrag);
   document.addEventListener('mouseup', stopMilestoneDrag);
 }
@@ -623,7 +727,6 @@ function onMilestoneDrag(e) {
   if (!mDragSt) return;
   var delta = Math.round((e.clientX - mDragSt.sx) / WEEK_W);
   var newWeek = Math.max(1, Math.min(TOTAL_WEEKS, mDragSt.ow + delta));
-  var actualDelta = newWeek - mDragSt.ow;
   milestoneState[mDragSt.r][mDragSt.mi].week = newWeek;
   setMilestonePos(mDragSt.bar, newWeek, 0, false, 30);
 
@@ -635,9 +738,13 @@ function onMilestoneDrag(e) {
     // Restore from originals + totalDelta to preserve durations
     milestoneState[r].forEach(function(ms, mi) {
       if (mi !== RELEASE_MI) {
-        ms.week = Math.max(1, Math.min(TOTAL_WEEKS, mDragSt.origMilestones[mi].week + totalDelta));
+        var newMiWeek = mDragSt.origMilestones[mi].week + totalDelta;
+        ms.week = newMiWeek < 1 ? -1 : Math.min(TOTAL_WEEKS, newMiWeek); // -1 = hidden
         var mel = document.getElementById('mbar-' + r + '-' + mi);
-        if (mel) setMilestonePos(mel, ms.week, 0, false, 30);
+        if (mel) {
+          if (ms.week < 1) { mel.style.display = 'none'; }
+          else { mel.style.display = ''; setMilestonePos(mel, ms.week, 0, false, 30); }
+        }
       }
     });
     barState[r].forEach(function(bState, ti) {
@@ -646,27 +753,47 @@ function onMilestoneDrag(e) {
       if (bState.isGroup && orig.subBars) {
         bState.subBars.forEach(function(sb, si) {
           if (!orig.subBars[si]) return;
+          // Use unclamped shift so bars restore to full size when dragging back right
           sb.startWeek = Math.max(1, Math.min(TOTAL_WEEKS, orig.subBars[si].startWeek + totalDelta));
-          sb.endWeek   = Math.max(1, Math.min(TOTAL_WEEKS, orig.subBars[si].endWeek   + totalDelta));
-          var barEl = document.getElementById('bar-' + r + '-' + ti + '-' + si);
-          if (barEl) setBarPos(barEl, sb);
+          sb.endWeek   = Math.max(sb.startWeek, Math.min(TOTAL_WEEKS, orig.subBars[si].endWeek + totalDelta));
+          if (detailView === 'details') {
+            var barEl = document.getElementById('bar-' + r + '-' + ti + '-' + si);
+            if (barEl) setBarPos(barEl, sb);
+          }
         });
       } else if (!bState.isGroup) {
         bState.startWeek = Math.max(1, Math.min(TOTAL_WEEKS, orig.startWeek + totalDelta));
-        bState.endWeek   = Math.max(1, Math.min(TOTAL_WEEKS, orig.endWeek   + totalDelta));
-        var barEl = document.getElementById('bar-' + r + '-' + ti);
-        if (barEl) setBarPos(barEl, bState);
+        bState.endWeek   = Math.max(bState.startWeek, Math.min(TOTAL_WEEKS, orig.endWeek + totalDelta));
+        if (detailView === 'details') {
+          var barEl = document.getElementById('bar-' + r + '-' + ti);
+          if (barEl) setBarPos(barEl, bState);
+        }
       }
     });
+
+    // Live-update overview bars during drag
+    if (detailView === 'overview' && mDragSt.origOverviewBars) {
+      overviewBarState[r].forEach(function(ovBar, ti) {
+        var orig = mDragSt.origOverviewBars[ti];
+        if (!orig) return;
+        ovBar.startWeek = Math.max(1, Math.min(TOTAL_WEEKS, orig.startWeek + totalDelta));
+        ovBar.endWeek   = Math.max(ovBar.startWeek, Math.min(TOTAL_WEEKS, orig.endWeek + totalDelta));
+        var barEl = document.getElementById('bar-ov-' + r + '-' + ti);
+        if (barEl) setBarPos(barEl, ovBar);
+      });
+    }
   }
 }
 function stopMilestoneDrag() {
   if (mDragSt) {
     var r = mDragSt.r;
     mDragSt.bar.classList.remove('dragging');
-    // Update canonical so next rocket drag starts from current positions
     if (canonicalBarState[r]) canonicalBarState[r] = deepCopyBarState(barState[r]);
     if (canonicalMilestoneState[r]) canonicalMilestoneState[r] = deepCopyMilestoneState(milestoneState[r]);
+    // Keep overviewBarState and savedDetailBarState in sync after a rocket drag
+    overviewBarState[r] = computeOverviewBars(r);
+    overviewBarStateAtLastLeave[r] = overviewBarState[r].map(function(b){ return { startWeek:b.startWeek, endWeek:b.endWeek }; });
+    savedDetailBarState[r] = deepCopyOneLevelBarState(barState[r]);
     mDragSt = null;
   }
   document.removeEventListener('mousemove', onMilestoneDrag);
@@ -727,19 +854,192 @@ function renderDetail(r, ti, si) {
     '<div class="detail-weeks" style="grid-template-columns:repeat(' + numWeeks + ',1fr)">' + html + '</div>';
 }
 
-function toggleToday() {
-  todayVisible = !todayVisible;
-  document.getElementById('todayToggleBtn').classList.toggle('active', todayVisible);
-  document.getElementById('chartInner').classList.toggle('no-today-highlight', !todayVisible);
-  buildHeader(); buildRows();
+function setOverviewMode(mode) {
+  overviewMode = mode;
+  ['full','product','design','data','engineering'].forEach(function(m) {
+    var btn = document.getElementById('modeBtn-' + m);
+    if (btn) btn.classList.toggle('active', m === mode);
+  });
+  buildSummary();
 }
 
-function toggleOverviewMode() {
-  overviewMode = overviewMode === 'full' ? 'strategy-launch' : 'full';
-  var btn = document.getElementById('overviewModeBtn');
-  btn.classList.toggle('active', overviewMode === 'strategy-launch');
-  btn.textContent = overviewMode === 'full' ? 'Product' : 'Release Cycle';
-  buildSummary();
+// ── Overview / Details view toggle ───────────────────────────────────────────
+
+// overviewBarState[r][ti] = { startWeek, endWeek } — one bar per team per release
+// Derived from barState when switching to overview; editable in overview mode.
+let overviewBarState = [];
+
+function initOverviewBarState() {
+  overviewBarState = [];
+  for (var r = 0; r < NUM_RELEASES; r++) overviewBarState[r] = computeOverviewBars(r);
+}
+
+function computeOverviewBars(r) {
+  // For each team, collapse subBars to a single bar spanning from earliest start to latest end
+  return TEAM_DEFS.map(function(team, ti) {
+    var bSt = barState[r][ti];
+    if (bSt.isGroup) {
+      var s = 999, e = 0;
+      bSt.subBars.forEach(function(sb) { if (sb.startWeek < s) s = sb.startWeek; if (sb.endWeek > e) e = sb.endWeek; });
+      return { startWeek: s, endWeek: e };
+    }
+    return { startWeek: bSt.startWeek, endWeek: bSt.endWeek };
+  });
+}
+
+// Distribute totalWeeks into subBars for each team according to the rules
+function distributeSubBars(ti, startWeek, totalWeeks) {
+  var team = TEAM_DEFS[ti];
+  if (!team.subBars) return null;
+  var subs = [];
+  var id = team.id;
+
+  if (id === 'strategy') {
+    if (totalWeeks < 4) {
+      // definition fixed at min(2, totalWeeks-1); discovery gets rest (min 1)
+      var definition = Math.min(2, totalWeeks - 1);
+      var discovery  = totalWeeks - definition;
+      subs = [discovery, definition];
+    } else {
+      var half = Math.floor(totalWeeks / 2);
+      subs = [half + (totalWeeks % 2), half];
+    }
+  } else if (id === 'design') {
+    if (totalWeeks < 6) {
+      // hifi and midfi share the fixed slots, lofi absorbs the remainder (min 1)
+      var hifi  = Math.min(2, Math.floor(totalWeeks / 2));
+      var midfi = Math.min(2, totalWeeks - hifi);
+      var lofi  = Math.max(1, totalWeeks - hifi - midfi);
+      // re-clamp if lofi pushed total over
+      var excess = (lofi + midfi + hifi) - totalWeeks;
+      if (excess > 0) midfi -= excess;
+      subs = [lofi, midfi, hifi];
+    } else {
+      var base = Math.floor(totalWeeks / 3), rem = totalWeeks % 3;
+      subs = [base + (rem >= 2 ? 1 : 0), base + (rem >= 1 ? 1 : 0), base];
+    }
+  } else if (id === 'data') {
+    if (totalWeeks < 7) {
+      // integrate=2, build=3, research=rest; scale down if totalWeeks too small
+      var integrate = Math.min(2, Math.floor(totalWeeks / 3));
+      var build     = Math.min(3, totalWeeks - integrate - 1);
+      var research  = Math.max(1, totalWeeks - integrate - build);
+      // re-clamp
+      var excess = (research + build + integrate) - totalWeeks;
+      if (excess > 0) build -= excess;
+      subs = [research, build, integrate];
+    } else {
+      var base = Math.floor(totalWeeks / 3), rem = totalWeeks % 3;
+      subs = [base + (rem >= 2 ? 1 : 0), base + (rem >= 1 ? 1 : 0), base];
+    }
+  } else if (id === 'engineering') {
+    // spec=1, qa=1, cooldown=1 only if room; otherwise build absorbs
+    var fixed = Math.min(3, totalWeeks - 1);
+    var build = Math.max(1, totalWeeks - fixed);
+    // distribute fixed slots: spec, qa, cooldown (1 each, clamped to available)
+    var spec     = fixed >= 1 ? 1 : 0;
+    var qa       = fixed >= 2 ? 1 : 0;
+    var cooldown = fixed >= 3 ? 1 : 0;
+    subs = [spec || 1, build, qa || 0, cooldown || 0];
+    // ensure sum == totalWeeks
+    var diff = totalWeeks - subs.reduce(function(a,b){return a+b;}, 0);
+    subs[1] += diff;
+  } else if (id === 'launch') {
+    var prep = Math.ceil(totalWeeks / 2);
+    var leftover = totalWeeks - prep;
+    var uat = Math.ceil(leftover / 2);
+    var qa  = leftover - uat;
+    subs = [prep, qa, uat];
+  }
+
+  // Assign weeks sequentially — no Math.max here; algorithm guarantees valid values
+  var result = [];
+  var cur = startWeek;
+  for (var i = 0; i < subs.length; i++) {
+    var w = subs[i];
+    if (w <= 0) continue; // skip zero-width bars gracefully
+    result.push({ startWeek: cur, endWeek: cur + w - 1 });
+    cur += w;
+  }
+  return result;
+}
+
+// savedDetailBarState[r][ti] — snapshot of barState when leaving Details view
+// overviewBarStateAtLastLeave[r][ti] — snapshot of overviewBarState when leaving Overview,
+//   used to detect which teams the user actually changed in Overview.
+let savedDetailBarState = [];
+let overviewBarStateAtLastLeave = [];
+
+function deepCopyOneLevelBarState(rowBars) {
+  return rowBars.map(function(b) {
+    if (b.isGroup) return { isGroup:true, subBars: b.subBars.map(function(sb){ return { startWeek:sb.startWeek, endWeek:sb.endWeek }; }) };
+    return { startWeek:b.startWeek, endWeek:b.endWeek };
+  });
+}
+
+// Write overviewBarState back into barState:
+// - If the overview bar for a team is unchanged from when we left Overview, restore saved detail state.
+// - If the overview bar changed, redistribute using the logic rules.
+function applyOverviewToBarState(r) {
+  var lastOv = overviewBarStateAtLastLeave[r]; // what overview looked like when we left Overview
+  TEAM_DEFS.forEach(function(team, ti) {
+    var ov = overviewBarState[r][ti];
+    var totalWeeks = ov.endWeek - ov.startWeek + 1;
+    var bSt = barState[r][ti];
+
+    // Check if overview bar changed since we entered Overview view
+    var ovChanged = !lastOv || !lastOv[ti] ||
+      lastOv[ti].startWeek !== ov.startWeek ||
+      lastOv[ti].endWeek   !== ov.endWeek;
+
+    if (!ovChanged && savedDetailBarState[r] && savedDetailBarState[r][ti]) {
+      // Restore saved detail state exactly
+      var saved = savedDetailBarState[r][ti];
+      if (bSt.isGroup && saved.isGroup) {
+        bSt.subBars = saved.subBars.map(function(sb){ return { startWeek:sb.startWeek, endWeek:sb.endWeek }; });
+      } else if (!bSt.isGroup) {
+        bSt.startWeek = saved.startWeek;
+        bSt.endWeek   = saved.endWeek;
+      }
+    } else {
+      // Overview bar changed — redistribute using logic rules
+      if (bSt.isGroup) {
+        var newSubs = distributeSubBars(ti, ov.startWeek, totalWeeks);
+        if (newSubs) bSt.subBars = newSubs;
+      } else {
+        bSt.startWeek = ov.startWeek;
+        bSt.endWeek   = ov.endWeek;
+      }
+    }
+  });
+  syncCanonical(r);
+}
+
+function setDetailView(view) {
+  if (view === 'overview' && detailView === 'details') {
+    // Snapshot current detail state before leaving
+    savedDetailBarState = barState.map(function(row) { return deepCopyOneLevelBarState(row); });
+    // Compute overview bars from current barState (collapsed spans)
+    initOverviewBarState();
+    // Snapshot overview state at the moment we enter Overview (to detect user changes later)
+    overviewBarStateAtLastLeave = overviewBarState.map(function(row) {
+      return row.map(function(b) { return { startWeek:b.startWeek, endWeek:b.endWeek }; });
+    });
+  } else if (view === 'details' && detailView === 'overview') {
+    // Snapshot overview state as it is NOW (user may have changed bars)
+    // Then restore details — per-team: restore saved if unchanged, redistribute if changed
+    for (var r = 0; r < NUM_RELEASES; r++) applyOverviewToBarState(r);
+    // Update overviewBarStateAtLastLeave to current state
+    overviewBarStateAtLastLeave = overviewBarState.map(function(row) {
+      return row.map(function(b) { return { startWeek:b.startWeek, endWeek:b.endWeek }; });
+    });
+  }
+  detailView = view;
+  ['overview','details'].forEach(function(v) {
+    var btn = document.getElementById('detailViewBtn-' + v);
+    if (btn) btn.classList.toggle('active', v === view);
+  });
+  buildRows();
 }
 
 function onDateChange() {
@@ -761,67 +1061,8 @@ function saveState() {
   };
   localStorage.setItem('releaseGanttState', JSON.stringify(state));
   const btn = document.getElementById('saveBtn');
-  btn.textContent = '\u2713 Saved'; btn.classList.add('saved');
-  setTimeout(function() { btn.textContent = '\ud83d\udcbe Save'; btn.classList.remove('saved'); }, 1800);
-}
-
-function exportState() {
-  const state = {
-    schemaVersion: 38,
-    numReleases: NUM_RELEASES,
-    cycleStartDate: document.getElementById('cycleStartInput').value,
-    releaseNames: [...releaseNames],
-    barState: barState.map(function(row) { return row.map(function(b) {
-      return b.isGroup ? { isGroup:true, subBars: b.subBars.map(function(sb) { return { startWeek:sb.startWeek, endWeek:sb.endWeek }; }) } : { startWeek:b.startWeek, endWeek:b.endWeek };
-    }); }),
-    milestoneState: milestoneState.map(function(row) { return row.map(function(m) { return { week:m.week }; }); })
-  };
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'release-planner-state.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-function importState(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const state = JSON.parse(e.target.result);
-      if (!state.numReleases || !state.releaseNames || !state.barState) {
-        alert('Import failed: file does not look like a valid export.');
-        return;
-      }
-      NUM_RELEASES = state.numReleases;
-      releaseNames = state.releaseNames;
-      if (state.cycleStartDate) {
-        document.getElementById('cycleStartInput').value = state.cycleStartDate;
-        cycleStartDate = new Date(state.cycleStartDate + 'T12:00:00');
-      }
-      barState = state.barState;
-      milestoneState = state.milestoneState || [];
-      for (var rr = 0; rr < NUM_RELEASES; rr++) {
-        if (!milestoneState[rr]) milestoneState[rr] = DEFAULT_MILESTONES.map(function(m) { return { week: m.week }; });
-      }
-      canonicalBarState = [];
-      canonicalMilestoneState = [];
-      for (var rr = 0; rr < NUM_RELEASES; rr++) {
-        if (barState[rr]) canonicalBarState[rr] = deepCopyBarState(barState[rr]);
-        if (milestoneState[rr]) canonicalMilestoneState[rr] = deepCopyMilestoneState(milestoneState[rr]);
-      }
-      computeTodayWeek(); buildHeader(); buildRows(); buildSummary();
-      localStorage.setItem('releaseGanttState', JSON.stringify(state));
-      const btn = document.getElementById('importBtn');
-      if (btn) { btn.textContent = '✓ Imported'; btn.classList.add('saved'); setTimeout(function(){ btn.textContent = '↑ Import'; btn.classList.remove('saved'); }, 2000); }
-    } catch(err) {
-      alert('Import failed: ' + err.message);
-    }
-  };
-  reader.readAsText(file);
-  event.target.value = '';
+  btn.classList.add('saved');
+  setTimeout(function() { btn.classList.remove('saved'); }, 1800);
 }
 
 function loadState() {
@@ -869,7 +1110,7 @@ function buildSummary() {
   hdr.appendChild(hdrAc);
 
   var hdrLbl = document.createElement('div');
-  hdrLbl.style.cssText = 'width:var(--label-w);flex-shrink:0;display:flex;align-items:center;padding:0 14px;font-family:monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#1a1a2e;';
+  hdrLbl.style.cssText = 'width:var(--label-w);flex-shrink:0;display:flex;align-items:center;padding:0 6px;font-family:Gloock,serif;font-size:18px;font-weight:400;color:#1a1a2e;';
   hdrLbl.textContent = 'Overview';
   hdr.appendChild(hdrLbl);
 
@@ -880,7 +1121,7 @@ function buildSummary() {
     wc.style.cssText = 'flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;';
     if (cycleStartDate) {
       var wd2 = document.createElement('span');
-      wd2.style.cssText = 'font-family:monospace;font-size:10px;color:#1a1a2e;';
+      wd2.style.cssText = 'font-family:Mooli,sans-serif;font-size:10px;color:#1a1a2e;';
       wd2.textContent = weekDate(w);
       wc.appendChild(wd2);
     }
@@ -889,42 +1130,64 @@ function buildSummary() {
   hdr.appendChild(hdrGrid);
   cont.appendChild(hdr);
 
-  // Rocket count row — one cell per week, showing rocket+count where releases land
+  function miniIcon(svgFull) {
+    // Replace width/height 28px circle with 16px and svg 16->10
+    return svgFull
+      .replace('width:28px;height:28px;', 'width:16px;height:16px;')
+      .replace('width="16" height="16"', 'width="10" height="10"');
+  }
+
+    // Rocket count row — one cell per week, showing rocket+count where releases land
   var rocketRow = document.createElement('div');
-  rocketRow.style.cssText = 'display:flex;height:24px;';
+  rocketRow.style.cssText = 'display:flex;height:32px;border-top:1px solid var(--border);';
 
   // Action col spacer
   var rrAc = document.createElement('div');
   rrAc.style.cssText = 'width:36px;flex-shrink:0;background:var(--surface);';
   rocketRow.appendChild(rrAc);
 
-  // Label col spacer
+  // Label col - 'Releases' label
   var rrLbl = document.createElement('div');
-  rrLbl.style.cssText = 'width:var(--label-w);flex-shrink:0;background:var(--surface);';
+  rrLbl.style.cssText = 'width:var(--label-w);flex-shrink:0;background:var(--surface);display:flex;align-items:center;padding:0 6px;';
+  rrLbl.innerHTML = '<span style="font-family:Mooli,sans-serif;font-size:12px;font-weight:400;color:var(--text-primary);">Releases</span>';
   rocketRow.appendChild(rrLbl);
 
-  // Week cols with rocket counts
+  var rrGrid = document.createElement('div');
+  rrGrid.style.cssText = 'flex:1;display:flex;';
   var RELEASE_MI2 = DEFAULT_MILESTONES.findIndex(function(m){return m.id==='release';});
   var releaseWeeks2 = {};
   milestoneState.forEach(function(rms) {
     var rw = rms[RELEASE_MI2].week;
     releaseWeeks2[rw] = (releaseWeeks2[rw] || 0) + 1;
   });
-  var rrGrid = document.createElement('div');
-  rrGrid.style.cssText = 'flex:1;display:flex;';
   for (var ww2 = 1; ww2 <= TOTAL_WEEKS; ww2++) {
     var rrCell = document.createElement('div');
     rrCell.style.cssText = 'flex:1;display:flex;align-items:center;justify-content:center;min-width:0;';
     if (releaseWeeks2[ww2]) {
-      rrCell.innerHTML = '<div style="width:18px;height:18px;border-radius:50%;background:#fbeb85;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ee5860" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></div><span style="font-family:monospace;font-size:9px;color:#1a1a2e;font-weight:600;margin-left:2px">' + releaseWeeks2[ww2] + '</span>';
+      rrCell.innerHTML = '<div style="width:18px;height:18px;border-radius:50%;background:#fbeb85;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ee5860" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></div><span style="font-family:Mooli,sans-serif;font-size:9px;color:#1a1a2e;font-weight:600;margin-left:2px">' + releaseWeeks2[ww2] + '</span>';
+      (function(w) {
+        var RELEASE_MI3 = DEFAULT_MILESTONES.findIndex(function(m){return m.id==='release';});
+        var names = [];
+        milestoneState.forEach(function(rms, ri) { if (rms[RELEASE_MI3].week === w) names.push(releaseNames[ri]); });
+        if (names.length) {
+          rrCell.style.cursor = 'default';
+          rrCell.addEventListener('mouseenter', function(e) { var tt=document.getElementById('globalTooltip'); tt.innerHTML=names.join('<br>'); tt.style.display='block'; tt.style.left=(e.clientX+12)+'px'; tt.style.top=(e.clientY-28)+'px'; });
+          rrCell.addEventListener('mousemove',  function(e) { var tt=document.getElementById('globalTooltip'); tt.style.left=(e.clientX+12)+'px'; tt.style.top=(e.clientY-28)+'px'; });
+          rrCell.addEventListener('mouseleave', function()  { document.getElementById('globalTooltip').style.display='none'; });
+        }
+      })(ww2);
     }
     rrGrid.appendChild(rrCell);
   }
+
   rocketRow.appendChild(rrGrid);
   cont.appendChild(rocketRow);
 
-  // One row per release — no borders between rows, no label in first col
-  for (var r = 0; r < NUM_RELEASES; r++) {
+
+
+  // One row per release
+  // Mini SVGs for overview milestone icons (16px circle)
+for (var r = 0; r < NUM_RELEASES; r++) {
     var earliest = 999, latest = 0;
     barState[r].forEach(function(b) {
       if (b.isGroup) {
@@ -939,16 +1202,52 @@ function buildSummary() {
     });
 
     var row = document.createElement('div');
-    row.style.cssText = 'display:flex;height:28px;';
+    row.style.cssText = 'display:flex;height:32px;border-top:1px solid var(--border);';
 
-    // Action col
+    // Action col with up/down buttons
     var ac = document.createElement('div');
-    ac.style.cssText = 'width:36px;flex-shrink:0;background:var(--surface);height:28px;';
+    ac.style.cssText = 'width:36px;flex-shrink:0;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;opacity:0;transition:opacity 0.15s;';
+    (function(acEl) {
+      acEl.addEventListener('mouseenter', function(){ acEl.style.opacity='1'; });
+      acEl.addEventListener('mouseleave', function(){ acEl.style.opacity='0'; });
+    })(ac);
+    var upBtn = document.createElement('button');
+    upBtn.style.cssText = 'width:20px;height:13px;border:none;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;background:#7ac2d7;color:#edb98d;padding:0;line-height:1;';
+    upBtn.innerHTML = '&#9650;';
+    upBtn.title = 'Move up';
+    var downBtn = document.createElement('button');
+    downBtn.style.cssText = 'width:20px;height:13px;border:none;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;background:#e4b9ff;color:#ee6327;padding:0;line-height:1;';
+    downBtn.innerHTML = '&#9660;';
+    downBtn.title = 'Move down';
+    (function(ri) {
+      upBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (ri === 0) return;
+        var swapArr = function(arr) { var tmp = arr[ri]; arr[ri] = arr[ri-1]; arr[ri-1] = tmp; };
+        swapArr(releaseNames); swapArr(barState); swapArr(milestoneState);
+        swapArr(canonicalBarState); swapArr(canonicalMilestoneState);
+        buildRows(); buildSummary();
+      });
+      downBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (ri >= NUM_RELEASES - 1) return;
+        var swapArr = function(arr) { var tmp = arr[ri]; arr[ri] = arr[ri+1]; arr[ri+1] = tmp; };
+        swapArr(releaseNames); swapArr(barState); swapArr(milestoneState);
+        swapArr(canonicalBarState); swapArr(canonicalMilestoneState);
+        buildRows(); buildSummary();
+      });
+    })(r);
+    ac.appendChild(upBtn);
+    ac.appendChild(downBtn);
     row.appendChild(ac);
 
-    // Label col — empty, no text, no right border
+    // Label col — name only, bold
     var lbl = document.createElement('div');
-    lbl.style.cssText = 'width:var(--label-w);flex-shrink:0;background:var(--surface);';
+    lbl.style.cssText = 'width:var(--label-w);flex-shrink:0;background:var(--surface);display:flex;align-items:center;padding:0 6px;overflow:hidden;';
+    var nSpan = document.createElement('span');
+    nSpan.style.cssText = "font-family:Mooli,sans-serif;font-size:12px;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;";
+    nSpan.textContent = releaseNames[r];
+    lbl.appendChild(nSpan);
     row.appendChild(lbl);
 
     // Grid
@@ -963,88 +1262,97 @@ function buildSummary() {
     var rowColor = RELEASE_COLORS[r % RELEASE_COLORS.length];
 
     if (overviewMode === 'full') {
-      // Single bar spanning full release
+      // Single empty bar spanning full release
       var sbar = document.createElement('div');
       var leftPct  = weekToX(earliest);
       var widthPct = (latest - earliest + 1) / TOTAL_WEEKS * 100;
       sbar.style.cssText =
-        'position:absolute;top:50%;transform:translateY(-50%);height:24px;border-radius:5px;' +
+        'position:absolute;top:50%;transform:translateY(-50%);height:18px;border-radius:4px;' +
         'left:calc(' + leftPct + '% + 2px);' +
         'width:calc(' + widthPct + '% - 6px);' +
-        'background:' + rowColor + ';' +
-        'display:flex;align-items:center;padding:0 10px;overflow:hidden;pointer-events:none;';
-      var slabel = document.createElement('span');
-      slabel.style.cssText = 'font-family:monospace;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#fff;white-space:nowrap;';
-      slabel.textContent = getVersionNumber(r) + ' | ' + releaseNames[r];
-      sbar.appendChild(slabel);
+        'background:' + rowColor + ';pointer-events:none;';
       grid.appendChild(sbar);
-    } else {
-      // Product mode: two inline bars, both same color, both showing version | release name
-      var strategyTi = TEAM_DEFS.findIndex(function(t){ return t.id === 'strategy'; });
-      var launchTi   = TEAM_DEFS.findIndex(function(t){ return t.id === 'launch'; });
 
-      [strategyTi, launchTi].forEach(function(ti) {
-        if (ti === -1) return;
-        var bState = barState[r][ti];
-        var bStart = 999, bEnd = 0;
-        if (bState.isGroup) {
-          bState.subBars.forEach(function(sb) {
-            if (sb.startWeek < bStart) bStart = sb.startWeek;
-            if (sb.endWeek   > bEnd)   bEnd   = sb.endWeek;
+      // Milestone icons on overview bar - only those within visible range
+      (function(rr) {
+        milestoneState[rr].forEach(function(ms, mi) {
+          var w = ms.week;
+          if (w < 1 || w > TOTAL_WEEKS) return;
+          var lp = weekToX(w);
+          var mEl = document.createElement('div');
+          var centerPct = (lp + (0.5 / TOTAL_WEEKS * 100));
+          mEl.style.cssText =
+            'position:absolute;top:50%;transform:translate(-50%,-50%);' +
+            'left:calc(' + centerPct + '%);z-index:5;pointer-events:all;cursor:default;';
+          mEl.innerHTML = miniIcon(MILESTONE_ICONS[mi]);
+          // Tooltip with same info as feature box
+          var tip = DEFAULT_MILESTONES[mi] ? DEFAULT_MILESTONES[mi].tooltip : '';
+          if (tip) {
+            mEl.addEventListener('mouseenter', function(e) {
+              var tt = document.getElementById('globalTooltip');
+              tt.textContent = tip;
+              tt.style.display = 'block';
+              tt.style.left = (e.clientX + 12) + 'px';
+              tt.style.top  = (e.clientY - 28) + 'px';
+            });
+            mEl.addEventListener('mousemove', function(e) {
+              var tt = document.getElementById('globalTooltip');
+              tt.style.left = (e.clientX + 12) + 'px';
+              tt.style.top  = (e.clientY - 28) + 'px';
+            });
+            mEl.addEventListener('mouseleave', function() {
+              document.getElementById('globalTooltip').style.display = 'none';
+            });
+          }
+          grid.appendChild(mEl);
+        });
+      })(r);
+
+
+
+    } else {
+      // Team bar mode — 'product' shows strategy+launch, others show single team
+      var teamIds = overviewMode === 'product' ? ['strategy','launch'] : [overviewMode];
+      teamIds.forEach(function(tid) {
+        var ti2 = TEAM_DEFS.findIndex(function(t){ return t.id === tid; });
+        if (ti2 === -1) return;
+        var bSt = barState[r][ti2];
+        var bStart2 = 999, bEnd2 = 0;
+        if (bSt.isGroup) {
+          bSt.subBars.forEach(function(sb) {
+            if (sb.startWeek < bStart2) bStart2 = sb.startWeek;
+            if (sb.endWeek   > bEnd2)   bEnd2   = sb.endWeek;
           });
-        } else {
-          bStart = bState.startWeek; bEnd = bState.endWeek;
-        }
-        if (bStart > bEnd) return;
-        var lp = weekToX(bStart);
-        var wp = (bEnd - bStart + 1) / TOTAL_WEEKS * 100;
-        var sb2 = document.createElement('div');
-        sb2.style.cssText =
-          'position:absolute;top:50%;transform:translateY(-50%);height:24px;border-radius:5px;' +
-          'left:calc(' + lp + '% + 2px);' +
-          'width:calc(' + wp + '% - 4px);' +
-          'background:' + rowColor + ';' +
-          'display:flex;align-items:center;padding:0 10px;overflow:hidden;pointer-events:none;';
-        var sl2 = document.createElement('span');
-        sl2.style.cssText = 'font-family:monospace;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#fff;white-space:nowrap;';
-        sl2.textContent = getVersionNumber(r) + ' | ' + releaseNames[r];
-        sb2.appendChild(sl2);
-        grid.appendChild(sb2);
+        } else { bStart2 = bSt.startWeek; bEnd2 = bSt.endWeek; }
+        if (bStart2 > bEnd2) return;
+        var lp3 = weekToX(bStart2);
+        var wp3 = (bEnd2 - bStart2 + 1) / TOTAL_WEEKS * 100;
+        var sb3 = document.createElement('div');
+        var teamDef3 = TEAM_DEFS.find(function(t){ return t.id === tid; });
+        var teamColorVal = rowColor;
+        sb3.style.cssText =
+          'position:absolute;top:50%;transform:translateY(-50%);height:18px;border-radius:4px;' +
+          'left:calc(' + lp3 + '% + 2px);' +
+          'width:calc(' + wp3 + '% - 4px);' +
+          'background:' + teamColorVal + ';pointer-events:none;';
+        grid.appendChild(sb3);
       });
     }
 
     row.appendChild(grid);
+
     cont.appendChild(row);
   }
 
-  // Spacer at bottom
-  var botSpacer = document.createElement('div');
-  botSpacer.style.cssText = 'height:12px;';
-  cont.appendChild(botSpacer);
+  // Thin spacer row at bottom
+  var spacerRow = document.createElement('div');
+  spacerRow.style.cssText = 'display:flex;height:11px;border-top:1px solid var(--border);';
+  cont.appendChild(spacerRow);
+
 }
 
 // ── Row reorder drag ──────────────────────────────────────────────────────────
 var rowDragSrc = null;
-
-function startRowDrag(e, r, row) {
-  rowDragSrc = r;
-  e.dataTransfer.effectAllowed = 'move';
-  setTimeout(function() { row.classList.add('row-dragging'); }, 0);
-}
-
-function stopRowDrag(e, row) {
-  row.classList.remove('row-dragging');
-  document.querySelectorAll('.release-row').forEach(function(rr) { rr.classList.remove('row-drag-over'); });
-  rowDragSrc = null;
-}
-
-function onRowDragOver(e, r, row) {
-  if (rowDragSrc === null || rowDragSrc === r) return;
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  document.querySelectorAll('.release-row').forEach(function(rr) { rr.classList.remove('row-drag-over'); });
-  row.classList.add('row-drag-over');
-}
 
 function onRowDrop(e, targetR) {
   e.preventDefault();
@@ -1052,18 +1360,22 @@ function onRowDrop(e, targetR) {
   document.querySelectorAll('.release-row').forEach(function(rr) { rr.classList.remove('row-drag-over'); });
 
   var src = rowDragSrc;
-  // Reorder releaseNames, barState, milestoneState
   function moveItem(arr, from, to) {
     var item = arr.splice(from, 1)[0];
     arr.splice(to, 0, item);
   }
-  moveItem(releaseNames,    src, targetR);
-  moveItem(barState,        src, targetR);
-  moveItem(milestoneState,  src, targetR);
+  moveItem(releaseNames,               src, targetR);
+  moveItem(barState,                   src, targetR);
+  moveItem(milestoneState,             src, targetR);
+  moveItem(canonicalBarState,          src, targetR);
+  moveItem(canonicalMilestoneState,    src, targetR);
+  moveItem(overviewBarState,           src, targetR);
+  moveItem(savedDetailBarState,        src, targetR);
+  moveItem(overviewBarStateAtLastLeave, src, targetR);
 
   rowDragSrc = null;
   buildRows();
-  // VERSION_NUMBERS stay in order — just the content moves, so version labels auto-update
+  buildSummary();
 }
 
 
@@ -1087,6 +1399,9 @@ function insertRelease(at) {
   milestoneState.splice(at, 0, d.milestones);
   canonicalBarState.splice(at, 0, deepCopyBarState(d.bars));
   canonicalMilestoneState.splice(at, 0, deepCopyMilestoneState(d.milestones));
+  overviewBarState.splice(at, 0, computeOverviewBars(at));
+  savedDetailBarState.splice(at, 0, deepCopyOneLevelBarState(d.bars));
+  overviewBarStateAtLastLeave.splice(at, 0, computeOverviewBars(at).map(function(b){ return { startWeek:b.startWeek, endWeek:b.endWeek }; }));
   if (selectedR !== null && selectedR >= at) selectedR++;
   buildRows(); buildSummary(); buildHeader();
 }
@@ -1099,6 +1414,9 @@ function deleteRelease(r) {
   releaseNames.splice(r, 1);
   barState.splice(r, 1);
   milestoneState.splice(r, 1);
+  overviewBarState.splice(r, 1);
+  savedDetailBarState.splice(r, 1);
+  overviewBarStateAtLastLeave.splice(r, 1);
   if (selectedR === r) { selectedR = null; selectedTi = null; selectedSi = null; showEmptyDetail(); }
   else if (selectedR > r) selectedR--;
   buildRows(); buildSummary(); buildHeader();
@@ -1108,10 +1426,16 @@ function resetAll() {
   localStorage.removeItem('releaseGanttState');
   NUM_RELEASES = DEFAULT_RELEASE_NAMES.length;
   releaseNames = [...DEFAULT_RELEASE_NAMES];
-  initBarState(); selectedR = null; selectedTi = null; selectedSi = null;
+  initBarState(); overviewBarState = []; savedDetailBarState = []; overviewBarStateAtLastLeave = []; selectedR = null; selectedTi = null; selectedSi = null;
   document.getElementById('cycleStartInput').value = '2026-05-03';
   cycleStartDate = new Date('2026-05-03T12:00:00');
-  computeTodayWeek(); buildReleaseInputs(); computeWeekW(); buildHeader(); buildRows(); buildSummary(); showEmptyDetail();
+  computeTodayWeek(); buildReleaseInputs(); computeWeekW(); buildHeader();
+  initOverviewBarState();
+  savedDetailBarState = barState.map(function(row) { return deepCopyOneLevelBarState(row); });
+  overviewBarStateAtLastLeave = overviewBarState.map(function(row) {
+    return row.map(function(b) { return { startWeek:b.startWeek, endWeek:b.endWeek }; });
+  });
+  buildRows(); buildSummary(); showEmptyDetail();
 }
 
 function resetRow(r) {
@@ -1122,6 +1446,9 @@ function resetRow(r) {
   milestoneState[r] = DEFAULT_MILESTONES.map(function(m) { return { week: m.week }; });
   canonicalBarState[r] = deepCopyBarState(barState[r]);
   canonicalMilestoneState[r] = deepCopyMilestoneState(milestoneState[r]);
+  overviewBarState[r] = computeOverviewBars(r);
+  savedDetailBarState[r] = deepCopyOneLevelBarState(barState[r]);
+  overviewBarStateAtLastLeave[r] = overviewBarState[r].map(function(b){ return { startWeek:b.startWeek, endWeek:b.endWeek }; });
   buildRows(); buildSummary();
 }
 
@@ -1135,8 +1462,12 @@ function init() {
   initBarState();
   const hasSaved = loadState();
   if (!hasSaved) { document.getElementById('cycleStartInput').value = '2026-05-03'; cycleStartDate = new Date('2026-05-03T12:00:00'); }
+  initOverviewBarState();
+  savedDetailBarState = barState.map(function(row) { return deepCopyOneLevelBarState(row); });
+  overviewBarStateAtLastLeave = overviewBarState.map(function(row) {
+    return row.map(function(b) { return { startWeek:b.startWeek, endWeek:b.endWeek }; });
+  });
   buildReleaseInputs(); computeWeekW(); computeTodayWeek(); buildHeader(); buildRows(); buildSummary();
-  document.getElementById('chartInner').classList.add('no-today-highlight');
 }
 
 window.addEventListener('resize', function() {

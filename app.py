@@ -213,7 +213,7 @@ def health():
     return "OK", 200
 
 
-@app.route("/project-planner")
+@app.route("/")
 def index():
     return render_template("index.html")
 

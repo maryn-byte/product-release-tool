@@ -1429,7 +1429,7 @@ function apiSaveRelease(releaseId) {
     needs_bi_analyst: !!(resourceState[r] && resourceState[r].needsBiAnalyst),
     users:            (resourceState[r] && resourceState[r].users)     || [],
   };
-  fetch('/project-planner/api/releases/' + releaseId, {
+  fetch('/api/releases/' + releaseId, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -1438,7 +1438,7 @@ function apiSaveRelease(releaseId) {
 
 function apiSaveDate() {
   var val = document.getElementById('cycleStartInput').value;
-  fetch('/project-planner/api/state/date', {
+  fetch('/api/state/date', {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ cycle_start_date: val })
@@ -1446,7 +1446,7 @@ function apiSaveDate() {
 }
 
 function apiReorder() {
-  fetch('/project-planner/api/releases/reorder', {
+  fetch('/api/releases/reorder', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ order: releaseIds })
@@ -2120,7 +2120,7 @@ function newReleaseData() {
 }
 
 function insertRelease(at) {
-  fetch('/project-planner/api/releases', {
+  fetch('/api/releases', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ position: at, name: 'New Project' })
@@ -2151,7 +2151,7 @@ function addRelease() { insertRelease(NUM_RELEASES); }
 function deleteRelease(r) {
   if (NUM_RELEASES <= 1) return;
   var id = releaseIds[r];
-  fetch('/project-planner/api/releases/' + id, { method: 'DELETE' })
+  fetch('/api/releases/' + id, { method: 'DELETE' })
     .catch(function(e) { console.error('Delete release failed', e); });
   NUM_RELEASES--;
   releaseIds.splice(r, 1);
@@ -2307,7 +2307,7 @@ function renderAll() {
 }
 
 function loadFromAPI() {
-  fetch('/project-planner/api/state')
+  fetch('/api/state')
     .then(function(res) { return res.json(); })
     .then(function(state) {
       initBarState(); // sets up default structure

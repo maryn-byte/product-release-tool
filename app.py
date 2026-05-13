@@ -208,7 +208,7 @@ def row_to_dict(row):
 
 # ── Routes ────────────────────────────────────────────────────────────────────
 
-@app.route("/project-planner/health")
+@app.route("/health")
 def health():
     return "OK", 200
 
@@ -219,7 +219,7 @@ def index():
 
 
 # GET  /api/state  — return full app state
-@app.route("/project-planner/api/state", methods=["GET"])
+@app.route("/api/state", methods=["GET"])
 def get_state():
     db = get_db()
     cycle_start = db.execute(
@@ -236,7 +236,7 @@ def get_state():
 
 
 # PUT  /api/state/date  — update cycle start date
-@app.route("/project-planner/api/state/date", methods=["PUT"])
+@app.route("/api/state/date", methods=["PUT"])
 def set_date():
     data = request.get_json()
     db = get_db()
@@ -249,7 +249,7 @@ def set_date():
 
 
 # PUT  /api/releases/<id>  — update a single release (any fields)
-@app.route("/project-planner/api/releases/<int:release_id>", methods=["PUT"])
+@app.route("/api/releases/<int:release_id>", methods=["PUT"])
 def update_release(release_id):
     data = request.get_json()
     db = get_db()
@@ -281,7 +281,7 @@ def update_release(release_id):
 
 
 # POST /api/releases  — insert a new release at a given position
-@app.route("/project-planner/api/releases", methods=["POST"])
+@app.route("/api/releases", methods=["POST"])
 def add_release():
     data = request.get_json()
     position = data.get("position", 9999)
@@ -299,7 +299,7 @@ def add_release():
 
 
 # DELETE /api/releases/<id>  — remove a release
-@app.route("/project-planner/api/releases/<int:release_id>", methods=["DELETE"])
+@app.route("/api/releases/<int:release_id>", methods=["DELETE"])
 def delete_release(release_id):
     db = get_db()
     row = db.execute("SELECT position FROM releases WHERE id = ?", (release_id,)).fetchone()
@@ -311,7 +311,7 @@ def delete_release(release_id):
 
 
 # POST /api/releases/reorder  — update positions for all releases
-@app.route("/project-planner/api/releases/reorder", methods=["POST"])
+@app.route("/api/releases/reorder", methods=["POST"])
 def reorder_releases():
     """Body: { "order": [id, id, id, ...] }"""
     data = request.get_json()

@@ -1,0 +1,2442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Planner</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Gloock&family=Mooli&display=swap');
+
+  :root {
+    --bg: #40a285; --surface: #ffffff; --surface2: #bde4c9; --border: #d8d0c8;
+    --text-primary: #1a1a2e; --text-muted: #555566; --text-dim: #9999aa;
+    --strategy-color: #dc5050; --strategy-bg: rgba(220,80,80,0.90);
+    --design-color: #dc3c78;   --design-bg: rgba(220,60,120,0.90);
+    --engineering-color: #3c64b4; --engineering-bg: rgba(60,100,180,0.90);
+    --launch-color: #3ca0a0;   --launch-bg: rgba(60,160,160,0.90);
+    --data-color: #8c1464;     --data-bg: rgba(140,20,100,0.90);
+    --release-color: #dc5050;
+    --bar-h: 22px; --header-h: 40px; --label-w: 270px;
+  }
+
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text-primary); font-family:'Mooli',sans-serif; min-height:100vh; padding:36px 32px; }
+
+  .page-header { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
+  .page-title { font-family:'Mooli',sans-serif; font-size:12px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:#f9d9c9; margin-bottom:6px; }
+  .page-headline { font-size:34px; font-weight:400; color:#1a1a2e; letter-spacing:-0.02em; font-family:'Gloock',serif; }
+  .header-right { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+
+  .reset-btn { background:#fff; border:1px solid var(--border); color:var(--text-muted); font-family:'Mooli',sans-serif; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; padding:9px 16px; border-radius:6px; cursor:pointer; transition:all 0.15s; }
+  .reset-btn:hover { border-color:var(--text-muted); color:var(--text-primary); }
+  .toggle-btn { font-family:'Mooli',sans-serif; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; padding:9px 16px; border-radius:6px; cursor:pointer; transition:all 0.15s; border:1px solid var(--border); background:#fff; color:var(--text-muted); }
+  .toggle-btn.active { background:#fbeb85; color:var(--text-primary); border-color:#fbeb85; }
+  .toggle-btn.saved { background:#0a8a5e; color:#fff; border-color:#0a8a5e; }
+  .toggle-btn:hover { border-color:var(--text-muted); color:var(--text-primary); }
+  .icon-action-btn { width:34px; height:34px; border:1px solid var(--border); background:#fff; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-muted); transition:all 0.15s; flex-shrink:0; }
+  #saveBtn { background:#f29ec6; border-color:#f29ec6; color:#1a1a2e; }
+  #resetBtn { background:hsl(53,95%,75%); border-color:hsl(53,95%,75%); color:#1a1a2e; }
+  .icon-action-btn:hover { border-color:var(--text-muted); color:var(--text-primary); }
+  .icon-action-btn.saved { background:#0a8a5e; color:#fff; border-color:#0a8a5e; }
+  .mode-btn { font-family:'Mooli',sans-serif; font-size:13px; letter-spacing:0.04em; padding:8px 14px; border-radius:6px; cursor:pointer; border:1px solid var(--border); background:#fff; color:var(--text-muted); transition:all 0.15s; }
+  .mode-btn:hover { border-color:var(--text-muted); color:var(--text-primary); }
+  .mode-btn.active { background:#e5b7ff; color:var(--text-primary); border-color:#e5b7ff; }
+
+
+
+
+  .summary-wrapper { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:32px; }
+  .chart-wrapper { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:visible; }
+  .chart-inner { width:100%; border-radius:12px; overflow:hidden; }
+
+  .chart-header { display:flex; height:var(--header-h); border-bottom:1px solid var(--border); background:var(--surface2); position:sticky; top:0; z-index:20; }
+  .header-label { width:var(--label-w); flex-shrink:0; display:flex; align-items:center; padding:0 6px; font-family:'Gloock',serif; font-size:18px; font-weight:400; color:#1a1a2e; }
+  .week-cell { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; min-width:0; }
+  .week-num  { font-family:'Mooli',sans-serif; font-size:13px; font-weight:600; color:#1a1a2e; }
+  .week-date { font-family:'Mooli',sans-serif; font-size:10px; color:#1a1a2e; text-align:center; }
+  .week-cell.wk-today { background:rgba(59,130,246,0.10); border-left:3px solid rgba(59,130,246,0.7); }
+  .week-cell.wk-today .week-num  { color:#1d4ed8; font-weight:700; }
+  .week-cell.wk-today .week-date { color:#1d4ed8; font-weight:700; }
+
+  .release-row { display:flex; border-bottom:1px solid var(--border); transition:box-shadow 0.15s; }
+  .row-actions-col { width:36px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; background:var(--surface); padding:4px 0; }
+  .row-actions-col .delete-row-btn { opacity:0; transition:opacity 0.15s; }
+  .row-actions-col:hover .delete-row-btn { opacity:1; }
+  .row-btn { width:17px; height:17px; border:none; border-radius:3px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:900; line-height:1; padding:0; transition:filter 0.15s; flex-shrink:0; }
+  .row-btn:hover { filter:brightness(0.85); }
+  .row-btn-add     { background:#981c76; color:#ed7028; }
+  .row-btn-delete  { background:#fbeb85; color:#ee5860; }
+  .row-btn-refresh { background:#aeb7df; color:#fff; }
+  .release-row:last-child { border-bottom:none; }
+  .release-row.row-dragging { opacity:0.5; }
+  .release-row.row-drag-over { box-shadow:inset 0 3px 0 0 #dc3c78; }
+  .summary-drag-over { box-shadow:inset 0 -3px 0 0 #dc3c78; }
+  .release-label { cursor:default; }
+  .release-label { width:var(--label-w); flex-shrink:0; display:flex; flex-direction:column; justify-content:center; padding:12px 6px; gap:4px; background:var(--surface); }
+  .release-version { font-family:'Mooli',sans-serif; font-size:11px; color:#adb6de; }
+  .release-name { font-size:15px; font-weight:400; color:var(--text-primary); font-family:'Gloock',serif; }
+
+  .release-grid { position:relative; flex:1; display:flex; }
+  .release-grid-col { flex:1; min-width:0; }
+  .release-grid-col.wk-today { background:rgba(59,130,246,0.06); }
+  .bars-container { position:absolute; top:0; left:0; right:0; bottom:0; pointer-events:none; }
+
+  .bar { position:absolute; height:var(--bar-h); border-radius:5px; cursor:grab; pointer-events:all; display:flex; align-items:center; justify-content:center; padding:0 8px; user-select:none; overflow:hidden; transition:filter 0.15s, box-shadow 0.15s; }
+  .bar:hover { filter:brightness(0.88); box-shadow:0 2px 10px rgba(0,0,0,0.2); }
+  .bar:active { cursor:grabbing; }
+  .bar.dragging { z-index:100; filter:brightness(0.85); cursor:grabbing; }
+
+  .bar-label { font-family:'Mooli',sans-serif; font-size:8px; font-weight:600; letter-spacing:0.06em; white-space:nowrap; text-transform:uppercase; pointer-events:none; color:#fff; }
+
+  .resize-handle { position:absolute; top:0; bottom:0; width:6px; cursor:ew-resize; z-index:10; }
+  .resize-handle.left  { left:0; border-radius:5px 0 0 5px; }
+  .resize-handle.right { right:0; border-radius:0 5px 5px 0; }
+
+  .milestone-marker { position:absolute; width:22px; height:22px; cursor:grab; pointer-events:all; user-select:none; transition:filter 0.15s; z-index:4; display:flex; align-items:center; justify-content:center; }
+  .milestone-marker:hover { filter:brightness(0.75); }
+  .milestone-marker:active { cursor:grabbing; }
+  .milestone-marker.dragging { z-index:100; filter:brightness(0.5); cursor:grabbing; }
+
+  .legend { display:flex; gap:20px; padding:14px 20px; border-top:1px solid var(--border); flex-wrap:wrap; align-items:center; }
+  .legend-item { display:flex; align-items:center; gap:7px; font-size:11px; color:var(--text-muted); font-family:'Mooli',sans-serif; }
+  .legend-swatch { width:22px; height:10px; border-radius:3px; }
+
+  .row-hide-btn { opacity:0; transition:opacity 0.15s; background:none; border:none; cursor:pointer; color:var(--text-dim); display:flex; align-items:center; justify-content:center; padding:0; width:20px; height:20px; flex-shrink:0; }
+  .release-row:hover .row-hide-btn { opacity:1; }
+  .detail-empty { display:flex; align-items:center; gap:10px; padding:24px 20px; font-family:'Mooli',sans-serif; font-size:13px; color:var(--text-dim); }
+  .detail-empty .arrow { font-size:18px; }
+  .detail-header { display:flex; align-items:flex-start; justify-content:space-between; padding:14px 20px 10px; border-bottom:1px solid var(--border); background:var(--surface2); }
+  .detail-team-name { display:flex; align-items:center; gap:8px; font-family:'Gloock',serif; font-size:16px; color:var(--text-primary); }
+  .detail-team-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+  .detail-subtitle { font-family:'Mooli',sans-serif; font-size:11px; color:var(--text-muted); margin-top:4px; }
+  .detail-close { background:none; border:1px solid var(--border); border-radius:6px; cursor:pointer; font-family:'Mooli',sans-serif; font-size:11px; color:var(--text-muted); padding:5px 10px; transition:all 0.15s; flex-shrink:0; }
+  .detail-close:hover { border-color:var(--text-muted); color:var(--text-primary); }
+  .detail-weeks { display:grid; gap:0; overflow-x:auto; }
+  .detail-week { padding:12px 14px; border-right:1px solid var(--border); min-width:160px; }
+  .detail-week:last-child { border-right:none; }
+  .detail-week.is-rel { background:rgba(220,80,80,0.05); }
+  .detail-week-num { font-family:'Mooli',sans-serif; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:5px; }
+  .detail-week-title { font-family:'Gloock',serif; font-size:13px; color:var(--text-primary); margin-bottom:6px; }
+  .detail-week-body { font-family:'Mooli',sans-serif; font-size:11px; color:var(--text-muted); line-height:1.55; }
+  .milestone-tag { display:inline-block; font-family:'Mooli',sans-serif; font-size:9px; font-weight:600; letter-spacing:0.06em; padding:3px 7px; border-radius:4px; margin-top:8px; text-transform:uppercase; }
+  .bar.selected { box-shadow:0 0 0 2px #fff, 0 0 0 4px #4d78be; }
+
+  /* ── Kanban board ── */
+  .kanban-board { display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; }
+  .kanban-col { flex:1; min-width:200px; display:flex; flex-direction:column; }
+  .kanban-col-header { display:flex; align-items:center; gap:7px; padding:9px 10px 7px; border-radius:8px 8px 0 0; background:#afb6dc; border:1px solid #afb6dc; border-bottom:none; }
+  .kanban-col-title { font-family:'Mooli',sans-serif; font-size:10px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-primary); flex:1; }
+  .kanban-col-count { font-family:'Mooli',sans-serif; font-size:10px; font-weight:400; color:var(--text-muted); flex-shrink:0; }
+  .kanban-cards { flex:1; min-height:60px; background:#fff; border:1px solid var(--border); border-radius:0 0 8px 8px; padding:6px; display:flex; flex-direction:column; gap:4px; transition:filter 0.15s; }
+  .kanban-cards.drag-over { filter:brightness(0.93); }
+  .kanban-card { border-radius:6px; padding:7px 10px; cursor:grab; user-select:none; transition:box-shadow 0.12s, opacity 0.12s, filter 0.12s; display:flex; align-items:center; min-height:unset; border:none; }
+  .kanban-card:hover { filter:brightness(0.88); box-shadow:0 2px 8px rgba(0,0,0,0.12); }
+  .kanban-card:active { cursor:grabbing; }
+  .kanban-card.dragging { opacity:0.35; box-shadow:none; }
+  .kanban-card-name { font-family:'Mooli',sans-serif; font-size:12px; font-weight:400; color:#1a1a2e; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div>
+    <div class="page-title">LET'S GO</div>
+    <div class="page-headline">Project Planner</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <label style="font-family:Mooli,sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#f9d9c9;">Start Date</label>
+      <input type="date" id="cycleStartInput" oninput="onDateChange()" style="background:#fff;border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:Mooli,sans-serif;font-size:12px;padding:7px 10px;outline:none;color-scheme:light;cursor:pointer;height:34px;">
+      <button class="icon-action-btn" onclick="saveState()" id="saveBtn" title="Save">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      </button>
+      <button class="icon-action-btn" id="resetBtn" onclick="resetAll()" title="Reset">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-5.1L1 10"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<div id="pipelineFilterBar" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;min-height:30px;align-items:center;justify-content:flex-end;"></div>
+
+<div class="summary-wrapper" style="margin-bottom:20px;min-height:60px;">
+  <div id="pipelineRows"></div>
+</div>
+
+<div class="summary-wrapper" style="margin-bottom:20px;overflow:visible;">
+  <div style="font-family:Gloock,serif;font-size:18px;font-weight:400;color:#1a1a2e;padding:16px 20px 14px;background:#bde4c9;border-radius:12px 12px 0 0;">Project Status</div>
+  <div style="padding:16px 20px 20px;"><div class="kanban-board" id="kanbanBoard"></div></div>
+</div>
+
+<div class="summary-wrapper" style="margin-bottom:20px;">
+  <div id="capacityRows"></div>
+</div>
+
+<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:16px;">
+  <div id="overviewModeButtons" style="display:flex;gap:6px;align-items:center;">
+    <button id="overviewToggleBtn" onclick="toggleOverviewPanel()" title="Toggle overview" style="background:none;border:none;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;padding:0 2px;opacity:0.6;transition:opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">
+      <svg id="eyeIconOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    </button>
+    <button class="mode-btn active" id="modeBtn-full" onclick="setOverviewMode('full')">All</button>
+    <button class="mode-btn" id="modeBtn-product" onclick="setOverviewMode('product')">Product</button>
+    <button class="mode-btn" id="modeBtn-design" onclick="setOverviewMode('design')">Design</button>
+    <button class="mode-btn" id="modeBtn-data" onclick="setOverviewMode('data')">Data</button>
+    <button class="mode-btn" id="modeBtn-engineering" onclick="setOverviewMode('engineering')">Engineering</button>
+  </div>
+</div>
+
+<div id="overviewPanel">
+<div class="summary-wrapper">
+  <div class="summary-inner" id="summaryInner">
+    <div id="summaryRows"></div>
+  </div>
+</div>
+</div>
+
+<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:16px;margin-top:20px;">
+  <button id="overviewToggleBtnClosed" onclick="toggleOverviewPanel()" title="Show overview" style="display:none;background:none;border:none;cursor:pointer;color:var(--text-muted);align-items:center;padding:0 2px;opacity:0.6;transition:opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">
+    <svg id="eyeIconClosed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+  </button>
+  <div style="display:flex;gap:6px;">
+    <button class="mode-btn active" id="detailViewBtn-overview" onclick="setDetailView('overview')">Overview</button>
+    <button class="mode-btn" id="detailViewBtn-details" onclick="setDetailView('details')">Details</button>
+  </div>
+</div>
+
+<div class="chart-wrapper">
+  <div class="chart-inner" id="chartInner">
+    <div class="chart-header" id="chartHeader"><div style="width:36px;flex-shrink:0;display:flex;align-items:center;justify-content:center;" id="chartHeaderEyeCell"></div><div class="header-label">Project</div></div>
+    <div id="chartRows"></div>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--strategy-bg)"></div>Product Strategy</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--design-bg)"></div>Design</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--data-bg)"></div>Data</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--engineering-bg)"></div>Engineering</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--launch-bg)"></div>Product Launch</div>
+    <div class="legend-item" style="margin-left:8px"><div style="width:20px;height:20px;border-radius:50%;background:#4c77bc;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#b8c69a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>Signoff</div>
+    <div class="legend-item"><div style="width:20px;height:20px;border-radius:50%;background:#fbeb85;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ee5860" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg></div>Staging</div>
+    <div class="legend-item"><div style="width:20px;height:20px;border-radius:50%;background:#fbeb85;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ee5860" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></div>Release</div>
+    <div class="legend-item"><div style="width:20px;height:20px;border-radius:50%;background:#e5b7fd;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ee6327" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12v0c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z"/></svg></div>Announcement</div>
+    <div class="legend-item"><div style="width:20px;height:20px;border-radius:50%;background:#adb6de;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffe3c3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>Handoff</div>
+  </div>
+</div>
+
+<div id="globalTooltip" style="display:none;position:fixed;background:#1a1a2e;color:#fff;font-size:12px;padding:6px 12px;border-radius:6px;pointer-events:none;z-index:9999;box-shadow:0 2px 10px rgba(0,0,0,0.3);font-family:Mooli,sans-serif;white-space:nowrap;"></div>
+
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-empty"><span class="arrow">&#8593;</span>Switch to Details view and click any team bar to see week-by-week details</div>
+</div>
+
+<script>
+const TOTAL_WEEKS  = 18;
+const RELEASE_WEEK = 14;
+let NUM_RELEASES = 32;
+let   WEEK_W       = 60;
+let   TODAY_WEEK   = null;
+let   cycleStartDate = null;
+let   overviewMode = 'full'; // 'full', 'strategy', 'design', 'data', 'engineering', 'launch'
+let   detailView = 'overview'; // 'details' or 'overview'
+let   selectedSummaryWeek = null; // highlighted column in summary header
+let   overviewVisible = true;
+
+function toggleOverviewPanel() {
+  overviewVisible = !overviewVisible;
+  var panel = document.getElementById('overviewPanel');
+  var modeBtns = document.getElementById('overviewModeButtons');
+  var openBtn = document.getElementById('overviewToggleBtn');
+  var closedBtn = document.getElementById('overviewToggleBtnClosed');
+  if (panel) panel.style.display = overviewVisible ? '' : 'none';
+  if (modeBtns) modeBtns.style.display = overviewVisible ? 'flex' : 'none';
+  if (openBtn) openBtn.style.display = overviewVisible ? 'flex' : 'none';
+  if (closedBtn) closedBtn.style.display = overviewVisible ? 'none' : 'flex';
+}
+
+const DEFAULT_RESOURCES = { engineers: [''], designer: '', needsDataEng: false, needsBiAnalyst: false, users: [] };
+function newDefaultResource() {
+  return { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: [] };
+}
+let resourceState = [];
+
+const DEFAULT_RELEASE_NAMES = [
+  'Plaid Connections Issues',
+  'Core Data Quality Strengthening',
+  'Resource Management',
+  'Employee Work Queue',
+  'Tight V6 Adoption',
+  'Bookkeeper Super View',
+  'Onboarding Architecture Refactor',
+  'Onboarding Workflows Dashboard',
+  'Social OAuth',
+  'MVP: Activate Affiliates',
+  'Customer Dashboard',
+  'Data Warehouse — HubSpot Emails(+) Store',
+  'Data Warehouse — Tight Data Store',
+  'Client Health Dashboard',
+  'Address NWRA Agent Issues',
+  'Gusto Embedded',
+  'Tax Recommendation Engine',
+  'Data Cleanup',
+  'Ticketing / Comms',
+  'Customer Product Management',
+  'Cancellations',
+  'Delinquency',
+  'Optimized Navigation Project',
+  'Centralized Doc Center',
+  'Self Serve Sign Up',
+  'Creator Financial IQ',
+  'AI P&L Checker',
+  'Affiliate Program Overhaul',
+  'Internal AI Assistant',
+  'CJAR Comms',
+  'Design System Remediation',
+  'Resource Library'
+];
+const VERSION_NUMBERS_BASE = ['v3.0','v3.1','v3.2','v3.3','v3.4','v3.5','v3.6','v3.7','v3.8','v3.9','v3.10','v3.11','v3.12','v3.13','v3.14','v3.15','v3.16','v3.17','v3.18','v3.19','v3.20','v3.21','v3.22','v3.23','v3.24','v3.25','v3.26','v3.27','v3.28','v3.29','v3.30','v3.31'];
+function getVersionNumber(r) {
+  if (r < VERSION_NUMBERS_BASE.length) return VERSION_NUMBERS_BASE[r];
+  var minor = r % 10;
+  var major = 3 + Math.floor(r / 10);
+  return 'v' + major + '.' + minor;
+}
+let releaseNames = [...DEFAULT_RELEASE_NAMES];
+
+const TEAM_DEFS = [
+  { id:'strategy', name:'Product Strategy', colorVar:'--strategy-color', bgVar:'--strategy-bg', startWeek:1, endWeek:4,
+    subBars:[
+      { id:'strategy-discovery',  name:'Discovery',  startWeek:1, endWeek:2 },
+      { id:'strategy-definition', name:'Definition', startWeek:3, endWeek:4 }
+    ]
+  },
+  { id:'design', name:'Design', colorVar:'--design-color', bgVar:'--design-bg', startWeek:2, endWeek:8,
+    subBars:[
+      { id:'design-lofi',  name:'Research & Lo-Fi', startWeek:1, endWeek:2  },
+      { id:'design-midfi', name:'Mid-Fi & Testing', startWeek:3, endWeek:4  },
+      { id:'design-hifi',  name:'Hi-Fi & Handoff',  startWeek:5, endWeek:6  }
+    ]
+  },
+  { id:'data', name:'Data', colorVar:'--data-color', bgVar:'--data-bg', startWeek:7, endWeek:13,
+    subBars:[
+      { id:'data-research',  name:'Research',  startWeek:5,  endWeek:6  },
+      { id:'data-build',     name:'Build',     startWeek:7,  endWeek:9  },
+      { id:'data-integrate', name:'Integrate', startWeek:10, endWeek:11 }
+    ]
+  },
+  { id:'engineering', name:'Engineering', colorVar:'--engineering-color', bgVar:'--engineering-bg', startWeek:8, endWeek:14,
+    subBars:[
+      { id:'eng-spec',     name:'Spec',     startWeek:7,  endWeek:7  },
+      { id:'eng-build',    name:'Build',    startWeek:8,  endWeek:11 },
+      { id:'eng-qa',       name:'QA',       startWeek:12, endWeek:12 },
+      { id:'eng-cooldown', name:'Cooldown', startWeek:13, endWeek:13 }
+    ]
+  },
+  { id:'launch', name:'Product Launch', colorVar:'--launch-color', bgVar:'--launch-bg', startWeek:9, endWeek:15,
+    subBars:[
+      { id:'launch-prep', name:'Prep', startWeek:8,  endWeek:10 },
+      { id:'launch-qa',   name:'QA',   startWeek:11, endWeek:12 },
+      { id:'launch-uat',  name:'UAT',  startWeek:13, endWeek:13 }
+    ]
+  }
+];
+
+const DEFAULT_MILESTONES = [
+  { id:'signoff-1',  name:'Signoff',      week:4,  tooltip:'Executive Sign Off' },
+  { id:'signoff-2',  name:'Signoff',      week:6,  tooltip:'Engineering Leadership Signoff' },
+  { id:'staging',    name:'Staging',      week:11, tooltip:'Deployed to Staging' },
+  { id:'release',    name:'Release',      week:13, tooltip:'Release Day: Deployed to Production!' },
+  { id:'announce-1', name:'Announcement', week:9,  tooltip:'Inform Sales, Marketing and Ops of Staging Release' },
+  { id:'announce-2', name:'Announcement', week:12, tooltip:'Inform Sales, Marketing and Ops of Production Release' },
+  { id:'handoff',    name:'Handoff',      week:10, tooltip:'Deliver Launch Package to Sales, Marketing and Ops teams.' },
+  { id:'signoff-3',  name:'Signoff',      week:14, tooltip:'Executive Sign off on UAT' },
+  { id:'handoff-2',   name:'Handoff',      week:1,  tooltip:'Handoff Meeting with Design' },
+  { id:'handoff-3',   name:'Handoff',      week:7,  tooltip:'Handoff to Engineering' },
+  { id:'handoff-4',   name:'Handoff',      week:5,  tooltip:'Handoff to Data' }
+];
+
+// Cache the release milestone index once — used in many places
+const RELEASE_MI = DEFAULT_MILESTONES.findIndex(function(m){ return m.id === 'release'; });
+
+const SVG_CHECK  = '<div style="width:22px;height:22px;border-radius:50%;background:#4c77bc;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#b8c69a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>';
+const SVG_PACKAGE = '<div style="width:22px;height:22px;border-radius:50%;background:#fbeb85;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ee5860" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg></div>';
+const SVG_SEND = '<div style="width:22px;height:22px;border-radius:50%;background:#fbeb85;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ee5860" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></div>';
+const SVG_USERS = '<div style="width:22px;height:22px;border-radius:50%;background:#adb6de;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffe3c3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>';
+const SVG_MEGAPHONE = '<div style="width:22px;height:22px;border-radius:50%;background:#e5b7fd;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ee6327" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none;display:block"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12v0c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11v0c-.11.7-.72 1.22-1.43 1.22H17"/><path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98v0C9.52 4.9 9 5.52 9 6.23V7"/><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z"/></svg></div>';
+const MILESTONE_ICONS = [SVG_CHECK, SVG_CHECK, SVG_PACKAGE, SVG_SEND, SVG_MEGAPHONE, SVG_MEGAPHONE, SVG_USERS, SVG_CHECK, SVG_USERS, SVG_USERS, SVG_USERS];
+
+let hiddenRows = new Set();
+let releaseIds = []; // parallel to releaseNames — DB primary keys
+
+function isDesignBlank(r) {
+  var res = resourceState[r] || {};
+  return !res.designer || res.designer === '' || res.designer === 'Not needed';
+}
+
+function isEngDataOnly(r) {
+  var res = resourceState[r] || {};
+  var users = Array.isArray(res.users) ? res.users.filter(function(u){ return !!u; }) : [];
+  if (users.length === 0) return false;
+  return users.every(function(u){ return u === 'Engineering' || u === 'Data'; });
+}
+
+let milestoneState = [];
+let barState = [];
+let canonicalBarState = [];  // full-size positions, updated only by manual bar drags
+let canonicalMilestoneState = [];
+
+function initMilestoneState() {
+  milestoneState = [];
+  for (let r = 0; r < NUM_RELEASES; r++) {
+    milestoneState[r] = DEFAULT_MILESTONES.map(m => ({ week: m.week }));
+  }
+}
+
+function deepCopyBarState(bs) {
+  return bs.map(function(b) {
+    if (b.isGroup) return { isGroup:true, subBars: b.subBars.map(function(sb) { return { startWeek:sb.startWeek, endWeek:sb.endWeek }; }) };
+    return { startWeek:b.startWeek, endWeek:b.endWeek };
+  });
+}
+function deepCopyMilestoneState(ms) {
+  return ms.map(function(m) { return { week:m.week }; });
+}
+function syncCanonical(r) {
+  canonicalBarState[r] = deepCopyBarState(barState[r]);
+  canonicalMilestoneState[r] = deepCopyMilestoneState(milestoneState[r]);
+}
+function initBarState() {
+  barState = [];
+  for (let r = 0; r < NUM_RELEASES; r++) {
+    barState[r] = TEAM_DEFS.map(t => {
+      if (t.subBars) return { isGroup:true, subBars: t.subBars.map(sb => ({ startWeek:sb.startWeek, endWeek:sb.endWeek })) };
+      return { startWeek:t.startWeek, endWeek:t.endWeek };
+    });
+  }
+  initMilestoneState();
+  resourceState = [];
+  for (let r = 0; r < NUM_RELEASES; r++) resourceState[r] = newDefaultResource();
+  canonicalBarState = [];
+  canonicalMilestoneState = [];
+  for (let r = 0; r < NUM_RELEASES; r++) { syncCanonical(r); }
+}
+
+const TEAM_DETAILS = {
+  data: { weeks: [
+    { title:'Research',  body:'Understand data requirements for the release. Audit existing data sources, identify gaps, and define the data model needed to support new features.', milestone:null },
+    { title:'Research',  body:'Continue data research. Validate assumptions with Engineering and Design. Document data contracts and finalize schema design.', milestone:null },
+    { title:'Build',     body:'Implement data pipelines, models, and infrastructure required for the release. Work closely with Engineering on integration points.', milestone:null },
+    { title:'Build',     body:'Continue data build. Testing data pipelines and validating outputs against expected results.', milestone:null },
+    { title:'Build',     body:'Finalize data build. Performance optimization and edge case handling before integration begins.', milestone:null },
+    { title:'Integrate', body:'Integrate data layer with Engineering build. Ensure data flows correctly through the full system and validate end-to-end.', milestone:null },
+    { title:'Integrate', body:'Final integration validation. Support QA & UAT with data verification. Confirm data is production-ready for release.', milestone:'Data Ready' }
+  ]},
+  strategy: { weeks: [
+    { title:'Release Brief',             body:'Review retrospective notes and GTM feedback. Meet with exec team to validate planned work still aligns with annual goals. Draft and circulate the Release Brief.', milestone:'Release Brief' },
+    { title:'Discovery & Refinement',    body:'Run user research to validate assumptions. Break themes into epics and stories with acceptance criteria. Prioritize the candidate list.', milestone:null },
+    { title:'Story Writing & Design Brief', body:'Write all user stories with acceptance criteria. Document design ideas, interaction notes, and business logic. Lock the feature list. Produce a complete Design Brief.', milestone:'Design Brief' },
+    { title:'Handoff',                   body:'Formal handoff to Design. Answer any open questions. Step back from active definition and shift to a supporting role.', milestone:'Design Handoff' }
+  ]},
+  design: { weeks: [
+    { title:'Brief Intake, Research & Lo-Fi', body:'Thoroughly review the Design Brief. Ask all outstanding questions. Research competitors, gather inspiration, create mood boards. No Figma yet. Rough wireframes by end of week.', milestone:'Product Sign-off' },
+    { title:'Lo-Fi Figma + Feasibility',      body:'Bring lo-fi concepts into Figma as basic clickable wireframes. Engineering lead does a feasibility check to catch technical constraints early.', milestone:'Product Sign-off' },
+    { title:'Mid-Fi Designs',                 body:'Build out mid-fi screens in Figma with real layouts, hierarchy, and basic visual treatment. Create a clickable prototype.', milestone:'Product Sign-off' },
+    { title:'User Testing & Revisions',       body:'Run user testing sessions with internal employees using the approved mid-fi prototype. Document findings, prioritize changes, and make revisions.', milestone:'Product Sign-off' },
+    { title:'Hi-Fi Designs',                  body:'Build full hi-fi designs. Final visual design, all states, edge cases covered. Once approved, design is locked.', milestone:'Design Locked' },
+    { title:'Hi-Fi Handoff',                  body:'Annotate specs, document interactions, ensure everything is clear for Engineering to build without needing to ask questions.', milestone:'Engineering Handoff' },
+    { title:'Engineering Collaboration',      body:'Support Engineering during build. Answer UX questions and handle small clarifications. Design is locked.', milestone:null }
+  ]},
+  engineering: { weeks: [
+    { title:'Sprint Planning & Tech Speccing', body:'Run Sprint Planning. Break down stories, estimate effort, commit to sprint scope. Review hi-fi designs. Write tech specs and flag risks.', milestone:'Sprint Planning' },
+    { title:'QA Test Writing & Build Begins',  body:'QA writes test cases. Development begins. Design available for questions.', milestone:'Build Begins' },
+    { title:'Core Build',                      body:'Active development. Design and Engineering in close collaboration. Embedded QA reviewing work as it is built.', milestone:null },
+    { title:'Core Build',                      body:'Development continues. Embedded QA ongoing. Push to complete all core features before UAT.', milestone:null },
+    { title:'Integration & Code to Staging',   body:'Integration focus. Code to Staging marks Dev Complete. No new features after this point.', milestone:'Code to Staging' },
+    { title:'QA & UAT + Release Tollgate',     body:'Product runs QA & UAT in collaboration with Engineering. Hold the Release Tollgate go/no-go decision.', milestone:'Tollgate' },
+    { title:'Release, Cooldown & Bug Fixes',   body:'Code to production. Monitor closely. Bug fixes as they arise. Tech debt and documentation. Retrospective.', milestone:'Release Day' }
+  ]},
+  launch: { weeks: [
+    { title:'Release Brief for Launch',    body:'Review what is shipping. Draft the internal release brief. Begin drafting release notes.', milestone:'Release Brief' },
+    { title:'Team Enablement',             body:'Brief Ops, Sales, and Marketing with enough runway to prepare. Flag customer comms need.', milestone:'Teams Briefed' },
+    { title:'Comms Preparation',           body:'Finalize release notes. Draft customer-facing comms. Confirm all internal teams are on track.', milestone:null },
+    { title:'Launch Checklist & Prep',     body:'Build and confirm the launch checklist with Engineering. Final check that all teams are prepared.', milestone:'Launch Checklist' },
+    { title:'Launch Execution',            body:'Execute the launch checklist. Coordinate with Engineering. Push internal and customer comms. Monitor.', milestone:'Release Day' },
+    { title:'Post-Launch Monitoring',      body:'Monitor adoption and early feedback. Capture signals and surface any issues.', milestone:null },
+    { title:'Retrospective & Handoff',     body:'Compile findings from launch. Feed back into Product Strategy next Release Brief. Close out cleanly.', milestone:'Cycle Close' }
+  ]}
+};
+
+function cv(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+// Blend a CSS rgba() color toward white by `fraction` (0=original, 1=white)
+function lightenColor(cssColor, fraction) {
+  var m = cssColor.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)/);
+  if (!m) return cssColor;
+  var r = parseInt(m[1]), g = parseInt(m[2]), b = parseInt(m[3]);
+  var a = m[4] !== undefined ? parseFloat(m[4]) : 1;
+  r = Math.round(r + (255 - r) * fraction);
+  g = Math.round(g + (255 - g) * fraction);
+  b = Math.round(b + (255 - b) * fraction);
+  return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+}
+
+function weekToX(w) { return ((w - 1) / TOTAL_WEEKS * 100); }
+
+function weekDate(w) {
+  if (!cycleStartDate) return '';
+  const d = new Date(cycleStartDate);
+  d.setDate(d.getDate() + (w - 1) * 7);
+  return d.toLocaleDateString('en-US', { month:'numeric', day:'numeric' });
+}
+
+function weekDateRange(w) {
+  if (!cycleStartDate) return 'Week ' + w;
+  const mon = new Date(cycleStartDate);
+  mon.setDate(mon.getDate() + (w - 1) * 7);
+  const fri = new Date(mon); fri.setDate(fri.getDate() + 4);
+  const fmt = d => d.toLocaleDateString('en-US', { month:'numeric', day:'numeric' });
+  return fmt(mon) + ' \u2013 ' + fmt(fri);
+}
+
+function computeTodayWeek() {
+  if (!cycleStartDate) { TODAY_WEEK = null; return; }
+  const today = new Date(); today.setHours(12,0,0,0);
+  const diffWeeks = Math.round((today - cycleStartDate) / (7*24*3600*1000));
+  TODAY_WEEK = (diffWeeks >= 0 && diffWeeks < TOTAL_WEEKS) ? diffWeeks + 1 : null;
+}
+
+function weekClass(w) { return ''; }
+
+function buildReleaseInputs() { /* stub — replaced by inline editing */ }
+function updateReleaseLabels() { /* stub — replaced by inline editing */ }
+
+function buildHeader() {
+  const hdr = document.getElementById('chartHeader');
+  [...hdr.querySelectorAll('.week-cell')].forEach(e => e.remove());
+  for (let w = 1; w <= TOTAL_WEEKS; w++) {
+    const c = document.createElement('div');
+    c.className = 'week-cell' + weekClass(w);
+    const ds = cycleStartDate ? weekDate(w) : '';
+    c.innerHTML = ds ? '<span class="week-date">' + ds + '</span>' : '<span class="week-num">' + w + '</span>';
+    hdr.appendChild(c);
+  }
+}
+
+function buildRows() {
+  const cont = document.getElementById('chartRows');
+  cont.innerHTML = '';
+  // rowH set dynamically per row based on milestone collisions
+
+  // Update header eye — show closed eye if any rows are hidden
+  var eyeCell = document.getElementById('chartHeaderEyeCell');
+  if (eyeCell) {
+    eyeCell.innerHTML = '';
+    if (hiddenRows.size > 0) {
+      var restoreBtn = document.createElement('button');
+      restoreBtn.style.cssText = 'background:none;border:none;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;padding:0;opacity:0.7;';
+      restoreBtn.title = 'Show all hidden rows';
+      restoreBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+      restoreBtn.addEventListener('click', function() { hiddenRows.clear(); buildRows(); buildSummary(); });
+      eyeCell.appendChild(restoreBtn);
+    }
+  }
+
+  for (let r = 0; r < NUM_RELEASES; r++) {
+    if (hiddenRows.has(r)) continue;
+    const row = document.createElement('div');
+    row.className = 'release-row';
+    // minHeight set dynamically after milestone collision detection
+    row.setAttribute('draggable', 'true');
+    // Row drag-and-drop reordering
+    (function(ri) {
+      row.addEventListener('dragstart', function(e) {
+        rowDragSrc = ri;
+        row.classList.add('row-dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      row.addEventListener('dragend', function() {
+        row.classList.remove('row-dragging');
+        document.querySelectorAll('.release-row').forEach(function(rr) { rr.classList.remove('row-drag-over'); });
+        rowDragSrc = null;
+      });
+      row.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        document.querySelectorAll('.release-row').forEach(function(rr) { rr.classList.remove('row-drag-over'); });
+        if (rowDragSrc !== null && rowDragSrc !== ri) row.classList.add('row-drag-over');
+      });
+      row.addEventListener('drop', function(e) { onRowDrop(e, ri); });
+    })(r);
+
+    const lbl = document.createElement('div');
+    lbl.className = 'release-label';
+    lbl.addEventListener('dragstart', function(e) { e.stopPropagation(); });
+    lbl.setAttribute('draggable', 'false');
+    lbl.innerHTML = '<div class="release-name" id="release-name-' + r + '" contenteditable="true" spellcheck="false">' + releaseNames[r] + '</div>';
+    var nameEl = lbl.querySelector('.release-name');
+    nameEl.addEventListener('blur', (function(ri) { return function() {
+      releaseNames[ri] = this.textContent.trim();
+      debouncedSaveRelease(releaseIds[ri], 300);
+      buildSummary();
+      buildKanban();
+    }; })(r));
+    nameEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); this.blur(); } });
+
+    // Resource inputs
+    var res = resourceState[r] || (resourceState[r] = newDefaultResource());
+    if (!Array.isArray(res.engineers)) res.engineers = [''];
+
+    var ENGINEERS = ['Anton','Brian','David','Jason','Kevin','Tim'];
+    var DESIGNERS_OPTS = ['Farhan','Maria'];
+    var INPUT_CSS = 'font-family:Mooli,sans-serif;font-size:10px;color:var(--text-primary);background:#fff;border:1px solid var(--border);border-radius:3px;padding:2px 3px;outline:none;cursor:pointer;';
+    var LBL_CSS   = 'font-family:Mooli,sans-serif;font-size:8px;color:#9999aa;text-transform:uppercase;letter-spacing:0.06em;line-height:1;white-space:nowrap;margin-bottom:0;';
+
+    function stopProp(el) {
+      el.addEventListener('mousedown', function(e){ e.stopPropagation(); });
+      el.addEventListener('click',     function(e){ e.stopPropagation(); });
+    }
+    function makeSelect(options, val, onChange, width) {
+      var sel = document.createElement('select');
+      sel.style.cssText = INPUT_CSS + (width ? 'width:' + width + ';' : 'flex:1;min-width:0;');
+      var blank = document.createElement('option'); blank.value=''; blank.textContent='—';
+      if (!val) blank.selected = true;
+      sel.appendChild(blank);
+      options.forEach(function(o) {
+        var opt = document.createElement('option'); opt.value=o; opt.textContent=o;
+        if (o === val) opt.selected = true;
+        sel.appendChild(opt);
+      });
+      sel.addEventListener('change', function(){ onChange(this.value); buildCapacity(); debouncedSaveRelease(releaseIds[r]); });
+      stopProp(sel);
+      return sel;
+    }
+    function makeCheckRow(labelText, checked, key) {
+      var wrap = document.createElement('div');
+      wrap.style.cssText = 'display:flex;align-items:center;gap:4px;margin-top:1px;';
+      var cb = document.createElement('input'); cb.type='checkbox'; cb.checked=!!checked;
+      cb.style.cssText = 'cursor:pointer;accent-color:#4d78be;width:11px;height:11px;flex-shrink:0;';
+      var lbl3 = document.createElement('span');
+      lbl3.style.cssText = 'font-family:Mooli,sans-serif;font-size:10px;color:var(--text-primary);';
+      lbl3.textContent = labelText;
+      cb.addEventListener('change', function(){ resourceState[r][key] = this.checked; buildCapacity(); debouncedSaveRelease(releaseIds[r]); });
+      stopProp(cb);
+      wrap.appendChild(cb); wrap.appendChild(lbl3);
+      return wrap;
+    }
+
+    var resWrap = document.createElement('div');
+    resWrap.style.cssText = 'margin-top:6px;display:flex;flex-direction:row;gap:8px;align-items:flex-start;';
+
+    // Left column: Dev, DES, Tetra, Matt
+    var leftCol = document.createElement('div');
+    leftCol.style.cssText = 'display:flex;flex-direction:column;gap:3px;';
+
+    // Engineers section — closure-safe via IIFE for renderEngineers
+    var engSection = document.createElement('div');
+    engSection.id = 'eng-section-' + r;
+
+    (function(engSec, resRef) {
+      function renderEngineers() {
+        engSec.innerHTML = '';
+        var entries = resRef.engineers.length > 0 ? resRef.engineers : [''];
+        entries.forEach(function(engVal, ei) {
+          (function(idx) {
+            var row2 = document.createElement('div');
+            row2.style.cssText = 'display:flex;align-items:center;gap:3px;';
+            var lbl3 = document.createElement('span');
+            lbl3.style.cssText = LBL_CSS;
+            lbl3.textContent = 'Dev';
+            var sel = makeSelect(ENGINEERS, resRef.engineers[idx] || '', function(v){ if (resRef.engineers.length === 0) resRef.engineers = ['']; resRef.engineers[idx] = v; }, '60px');
+            row2.appendChild(lbl3); row2.appendChild(sel);
+            if (idx > 0) {
+              var rmBtn = document.createElement('button');
+              rmBtn.textContent = '×';
+              rmBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:12px;font-weight:400;color:#aaa;padding:0 2px;line-height:1;flex-shrink:0;';
+              rmBtn.addEventListener('click', function(e){ e.stopPropagation(); resRef.engineers.splice(idx, 1); renderEngineers(); });
+              stopProp(rmBtn);
+              row2.appendChild(rmBtn);
+            } else {
+              // + button to right of Dev dropdown on first row
+              var addEngBtn = document.createElement('button');
+              addEngBtn.textContent = '+';
+              addEngBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-family:Mooli,sans-serif;font-size:8px;color:var(--text-muted);padding:1px 5px;flex-shrink:0;';
+              addEngBtn.addEventListener('click', function(e){ e.stopPropagation(); resRef.engineers.push(''); renderEngineers(); });
+              stopProp(addEngBtn);
+              row2.appendChild(addEngBtn);
+            }
+            engSec.appendChild(row2);
+          })(ei);
+        });
+      }
+      renderEngineers();
+    })(engSection, res);
+
+    leftCol.appendChild(engSection);
+
+    // Designer dropdown (Farhan, Maria, Not needed)
+    var desRow = document.createElement('div');
+    desRow.style.cssText = 'display:flex;align-items:center;gap:3px;';
+    var desLbl = document.createElement('span');
+    desLbl.style.cssText = LBL_CSS;
+    desLbl.textContent = 'DES';
+    var desVal = res.designer || '';
+    var desSel = makeSelect(DESIGNERS_OPTS, desVal, function(v){ res.designer = v; }, '60px');
+    desRow.appendChild(desLbl); desRow.appendChild(desSel);
+    leftCol.appendChild(desRow);
+
+    // Checkboxes — no word "needed"
+    leftCol.appendChild(makeCheckRow('Tetra', res.needsDataEng,   'needsDataEng'));
+    leftCol.appendChild(makeCheckRow('Matt',  res.needsBiAnalyst, 'needsBiAnalyst'));
+
+    resWrap.appendChild(leftCol);
+
+    // Right column: Users section (sits beside Dev, not below Matt)
+    var USERS_OPTS = ['Creator Accountants','Historical Cleanup','Tax','Payroll','Customer Success','Sales','Marketing','Managers','Customers','Engineering','Data'];
+    if (!Array.isArray(res.users)) res.users = [];
+    var userSection = document.createElement('div');
+    userSection.id = 'user-section-' + r;
+    userSection.style.cssText = 'display:flex;flex-direction:column;gap:3px;';
+    (function(userSec, resRef) {
+      function renderUsers() {
+        userSec.innerHTML = '';
+        // Always show at least one row (with blank selection)
+        var entries = resRef.users.length > 0 ? resRef.users : [''];
+        entries.forEach(function(uVal, ui) {
+          (function(idx) {
+            var uRow = document.createElement('div');
+            uRow.style.cssText = 'display:flex;align-items:center;gap:3px;';
+            var uLbl = document.createElement('span');
+            uLbl.style.cssText = LBL_CSS;
+            uLbl.textContent = 'User';
+            var uSel = makeSelect(USERS_OPTS, resRef.users[idx] || '', function(v){
+              if (resRef.users.length === 0) resRef.users = [''];
+              resRef.users[idx] = v;
+            }, '60px');
+            uRow.appendChild(uLbl); uRow.appendChild(uSel);
+            if (idx === 0) {
+              // + button to right of first User dropdown
+              var addUserBtn = document.createElement('button');
+              addUserBtn.textContent = '+';
+              addUserBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-family:Mooli,sans-serif;font-size:8px;color:var(--text-muted);padding:1px 5px;flex-shrink:0;';
+              addUserBtn.addEventListener('click', function(e){ e.stopPropagation(); resRef.users.push(''); renderUsers(); });
+              stopProp(addUserBtn);
+              uRow.appendChild(addUserBtn);
+            } else {
+              var rmUserBtn = document.createElement('button');
+              rmUserBtn.textContent = '×';
+              rmUserBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:12px;font-weight:400;color:#aaa;padding:0 2px;line-height:1;flex-shrink:0;';
+              rmUserBtn.addEventListener('click', function(e){
+                e.stopPropagation();
+                resRef.users.splice(idx, 1);
+                renderUsers();
+              });
+              stopProp(rmUserBtn);
+              uRow.appendChild(rmUserBtn);
+            }
+            userSec.appendChild(uRow);
+          })(ui);
+        });
+      }
+      renderUsers();
+    })(userSection, res);
+    resWrap.appendChild(userSection);
+
+    lbl.appendChild(resWrap);
+
+
+    // Actions column
+    var actCol = document.createElement('div');
+    actCol.className = 'row-actions-col';
+    (function(ri) {
+      var addBtn = document.createElement('button');
+      addBtn.className = 'delete-row-btn row-btn row-btn-add';
+      addBtn.innerHTML = '+';
+      addBtn.title = 'Insert release below';
+      addBtn.addEventListener('click', function(e) { e.stopPropagation(); insertRelease(ri + 1); });
+      var delBtn = document.createElement('button');
+      delBtn.className = 'delete-row-btn row-btn row-btn-delete';
+      delBtn.innerHTML = '&minus;';
+      delBtn.title = 'Delete release';
+      delBtn.addEventListener('click', function(e) { e.stopPropagation(); deleteRelease(ri); });
+      var refreshBtn = document.createElement('button');
+      refreshBtn.className = 'delete-row-btn row-btn row-btn-refresh';
+      refreshBtn.innerHTML = '&#8634;';
+      refreshBtn.title = 'Reset this row to default';
+      refreshBtn.addEventListener('click', function(e) { e.stopPropagation(); resetRow(ri); });
+      // Eye/hide button
+      var hideBtn = document.createElement('button');
+      hideBtn.className = 'row-hide-btn';
+      hideBtn.title = 'Hide this row';
+      hideBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+      hideBtn.addEventListener('click', function(e) { e.stopPropagation(); hiddenRows.add(ri); buildRows(); buildSummary(); });
+      actCol.appendChild(addBtn);
+      actCol.appendChild(delBtn);
+      actCol.appendChild(refreshBtn);
+      actCol.appendChild(hideBtn);
+    })(r);
+
+    row.appendChild(actCol);
+    row.appendChild(lbl);
+
+    const grid = document.createElement('div');
+    grid.className = 'release-grid';
+    for (let w = 1; w <= TOTAL_WEEKS; w++) {
+      const col = document.createElement('div');
+      col.className = 'release-grid-col' + weekClass(w);
+      grid.appendChild(col);
+    }
+
+    const bc = document.createElement('div');
+    bc.className = 'bars-container';
+    bc.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;';
+
+    // Milestones — detect column collisions and auto-stack into sub-rows
+    var weekOccupied = {};
+    milestoneState[r].forEach(function(ms) { if (ms.week >= 1) weekOccupied[ms.week] = 0; });
+
+    var hasSubRow = false;
+    var mRowAssignment = milestoneState[r].map(function(mState) {
+      var w = mState.week;
+      if (w < 1) return -1; // hidden
+      var count = weekOccupied[w] || 0;
+      weekOccupied[w] = count + 1;
+      if (count > 0) hasSubRow = true;
+      return count;
+    });
+
+    // Adjust row height dynamically
+    var milestoneAreaH = hasSubRow ? 52 : 30;
+    var dynamicRowH = milestoneAreaH + 8 + TEAM_DEFS.length * (22 + 4) + 8;
+    row.style.minHeight = dynamicRowH + 'px';
+
+    var designBlank = isDesignBlank(r);
+    var engDataOnly = isEngDataOnly(r);
+
+    // Check if anyone at all is assigned
+    var res = resourceState[r] || {};
+    var anyAssigned = (Array.isArray(res.engineers) && res.engineers.some(function(e){ return !!e; })) ||
+                      (res.designer && res.designer !== '') ||
+                      res.needsDataEng || res.needsBiAnalyst;
+    var noDevs = !Array.isArray(res.engineers) || !res.engineers.some(function(e){ return !!e; });
+
+    // Milestone indices to suppress
+    var suppressedMilestones = new Set();
+    if (anyAssigned && designBlank) suppressedMilestones.add(8); // handoff-2: Handoff Meeting with Design
+    if (anyAssigned && engDataOnly) { suppressedMilestones.add(4); suppressedMilestones.add(5); suppressedMilestones.add(6); } // announce-1, announce-2, handoff(sales)
+
+    // Teams to suppress
+    var suppressedTeams = new Set();
+    if (anyAssigned && designBlank) suppressedTeams.add(1); // design (ti=1)
+    if (anyAssigned && engDataOnly) { suppressedTeams.add(0); suppressedTeams.add(4); } // strategy (ti=0), launch (ti=4)
+    if (anyAssigned && noDevs) suppressedTeams.add(3); // engineering (ti=3)
+
+    milestoneState[r].forEach(function(mState, mi) {
+      if (mState.week < 1) return; // hidden - don't render
+      if (suppressedMilestones.has(mi)) return; // suppressed for this row
+      const mbar = document.createElement('div');
+      mbar.className = 'milestone-marker';
+      mbar.id = 'mbar-' + r + '-' + mi;
+      mbar.innerHTML = MILESTONE_ICONS[mi];
+      var subRow = mRowAssignment[mi] > 0;
+      setMilestonePos(mbar, mState.week, 0, subRow, milestoneAreaH);
+      var tip = DEFAULT_MILESTONES[mi] ? DEFAULT_MILESTONES[mi].tooltip : '';
+      if (tip) {
+        mbar.addEventListener('mouseenter', function(e) {
+          var tt = document.getElementById('globalTooltip');
+          tt.textContent = tip;
+          tt.style.display = 'block';
+        });
+        mbar.addEventListener('mousemove', function(e) {
+          var tt = document.getElementById('globalTooltip');
+          tt.style.left = (e.clientX + 12) + 'px';
+          tt.style.top  = (e.clientY - 32) + 'px';
+        });
+        mbar.addEventListener('mouseleave', function() {
+          document.getElementById('globalTooltip').style.display = 'none';
+        });
+      }
+      let mDidMove = false;
+      mbar.addEventListener('mousedown', function(e) { mDidMove = false; startMilestoneDrag(e, r, mi, function() { mDidMove = true; }); });
+      bc.appendChild(mbar);
+    });
+
+    // Team bars — overview mode: one bar per team; details mode: sub-bars
+    if (detailView === 'overview') {
+      if (!overviewBarState[r]) overviewBarState[r] = computeOverviewBars(r);
+      TEAM_DEFS.forEach(function(team, ti) {
+        if (suppressedTeams.has(ti)) return;
+        var ovState = overviewBarState[r][ti];
+        var topY = 8 + milestoneAreaH + ti * (22 + 4);
+        var bar = document.createElement('div');
+        bar.className = 'bar';
+        bar.id = 'bar-ov-' + r + '-' + ti;
+        bar.style.background = cv(team.bgVar);
+        bar.style.top = topY + 'px';
+        setBarPos(bar, ovState);
+        var lh = document.createElement('div'); lh.className = 'resize-handle left';
+        var rh = document.createElement('div'); rh.className = 'resize-handle right';
+        bar.innerHTML = '<span class="bar-label">' + team.name + '</span>';
+        bar.appendChild(lh); bar.appendChild(rh);
+        (function(rr, tii) {
+          lh.addEventListener('mousedown', function(e) { startOverviewResize(e, rr, tii, 'left'); });
+          rh.addEventListener('mousedown', function(e) { startOverviewResize(e, rr, tii, 'right'); });
+          bar.addEventListener('mousedown', function(e) {
+            if (e.target.classList.contains('resize-handle')) return;
+            startOverviewDrag(e, rr, tii);
+          });
+        })(r, ti);
+        bc.appendChild(bar);
+      });
+    } else {
+      TEAM_DEFS.forEach(function(team, ti) {
+        if (suppressedTeams.has(ti)) return;
+        const state = barState[r][ti];
+        const topY = 8 + milestoneAreaH + ti * (22 + 4);
+
+        if (team.subBars) {
+          team.subBars.forEach(function(subDef, si) {
+            const subState = state.subBars[si];
+            const bar = document.createElement('div');
+            bar.className = 'bar';
+            bar.id = 'bar-' + r + '-' + ti + '-' + si;
+            var baseColor = cv(team.bgVar);
+            bar.style.background = lightenColor(baseColor, si * 0.15);
+            bar.style.top = topY + 'px';
+            setBarPos(bar, subState);
+            const lh = document.createElement('div'); lh.className = 'resize-handle left';  lh.addEventListener('mousedown', function(e) { startResize(e, r, ti, 'left', si); });
+            const rh = document.createElement('div'); rh.className = 'resize-handle right'; rh.addEventListener('mousedown', function(e) { startResize(e, r, ti, 'right', si); });
+            bar.innerHTML = '<span class="bar-label">' + subDef.name + '</span>';
+            bar.appendChild(lh); bar.appendChild(rh);
+            let didMove = false;
+            bar.addEventListener('mousedown', function(e) { if (e.target.classList.contains('resize-handle')) return; didMove = false; startDrag(e, r, ti, function() { didMove = true; }, si); });
+            bar.addEventListener('click', (function(rr,tii,sii){ return function(e) { if (!didMove && !e.target.classList.contains('resize-handle')) selectBar(rr, tii, sii); }; })(r, ti, si));
+            bc.appendChild(bar);
+          });
+        } else {
+          const bar = document.createElement('div');
+          bar.className = 'bar';
+          bar.id = 'bar-' + r + '-' + ti;
+          bar.style.background = cv(team.bgVar);
+          bar.style.top = topY + 'px';
+          setBarPos(bar, state);
+          const lh = document.createElement('div'); lh.className = 'resize-handle left';  lh.addEventListener('mousedown', function(e) { startResize(e, r, ti, 'left'); });
+          const rh = document.createElement('div'); rh.className = 'resize-handle right'; rh.addEventListener('mousedown', function(e) { startResize(e, r, ti, 'right'); });
+          bar.innerHTML = '<span class="bar-label">' + team.name + '</span>';
+          bar.appendChild(lh); bar.appendChild(rh);
+          let didMove = false;
+          bar.addEventListener('mousedown', function(e) { if (e.target.classList.contains('resize-handle')) return; didMove = false; startDrag(e, r, ti, function() { didMove = true; }); });
+          bar.addEventListener('click', (function(rr,tii){ return function(e) { if (!didMove && !e.target.classList.contains('resize-handle')) selectBar(rr, tii, undefined); }; })(r, ti));
+          bc.appendChild(bar);
+        }
+      });
+    }
+
+    grid.appendChild(bc);
+    row.appendChild(grid);
+
+    cont.appendChild(row);
+  }
+}
+
+function setBarPos(bar, state) {
+  bar.style.left  = weekToX(state.startWeek) + '%';
+  bar.style.width = 'calc(' + ((state.endWeek - state.startWeek + 1) / TOTAL_WEEKS * 100) + '% - 4px)';
+}
+
+function setMilestonePos(el, week, mrow, subRow, milestoneAreaH) {
+  const colPct = 1 / TOTAL_WEEKS * 100;
+  el.style.left = 'calc(' + weekToX(week) + '% + ' + (colPct / 2) + '% - 14px)';
+  el.style.top = subRow ? '30px' : '6px';
+}
+
+var dragSt = null;
+function startDrag(e, r, ti, onMove, si) {
+  e.preventDefault();
+  const barId = si !== undefined ? ('bar-' + r + '-' + ti + '-' + si) : ('bar-' + r + '-' + ti);
+  const bar = document.getElementById(barId);
+  bar.classList.add('dragging');
+  const state = si !== undefined ? barState[r][ti].subBars[si] : barState[r][ti];
+  dragSt = { r:r, ti:ti, si:si, bar:bar, sx:e.clientX, os:state.startWeek, dur:state.endWeek - state.startWeek, onMove:onMove };
+  document.addEventListener('mousemove', onDrag);
+  document.addEventListener('mouseup', stopDrag);
+}
+function onDrag(e) {
+  if (!dragSt) return;
+  var dx = e.clientX - dragSt.sx;
+  if (Math.abs(dx) > 3) dragSt.onMove();
+  var delta = Math.round(dx / WEEK_W);
+  var state = dragSt.si !== undefined ? barState[dragSt.r][dragSt.ti].subBars[dragSt.si] : barState[dragSt.r][dragSt.ti];
+  state.startWeek = Math.max(1, Math.min(TOTAL_WEEKS - dragSt.dur, dragSt.os + delta));
+  state.endWeek   = state.startWeek + dragSt.dur;
+  setBarPos(dragSt.bar, state);
+  if (selectedR === dragSt.r && selectedTi === dragSt.ti) renderDetail(dragSt.r, dragSt.ti, dragSt.si);
+}
+function stopDrag() {
+  if (dragSt) { var rr = dragSt.r; dragSt.bar.classList.remove('dragging'); dragSt = null; syncCanonical(rr); buildSummary(); debouncedSaveRelease(releaseIds[rr]); }
+  document.removeEventListener('mousemove', onDrag);
+  document.removeEventListener('mouseup', stopDrag);
+}
+
+var resSt = null;
+function startResize(e, r, ti, side, si) {
+  e.preventDefault(); e.stopPropagation();
+  const barId = si !== undefined ? ('bar-' + r + '-' + ti + '-' + si) : ('bar-' + r + '-' + ti);
+  const state = si !== undefined ? barState[r][ti].subBars[si] : barState[r][ti];
+  resSt = { r:r, ti:ti, si:si, bar:document.getElementById(barId), side:side, sx:e.clientX, os:state.startWeek, oe:state.endWeek };
+  document.addEventListener('mousemove', onResize);
+  document.addEventListener('mouseup', stopResize);
+}
+function onResize(e) {
+  if (!resSt) return;
+  var delta = Math.round((e.clientX - resSt.sx) / WEEK_W);
+  var state = resSt.si !== undefined ? barState[resSt.r][resSt.ti].subBars[resSt.si] : barState[resSt.r][resSt.ti];
+  if (resSt.side === 'left') state.startWeek = Math.max(1, Math.min(state.endWeek, resSt.os + delta));
+  else                       state.endWeek   = Math.max(state.startWeek, Math.min(TOTAL_WEEKS, resSt.oe + delta));
+  setBarPos(resSt.bar, state);
+  if (selectedR === resSt.r && selectedTi === resSt.ti) renderDetail(resSt.r, resSt.ti, resSt.si);
+}
+function stopResize() {
+  if (resSt) { var rr = resSt.r; syncCanonical(rr); buildSummary(); debouncedSaveRelease(releaseIds[rr]); }
+  resSt = null;
+  document.removeEventListener('mousemove', onResize);
+  document.removeEventListener('mouseup', stopResize);
+}
+
+// ── Overview bar drag & resize ────────────────────────────────────────────────
+var ovDragSt = null;
+function startOverviewDrag(e, r, ti) {
+  e.preventDefault();
+  if (!overviewBarState[r]) return;
+  var bar = document.getElementById('bar-ov-' + r + '-' + ti);
+  if (!bar) return;
+  bar.classList.add('dragging');
+  var st = overviewBarState[r][ti];
+  ovDragSt = { r:r, ti:ti, bar:bar, sx:e.clientX, os:st.startWeek, dur:st.endWeek - st.startWeek };
+  document.addEventListener('mousemove', onOverviewDrag);
+  document.addEventListener('mouseup', stopOverviewDrag);
+}
+function onOverviewDrag(e) {
+  if (!ovDragSt) return;
+  var delta = Math.round((e.clientX - ovDragSt.sx) / WEEK_W);
+  var st = overviewBarState[ovDragSt.r][ovDragSt.ti];
+  st.startWeek = Math.max(1, Math.min(TOTAL_WEEKS - ovDragSt.dur, ovDragSt.os + delta));
+  st.endWeek = st.startWeek + ovDragSt.dur;
+  setBarPos(ovDragSt.bar, st);
+}
+function stopOverviewDrag() {
+  if (ovDragSt) { var rr = ovDragSt.r; ovDragSt.bar.classList.remove('dragging'); ovDragSt = null; buildSummary(); debouncedSaveRelease(releaseIds[rr]); }
+  document.removeEventListener('mousemove', onOverviewDrag);
+  document.removeEventListener('mouseup', stopOverviewDrag);
+}
+
+var ovResSt = null;
+function startOverviewResize(e, r, ti, side) {
+  e.preventDefault(); e.stopPropagation();
+  if (!overviewBarState[r]) return;
+  var bar = document.getElementById('bar-ov-' + r + '-' + ti);
+  var st = overviewBarState[r][ti];
+  ovResSt = { r:r, ti:ti, bar:bar, side:side, sx:e.clientX, os:st.startWeek, oe:st.endWeek };
+  document.addEventListener('mousemove', onOverviewResize);
+  document.addEventListener('mouseup', stopOverviewResize);
+}
+function onOverviewResize(e) {
+  if (!ovResSt) return;
+  var delta = Math.round((e.clientX - ovResSt.sx) / WEEK_W);
+  var st = overviewBarState[ovResSt.r][ovResSt.ti];
+  if (ovResSt.side === 'left') st.startWeek = Math.max(1, Math.min(st.endWeek, ovResSt.os + delta));
+  else st.endWeek = Math.max(st.startWeek, Math.min(TOTAL_WEEKS, ovResSt.oe + delta));
+  setBarPos(ovResSt.bar, st);
+}
+function stopOverviewResize() {
+  if (ovResSt) { var rr = ovResSt.r; ovResSt = null; buildSummary(); debouncedSaveRelease(releaseIds[rr]); }
+  document.removeEventListener('mousemove', onOverviewResize);
+  document.removeEventListener('mouseup', stopOverviewResize);
+}
+
+var mDragSt = null;
+function startMilestoneDrag(e, r, mi, onMove) {
+  e.preventDefault();
+  document.getElementById('globalTooltip').style.display = 'none';
+  const bar = document.getElementById('mbar-' + r + '-' + mi);
+  bar.classList.add('dragging');
+  // Snapshot original positions at drag start for release milestone
+  var origBars = null, origMilestones = null, origOverviewBars = null;
+  if (mi === RELEASE_MI) {
+    // Use canonical (pre-drag) positions so bars always restore to full size
+    origBars = deepCopyBarState(canonicalBarState[r] || barState[r]);
+    origMilestones = deepCopyMilestoneState(canonicalMilestoneState[r] || milestoneState[r]);
+    // Snapshot overview bars too for live update in overview mode
+    origOverviewBars = (overviewBarState[r] || []).map(function(b){ return { startWeek:b.startWeek, endWeek:b.endWeek }; });
+  }
+  mDragSt = { r:r, mi:mi, bar:bar, sx:e.clientX, ow:milestoneState[r][mi].week, onMove:onMove, origBars:origBars, origMilestones:origMilestones, origOverviewBars:origOverviewBars };
+  document.addEventListener('mousemove', onMilestoneDrag);
+  document.addEventListener('mouseup', stopMilestoneDrag);
+}
+function onMilestoneDrag(e) {
+  if (!mDragSt) return;
+  var delta = Math.round((e.clientX - mDragSt.sx) / WEEK_W);
+  var newWeek = Math.max(1, Math.min(TOTAL_WEEKS, mDragSt.ow + delta));
+  milestoneState[mDragSt.r][mDragSt.mi].week = newWeek;
+  setMilestonePos(mDragSt.bar, newWeek, 0, false, 30);
+
+  // If dragging the release milestone (last one), shift all bars in this release
+  if (mDragSt.mi === RELEASE_MI) {
+    var r = mDragSt.r;
+    var totalDelta = newWeek - mDragSt.origMilestones[RELEASE_MI].week;
+    // Restore from originals + totalDelta to preserve durations
+    milestoneState[r].forEach(function(ms, mi) {
+      if (mi !== RELEASE_MI) {
+        var newMiWeek = mDragSt.origMilestones[mi].week + totalDelta;
+        ms.week = newMiWeek < 1 ? -1 : Math.min(TOTAL_WEEKS, newMiWeek); // -1 = hidden
+        var mel = document.getElementById('mbar-' + r + '-' + mi);
+        if (mel) {
+          if (ms.week < 1) { mel.style.display = 'none'; }
+          else { mel.style.display = ''; setMilestonePos(mel, ms.week, 0, false, 30); }
+        }
+      }
+    });
+    barState[r].forEach(function(bState, ti) {
+      var orig = mDragSt.origBars ? mDragSt.origBars[ti] : null;
+      if (!orig) return;
+      if (bState.isGroup && orig.subBars) {
+        bState.subBars.forEach(function(sb, si) {
+          if (!orig.subBars[si]) return;
+          // Use unclamped shift so bars restore to full size when dragging back right
+          sb.startWeek = Math.max(1, Math.min(TOTAL_WEEKS, orig.subBars[si].startWeek + totalDelta));
+          sb.endWeek   = Math.max(sb.startWeek, Math.min(TOTAL_WEEKS, orig.subBars[si].endWeek + totalDelta));
+          if (detailView === 'details') {
+            var barEl = document.getElementById('bar-' + r + '-' + ti + '-' + si);
+            if (barEl) setBarPos(barEl, sb);
+          }
+        });
+      } else if (!bState.isGroup) {
+        bState.startWeek = Math.max(1, Math.min(TOTAL_WEEKS, orig.startWeek + totalDelta));
+        bState.endWeek   = Math.max(bState.startWeek, Math.min(TOTAL_WEEKS, orig.endWeek + totalDelta));
+        if (detailView === 'details') {
+          var barEl = document.getElementById('bar-' + r + '-' + ti);
+          if (barEl) setBarPos(barEl, bState);
+        }
+      }
+    });
+
+    // Live-update overview bars during drag
+    if (detailView === 'overview' && mDragSt.origOverviewBars) {
+      overviewBarState[r].forEach(function(ovBar, ti) {
+        var orig = mDragSt.origOverviewBars[ti];
+        if (!orig) return;
+        ovBar.startWeek = Math.max(1, Math.min(TOTAL_WEEKS, orig.startWeek + totalDelta));
+        ovBar.endWeek   = Math.max(ovBar.startWeek, Math.min(TOTAL_WEEKS, orig.endWeek + totalDelta));
+        var barEl = document.getElementById('bar-ov-' + r + '-' + ti);
+        if (barEl) setBarPos(barEl, ovBar);
+      });
+    }
+  }
+}
+function stopMilestoneDrag() {
+  if (mDragSt) {
+    var r = mDragSt.r;
+    mDragSt.bar.classList.remove('dragging');
+    if (canonicalBarState[r]) canonicalBarState[r] = deepCopyBarState(barState[r]);
+    if (canonicalMilestoneState[r]) canonicalMilestoneState[r] = deepCopyMilestoneState(milestoneState[r]);
+    overviewBarState[r] = computeOverviewBars(r);
+    overviewBarStateAtLastLeave[r] = overviewBarState[r].map(function(b){ return { startWeek:b.startWeek, endWeek:b.endWeek }; });
+    savedDetailBarState[r] = deepCopyOneLevelBarState(barState[r]);
+    debouncedSaveRelease(releaseIds[r]);
+    mDragSt = null;
+  }
+  document.removeEventListener('mousemove', onMilestoneDrag);
+  document.removeEventListener('mouseup', stopMilestoneDrag);
+  buildHeader();
+  buildRows();
+  buildSummary();
+}
+
+var selectedR = null, selectedTi = null, selectedSi = null;
+
+function selectBar(r, ti, si) {
+  if (selectedR !== null) {
+    const prevId = selectedSi !== null ? ('bar-' + selectedR + '-' + selectedTi + '-' + selectedSi) : ('bar-' + selectedR + '-' + selectedTi);
+    const prev = document.getElementById(prevId);
+    if (prev) prev.classList.remove('selected');
+  }
+  const newSi = si !== undefined ? si : null;
+  if (selectedR === r && selectedTi === ti && selectedSi === newSi) {
+    selectedR = null; selectedTi = null; selectedSi = null;
+    showEmptyDetail(); return;
+  }
+  selectedR = r; selectedTi = ti; selectedSi = newSi;
+  const barId = si !== undefined ? ('bar-' + r + '-' + ti + '-' + si) : ('bar-' + r + '-' + ti);
+  const bar = document.getElementById(barId);
+  if (bar) bar.classList.add('selected');
+  renderDetail(r, ti, si);
+}
+
+function showEmptyDetail() {
+  var dp = document.getElementById('detailPanel');
+  if (dp) dp.innerHTML = '<div class="detail-empty"><span class="arrow">&#8593;</span>Click any team bar above to see week-by-week details</div>';
+}
+
+function renderDetail(r, ti, si) {
+  const team = TEAM_DEFS[ti];
+  const state = (si !== undefined && si !== null) ? barState[r][ti].subBars[si] : barState[r][ti];
+  const dets = TEAM_DETAILS[team.id].weeks;
+  const color = cv(team.colorVar);
+  const numWeeks = state.endWeek - state.startWeek + 1;
+  const subName = (si !== undefined && si !== null && team.subBars) ? team.subBars[si].name : team.name;
+  // Use actual release milestone week for this row (not hardcoded RELEASE_WEEK)
+  var actualReleaseWeek = (milestoneState[r] && milestoneState[r][RELEASE_MI]) ? milestoneState[r][RELEASE_MI].week : RELEASE_WEEK;
+
+  let html = '';
+  for (let i = 0; i < numWeeks; i++) {
+    const absW = state.startWeek + i;
+    const d = dets[i] || { title:'\u2014', body:'No activity scheduled.', milestone:null };
+    const isRel = absW === actualReleaseWeek;
+    const dateRange = cycleStartDate ? weekDateRange(absW) : ('Week ' + (i+1));
+    const wkLabel = isRel ? (dateRange + ' \u00b7 RELEASE') : dateRange;
+    const mTag = d.milestone ? '<div class="milestone-tag" style="background:' + color + '20;color:' + color + '">\u25c6 ' + d.milestone + '</div>' : '';
+    html += '<div class="detail-week' + (isRel?' is-rel':'') + '"><div class="detail-week-num" style="color:' + (isRel?'var(--release-color)':color) + '99">' + wkLabel + '</div><div class="detail-week-title">' + d.title + '</div><div class="detail-week-body">' + d.body + '</div>' + mTag + '</div>';
+  }
+
+  var dp2 = document.getElementById('detailPanel');
+  if (dp2) dp2.innerHTML =
+    '<div class="detail-header"><div><div class="detail-team-name"><div class="detail-team-dot" style="background:' + color + '"></div>' + subName + ' \u2014 ' + releaseNames[r] + '</div><div class="detail-subtitle">' + (cycleStartDate ? weekDateRange(state.startWeek) + ' \u2192 ' + weekDateRange(state.endWeek) : 'Weeks ' + state.startWeek + '\u2013' + state.endWeek) + ' \u00b7 ' + numWeeks + ' weeks active</div></div>' +
+    '<button class="detail-close" onclick="selectBar(' + r + ',' + ti + ',' + selectedSi + ')">&#10005; Close</button></div>' +
+    '<div class="detail-weeks" style="grid-template-columns:repeat(' + numWeeks + ',1fr)">' + html + '</div>';
+}
+
+function setOverviewMode(mode) {
+  overviewMode = mode;
+  ['full','product','design','data','engineering'].forEach(function(m) {
+    var btn = document.getElementById('modeBtn-' + m);
+    if (btn) btn.classList.toggle('active', m === mode);
+  });
+  buildSummary();
+}
+
+// ── Overview / Details view toggle ───────────────────────────────────────────
+
+// overviewBarState[r][ti] = { startWeek, endWeek } — one bar per team per release
+// Derived from barState when switching to overview; editable in overview mode.
+let overviewBarState = [];
+
+function initOverviewBarState() {
+  overviewBarState = [];
+  for (var r = 0; r < NUM_RELEASES; r++) overviewBarState[r] = computeOverviewBars(r);
+}
+
+function computeOverviewBars(r) {
+  // For each team, collapse subBars to a single bar spanning from earliest start to latest end
+  return TEAM_DEFS.map(function(team, ti) {
+    var bSt = barState[r][ti];
+    if (bSt.isGroup) {
+      var s = 999, e = 0;
+      bSt.subBars.forEach(function(sb) { if (sb.startWeek < s) s = sb.startWeek; if (sb.endWeek > e) e = sb.endWeek; });
+      return { startWeek: s, endWeek: e };
+    }
+    return { startWeek: bSt.startWeek, endWeek: bSt.endWeek };
+  });
+}
+
+// Distribute totalWeeks into subBars for each team according to the rules
+function distributeSubBars(ti, startWeek, totalWeeks) {
+  var team = TEAM_DEFS[ti];
+  if (!team.subBars) return null;
+  var subs = [];
+  var id = team.id;
+
+  if (id === 'strategy') {
+    if (totalWeeks < 4) {
+      // definition fixed at min(2, totalWeeks-1); discovery gets rest (min 1)
+      var definition = Math.min(2, totalWeeks - 1);
+      var discovery  = totalWeeks - definition;
+      subs = [discovery, definition];
+    } else {
+      var half = Math.floor(totalWeeks / 2);
+      subs = [half + (totalWeeks % 2), half];
+    }
+  } else if (id === 'design') {
+    if (totalWeeks < 6) {
+      // hifi and midfi share the fixed slots, lofi absorbs the remainder (min 1)
+      var hifi  = Math.min(2, Math.floor(totalWeeks / 2));
+      var midfi = Math.min(2, totalWeeks - hifi);
+      var lofi  = Math.max(1, totalWeeks - hifi - midfi);
+      // re-clamp if lofi pushed total over
+      var excess = (lofi + midfi + hifi) - totalWeeks;
+      if (excess > 0) midfi -= excess;
+      subs = [lofi, midfi, hifi];
+    } else {
+      var base = Math.floor(totalWeeks / 3), rem = totalWeeks % 3;
+      subs = [base + (rem >= 2 ? 1 : 0), base + (rem >= 1 ? 1 : 0), base];
+    }
+  } else if (id === 'data') {
+    if (totalWeeks < 7) {
+      // integrate=2, build=3, research=rest; scale down if totalWeeks too small
+      var integrate = Math.min(2, Math.floor(totalWeeks / 3));
+      var build     = Math.min(3, totalWeeks - integrate - 1);
+      var research  = Math.max(1, totalWeeks - integrate - build);
+      // re-clamp
+      var excess = (research + build + integrate) - totalWeeks;
+      if (excess > 0) build -= excess;
+      subs = [research, build, integrate];
+    } else {
+      var base = Math.floor(totalWeeks / 3), rem = totalWeeks % 3;
+      subs = [base + (rem >= 2 ? 1 : 0), base + (rem >= 1 ? 1 : 0), base];
+    }
+  } else if (id === 'engineering') {
+    // spec=1, qa=1, cooldown=1 only if room; otherwise build absorbs
+    var fixed = Math.min(3, totalWeeks - 1);
+    var build = Math.max(1, totalWeeks - fixed);
+    // distribute fixed slots: spec, qa, cooldown (1 each, clamped to available)
+    var spec     = fixed >= 1 ? 1 : 0;
+    var qa       = fixed >= 2 ? 1 : 0;
+    var cooldown = fixed >= 3 ? 1 : 0;
+    subs = [spec || 1, build, qa || 0, cooldown || 0];
+    // ensure sum == totalWeeks
+    var diff = totalWeeks - subs.reduce(function(a,b){return a+b;}, 0);
+    subs[1] += diff;
+  } else if (id === 'launch') {
+    var prep = Math.ceil(totalWeeks / 2);
+    var leftover = totalWeeks - prep;
+    var uat = Math.ceil(leftover / 2);
+    var qa  = leftover - uat;
+    subs = [prep, qa, uat];
+  }
+
+  // Assign weeks sequentially — no Math.max here; algorithm guarantees valid values
+  var result = [];
+  var cur = startWeek;
+  for (var i = 0; i < subs.length; i++) {
+    var w = subs[i];
+    if (w <= 0) continue; // skip zero-width bars gracefully
+    result.push({ startWeek: cur, endWeek: cur + w - 1 });
+    cur += w;
+  }
+  return result;
+}
+
+// savedDetailBarState[r][ti] — snapshot of barState when leaving Details view
+// overviewBarStateAtLastLeave[r][ti] — snapshot of overviewBarState when leaving Overview,
+//   used to detect which teams the user actually changed in Overview.
+let savedDetailBarState = [];
+let overviewBarStateAtLastLeave = [];
+
+function deepCopyOneLevelBarState(rowBars) {
+  return rowBars.map(function(b) {
+    if (b.isGroup) return { isGroup:true, subBars: b.subBars.map(function(sb){ return { startWeek:sb.startWeek, endWeek:sb.endWeek }; }) };
+    return { startWeek:b.startWeek, endWeek:b.endWeek };
+  });
+}
+
+// Write overviewBarState back into barState:
+// - If the overview bar for a team is unchanged from when we left Overview, restore saved detail state.
+// - If the overview bar changed, redistribute using the logic rules.
+function applyOverviewToBarState(r) {
+  var lastOv = overviewBarStateAtLastLeave[r]; // what overview looked like when we left Overview
+  TEAM_DEFS.forEach(function(team, ti) {
+    var ov = overviewBarState[r][ti];
+    var totalWeeks = ov.endWeek - ov.startWeek + 1;
+    var bSt = barState[r][ti];
+
+    // Check if overview bar changed since we entered Overview view
+    var ovChanged = !lastOv || !lastOv[ti] ||
+      lastOv[ti].startWeek !== ov.startWeek ||
+      lastOv[ti].endWeek   !== ov.endWeek;
+
+    if (!ovChanged && savedDetailBarState[r] && savedDetailBarState[r][ti]) {
+      // Restore saved detail state exactly
+      var saved = savedDetailBarState[r][ti];
+      if (bSt.isGroup && saved.isGroup) {
+        bSt.subBars = saved.subBars.map(function(sb){ return { startWeek:sb.startWeek, endWeek:sb.endWeek }; });
+      } else if (!bSt.isGroup) {
+        bSt.startWeek = saved.startWeek;
+        bSt.endWeek   = saved.endWeek;
+      }
+    } else {
+      // Overview bar changed — redistribute using logic rules
+      if (bSt.isGroup) {
+        var newSubs = distributeSubBars(ti, ov.startWeek, totalWeeks);
+        if (newSubs) bSt.subBars = newSubs;
+      } else {
+        bSt.startWeek = ov.startWeek;
+        bSt.endWeek   = ov.endWeek;
+      }
+    }
+  });
+  syncCanonical(r);
+}
+
+function setDetailView(view) {
+  if (view === 'overview' && detailView === 'details') {
+    // Snapshot current detail state before leaving
+    savedDetailBarState = barState.map(function(row) { return deepCopyOneLevelBarState(row); });
+    // Compute overview bars from current barState (collapsed spans)
+    initOverviewBarState();
+    // Snapshot overview state at the moment we enter Overview (to detect user changes later)
+    overviewBarStateAtLastLeave = overviewBarState.map(function(row) {
+      return row.map(function(b) { return { startWeek:b.startWeek, endWeek:b.endWeek }; });
+    });
+    // Clear selection and reset detail panel
+    selectedR = null; selectedTi = null; selectedSi = null;
+    var dp = document.getElementById('detailPanel');
+    if (dp) { dp.style.display = 'none'; }
+  } else if (view === 'details' && detailView === 'overview') {
+    // Snapshot overview state as it is NOW (user may have changed bars)
+    // Then restore details — per-team: restore saved if unchanged, redistribute if changed
+    for (var r = 0; r < NUM_RELEASES; r++) applyOverviewToBarState(r);
+    // Update overviewBarStateAtLastLeave to current state
+    overviewBarStateAtLastLeave = overviewBarState.map(function(row) {
+      return row.map(function(b) { return { startWeek:b.startWeek, endWeek:b.endWeek }; });
+    });
+    // Show detail panel with empty state
+    var dp = document.getElementById('detailPanel');
+    if (dp) { dp.style.display = ''; showEmptyDetail(); }
+  }
+  detailView = view;
+  ['overview','details'].forEach(function(v) {
+    var btn = document.getElementById('detailViewBtn-' + v);
+    if (btn) btn.classList.toggle('active', v === view);
+  });
+  buildRows();
+}
+
+function onDateChange() {
+  const val = document.getElementById('cycleStartInput').value;
+  cycleStartDate = val ? new Date(val + 'T12:00:00') : null;
+  computeTodayWeek(); buildHeader(); buildRows(); updateReleaseLabels();
+  apiSaveDate();
+}
+
+// ── API helpers ───────────────────────────────────────────────────────────────
+
+// Debounce map: releaseId -> timer — avoids hammering the API on every drag tick
+var _apiTimers = {};
+function debouncedSaveRelease(releaseId, delayMs) {
+  clearTimeout(_apiTimers[releaseId]);
+  _apiTimers[releaseId] = setTimeout(function() { apiSaveRelease(releaseId); }, delayMs || 600);
+}
+
+function apiSaveRelease(releaseId) {
+  var r = releaseIds.indexOf(releaseId);
+  if (r === -1) return;
+  var payload = {
+    name:             releaseNames[r],
+    kanban_col:       kanbanState[r] || 'Idea',
+    bar_state:        barState[r],
+    milestone_state:  milestoneState[r],
+    engineers:        (resourceState[r] && resourceState[r].engineers) || [],
+    designer:         (resourceState[r] && resourceState[r].designer)  || '',
+    needs_data_eng:   !!(resourceState[r] && resourceState[r].needsDataEng),
+    needs_bi_analyst: !!(resourceState[r] && resourceState[r].needsBiAnalyst),
+    users:            (resourceState[r] && resourceState[r].users)     || [],
+  };
+  fetch('/project-planner/api/releases/' + releaseId, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(function(e) { console.error('Save release failed', e); });
+}
+
+function apiSaveDate() {
+  var val = document.getElementById('cycleStartInput').value;
+  fetch('/project-planner/api/state/date', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cycle_start_date: val })
+  }).catch(function(e) { console.error('Save date failed', e); });
+}
+
+function apiReorder() {
+  fetch('/project-planner/api/releases/reorder', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ order: releaseIds })
+  }).catch(function(e) { console.error('Reorder failed', e); });
+}
+
+function saveState() {
+  // Save everything — date + all releases
+  apiSaveDate();
+  for (var i = 0; i < NUM_RELEASES; i++) {
+    if (releaseIds[i]) apiSaveRelease(releaseIds[i]);
+  }
+  var btn = document.getElementById('saveBtn');
+  btn.classList.add('saved');
+  setTimeout(function() { btn.classList.remove('saved'); }, 1800);
+}
+
+function loadState() { return false; } // replaced by loadFromAPI()
+
+
+
+// ── Pipeline calendar ─────────────────────────────────────────────────────────
+var pipelineUserFilter = null; // null = show all
+
+function buildPipeline() {
+  var cont = document.getElementById('pipelineRows');
+  if (!cont) return;
+  cont.innerHTML = '';
+
+  var ALL_USERS = ['Creator Accountants','Historical Cleanup','Tax','Payroll','Customer Success','Sales','Marketing','Managers','Customers','Engineering','Data'];
+
+  // Render filter buttons into the external bar
+  var filterBar = document.getElementById('pipelineFilterBar');
+  if (filterBar) {
+    filterBar.innerHTML = '';
+    // "All" button
+    var allBtn = document.createElement('button');
+    allBtn.textContent = 'All';
+    var allActive = pipelineUserFilter === null;
+    allBtn.style.cssText = 'font-family:Mooli,sans-serif;font-size:10px;letter-spacing:0.04em;padding:4px 10px;border-radius:5px;cursor:pointer;border:1px solid ' + (allActive ? '#e5b7ff' : 'var(--border)') + ';background:' + (allActive ? '#e5b7ff' : '#fff') + ';color:var(--text-primary);transition:all 0.15s;';
+    allBtn.addEventListener('click', function() { pipelineUserFilter = null; buildPipeline(); });
+    filterBar.appendChild(allBtn);
+    ALL_USERS.forEach(function(u) {
+      var btn = document.createElement('button');
+      btn.textContent = u;
+      var isActive = pipelineUserFilter === u;
+      btn.style.cssText = 'font-family:Mooli,sans-serif;font-size:10px;letter-spacing:0.04em;padding:4px 10px;border-radius:5px;cursor:pointer;border:1px solid ' + (isActive ? '#e5b7ff' : 'var(--border)') + ';background:' + (isActive ? '#e5b7ff' : '#fff') + ';color:var(--text-primary);transition:all 0.15s;';
+      btn.addEventListener('click', function() {
+        pipelineUserFilter = (pipelineUserFilter === u) ? null : u;
+        buildPipeline();
+      });
+      filterBar.appendChild(btn);
+    });
+  }
+
+  // Collect release entries per week
+  var releaseByWeek = {};
+  for (var w = 1; w <= TOTAL_WEEKS; w++) releaseByWeek[w] = [];
+  for (var r = 0; r < NUM_RELEASES; r++) {
+    var ms = milestoneState[r][RELEASE_MI];
+    if (!ms || ms.week < 1 || ms.week > TOTAL_WEEKS) continue;
+    releaseByWeek[ms.week].push({ featureName: releaseNames[r], miIcon: MILESTONE_ICONS[RELEASE_MI] || '', releaseIndex: r });
+  }
+
+  // Header — Pipeline title + column labels
+  var hdr = document.createElement('div');
+  hdr.style.cssText = 'display:flex;align-items:center;height:40px;background:var(--surface2);border-bottom:1px solid var(--border);';
+  var hdrSpacer = document.createElement('div');
+  hdrSpacer.style.cssText = 'width:36px;flex-shrink:0;';
+  hdr.appendChild(hdrSpacer);
+  var hdrTitle = document.createElement('div');
+  hdrTitle.style.cssText = 'font-family:Gloock,serif;font-size:18px;font-weight:400;color:#1a1a2e;width:var(--label-w);flex-shrink:0;padding:0 6px;';
+  hdrTitle.textContent = 'Pipeline';
+  hdr.appendChild(hdrTitle);
+  var hdrReleases = document.createElement('div');
+  hdrReleases.style.cssText = 'flex:1;font-family:Mooli,sans-serif;font-size:10px;color:#1a1a2e;text-transform:uppercase;letter-spacing:0.08em;padding:0 10px;';
+  hdrReleases.textContent = 'Releases';
+  hdr.appendChild(hdrReleases);
+  var hdrEngReleases = document.createElement('div');
+  hdrEngReleases.style.cssText = 'flex:1;font-family:Mooli,sans-serif;font-size:10px;color:#1a1a2e;text-transform:uppercase;letter-spacing:0.08em;padding:0 10px;';
+  hdrEngReleases.textContent = 'Engineering Releases';
+  hdr.appendChild(hdrEngReleases);
+  cont.appendChild(hdr);
+
+  // Filter and bucket releases
+  var activeWeeks = [];
+  for (var w = 1; w <= TOTAL_WEEKS; w++) {
+    var allEntries = releaseByWeek[w];
+    if (!allEntries.length) continue;
+
+    // Apply user filter
+    var filtered = pipelineUserFilter
+      ? allEntries.filter(function(ev) {
+          var res = resourceState[ev.releaseIndex] || {};
+          return Array.isArray(res.users) && res.users.indexOf(pipelineUserFilter) !== -1;
+        })
+      : allEntries;
+
+    if (!filtered.length) continue;
+
+    // Split into main (non-Eng/Data) and side (Engineering or Data)
+    var mainEntries = filtered.filter(function(ev) {
+      var res = resourceState[ev.releaseIndex] || {};
+      var u = Array.isArray(res.users) ? res.users : [];
+      return u.indexOf('Engineering') === -1 && u.indexOf('Data') === -1;
+    });
+    var sideEntries = filtered.filter(function(ev) {
+      var res = resourceState[ev.releaseIndex] || {};
+      var u = Array.isArray(res.users) ? res.users : [];
+      return u.indexOf('Engineering') !== -1 || u.indexOf('Data') !== -1;
+    });
+
+    activeWeeks.push({ week: w, main: mainEntries, side: sideEntries });
+  }
+
+  if (activeWeeks.length === 0) {
+    var empty = document.createElement('div');
+    empty.style.cssText = 'padding:16px 48px;font-family:Mooli,sans-serif;font-size:12px;color:#9999aa;';
+    empty.textContent = pipelineUserFilter ? 'No releases affect ' + pipelineUserFilter + '.' : 'No releases scheduled yet.';
+    cont.appendChild(empty);
+    return;
+  }
+
+  function makeEntryList(entries) {
+    var col = document.createElement('div');
+    col.style.cssText = 'flex:1;display:flex;flex-direction:column;';
+    entries.forEach(function(ev) {
+      var subRow = document.createElement('div');
+      subRow.style.cssText = 'display:flex;align-items:center;gap:5px;padding:2px 10px;min-height:24px;';
+      var iconWrap = document.createElement('div');
+      var iconHtml = ev.miIcon
+        .replace('width:22px;height:22px;', 'width:16px;height:16px;')
+        .replace('width="12" height="12"', 'width="9" height="9"');
+      iconWrap.innerHTML = iconHtml;
+      subRow.appendChild(iconWrap);
+      var lbl = document.createElement('span');
+      lbl.style.cssText = 'font-family:Mooli,sans-serif;font-size:11px;color:var(--text-primary);';
+      lbl.textContent = ev.featureName;
+      subRow.appendChild(lbl);
+      col.appendChild(subRow);
+    });
+    return col;
+  }
+
+  activeWeeks.forEach(function(item) {
+    var w = item.week;
+    var dateLabel = cycleStartDate ? weekDate(w) : 'Wk ' + w;
+
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;border-top:1px solid var(--border);min-height:36px;';
+
+    var sp = document.createElement('div');
+    sp.style.cssText = 'width:36px;flex-shrink:0;background:var(--surface);';
+    row.appendChild(sp);
+
+    var dateCol = document.createElement('div');
+    dateCol.style.cssText = 'width:var(--label-w);flex-shrink:0;background:var(--surface);display:flex;align-items:center;padding:8px 6px;';
+    var dateSpan = document.createElement('span');
+    dateSpan.style.cssText = 'font-family:Mooli,sans-serif;font-size:13px;font-weight:600;color:var(--text-primary);';
+    dateSpan.textContent = dateLabel;
+    dateCol.appendChild(dateSpan);
+    row.appendChild(dateCol);
+
+    // Col 2: main releases (non-Eng/Data)
+    var mainCol = makeEntryList(item.main);
+    row.appendChild(mainCol);
+
+    // Col 3: side releases (Engineering or Data) — no border, no header
+    var sideCol = makeEntryList(item.side);
+    row.appendChild(sideCol);
+
+    cont.appendChild(row);
+  });
+
+  var sp2 = document.createElement('div');
+  sp2.style.cssText = 'height:11px;border-top:1px solid var(--border);';
+  cont.appendChild(sp2);
+}
+
+// ── Capacity chart ────────────────────────────────────────────────────────────
+function buildCapacity() {
+  var cont = document.getElementById('capacityRows');
+  if (!cont) return;
+  cont.innerHTML = '';
+
+  var LABEL_W = 'var(--label-w)';
+
+  // People rows: engineers, designers, fixed data/bi
+  var ALL_ENGINEERS = ['Anton','Brian','David','Jason','Kevin','Tim'];
+  var ALL_DESIGNERS = ['Farhan','Maria'];
+  var FIXED_PEOPLE  = [
+    { name:'Tetra', role:'data' },
+    { name:'Matt',  role:'bi'   }
+  ];
+
+  // For a given release row r, get the weeks that a team's bars cover
+  function teamWeeks(r, teamId) {
+    var ti = TEAM_DEFS.findIndex(function(t){ return t.id === teamId; });
+    if (ti === -1) return {};
+    var covered = {};
+    // In overview mode use the collapsed overview bar span; in details use actual sub-bars
+    if (detailView === 'overview' && overviewBarState[r] && overviewBarState[r][ti]) {
+      var ov = overviewBarState[r][ti];
+      for (var w = ov.startWeek; w <= ov.endWeek; w++) covered[w] = true;
+      return covered;
+    }
+    var bSt = barState[r][ti];
+    if (bSt.isGroup) {
+      bSt.subBars.forEach(function(sb) {
+        for (var w = sb.startWeek; w <= sb.endWeek; w++) covered[w] = true;
+      });
+    } else {
+      for (var w = bSt.startWeek; w <= bSt.endWeek; w++) covered[w] = true;
+    }
+    return covered;
+  }
+
+  // Count per person per week
+  // engineers -> engineering weeks; designers -> design weeks; tetra/matt -> data weeks
+  function countForPerson(name, role) {
+    var counts = {};
+    for (var w = 1; w <= TOTAL_WEEKS; w++) counts[w] = 0;
+    for (var r = 0; r < NUM_RELEASES; r++) {
+      var res = resourceState[r];
+      if (!res) continue;
+      var teamId = (role === 'engineer') ? 'engineering' : (role === 'designer') ? 'design' : 'data';
+      var weeks = teamWeeks(r, teamId);
+      var assigned = false;
+      if (role === 'engineer') {
+        assigned = Array.isArray(res.engineers) && res.engineers.indexOf(name) !== -1;
+      } else if (role === 'designer') {
+        assigned = res.designer === name;
+      } else if (role === 'data' || role === 'bi') {
+        assigned = (role === 'data') ? !!res.needsDataEng : !!res.needsBiAnalyst;
+      }
+      if (assigned) {
+        Object.keys(weeks).forEach(function(w) { counts[parseInt(w)]++; });
+      }
+    }
+    return counts;
+  }
+
+  // Colour scale: dynamic — find max count across all people/weeks, then interpolate
+  // Base colour #e5b6ff (darkest), white (lightest)
+  var maxCount = 0;
+  var allPeopleForMax = [];
+  ALL_ENGINEERS.forEach(function(n){ allPeopleForMax.push({ name:n, role:'engineer' }); });
+  ALL_DESIGNERS.forEach(function(n){ allPeopleForMax.push({ name:n, role:'designer' }); });
+  FIXED_PEOPLE.forEach(function(p){ allPeopleForMax.push({ name:p.name, role:p.role }); });
+  allPeopleForMax.forEach(function(p) {
+    var c = countForPerson(p.name, p.role);
+    Object.keys(c).forEach(function(w){ if (c[w] > maxCount) maxCount = c[w]; });
+  });
+  if (maxCount < 1) maxCount = 1;
+
+  // Build a lookup: person -> week -> [featureNames]
+  function featureNamesForPerson(name, role) {
+    var lookup = {};
+    for (var r = 0; r < NUM_RELEASES; r++) {
+      var res = resourceState[r];
+      if (!res) continue;
+      var teamId = (role === 'engineer') ? 'engineering' : (role === 'designer') ? 'design' : 'data';
+      var weeks = teamWeeks(r, teamId);
+      var assigned = false;
+      if (role === 'engineer') assigned = Array.isArray(res.engineers) && res.engineers.indexOf(name) !== -1;
+      else if (role === 'designer') assigned = res.designer === name;
+      else if (role === 'data') assigned = !!res.needsDataEng;
+      else if (role === 'bi') assigned = !!res.needsBiAnalyst;
+      if (assigned) {
+        Object.keys(weeks).forEach(function(w) {
+          var ww = parseInt(w);
+          if (!lookup[ww]) lookup[ww] = [];
+          lookup[ww].push(releaseNames[r]);
+        });
+      }
+    }
+    return lookup;
+  }
+
+  // Header row
+  var hdr = document.createElement('div');
+  hdr.style.cssText = 'display:flex;height:40px;border-bottom:1px solid var(--border);background:var(--surface2);';
+  var hdrSpacer = document.createElement('div');
+  hdrSpacer.style.cssText = 'width:36px;flex-shrink:0;';
+  hdr.appendChild(hdrSpacer);
+  var hdrLbl = document.createElement('div');
+  hdrLbl.style.cssText = 'width:' + LABEL_W + ';flex-shrink:0;display:flex;align-items:center;padding:0 6px;font-family:Gloock,serif;font-size:18px;font-weight:400;color:#1a1a2e;';
+  hdrLbl.textContent = 'Individual Capacity';
+  hdr.appendChild(hdrLbl);
+  var hdrGrid = document.createElement('div');
+  hdrGrid.style.cssText = 'flex:1;display:flex;';
+  for (var w = 1; w <= TOTAL_WEEKS; w++) {
+    var wc = document.createElement('div');
+    wc.style.cssText = 'flex:1;display:flex;align-items:center;justify-content:center;min-width:0;';
+    var wd = document.createElement('span');
+    wd.style.cssText = 'font-family:Mooli,sans-serif;font-size:10px;color:#1a1a2e;';
+    wd.textContent = cycleStartDate ? weekDate(w) : w;
+    wc.appendChild(wd);
+    hdrGrid.appendChild(wc);
+  }
+  hdr.appendChild(hdrGrid);
+  cont.appendChild(hdr);
+
+  // Build all people rows
+  var people = [];
+  ALL_ENGINEERS.forEach(function(n){ people.push({ name:n, role:'engineer', group:'Devs' }); });
+  ALL_DESIGNERS.forEach(function(n){ people.push({ name:n, role:'designer', group:'Design' }); });
+  FIXED_PEOPLE.forEach(function(p){ people.push({ name:p.name, role:p.role, group:p.role === 'data' ? 'Data' : 'BI' }); });
+
+  var prevGroup = null;
+  people.forEach(function(person) {
+    var counts = countForPerson(person.name, person.role);
+    var featureNames = featureNamesForPerson(person.name, person.role);
+
+    // Per-role circle colour
+    var circleColor = person.role === 'engineer' ? '#adb6de'
+                    : person.role === 'designer'  ? '#f29ec6'
+                    : person.role === 'data'       ? '#f4af97'
+                    : '#fad063'; // bi
+
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;height:28px;border-top:1px solid var(--border);';
+
+    if (person.group !== prevGroup && prevGroup !== null) {
+      row.style.borderTop = '2px solid var(--border)';
+    }
+    prevGroup = person.group;
+
+    var spacer = document.createElement('div');
+    spacer.style.cssText = 'width:36px;flex-shrink:0;background:var(--surface);';
+    row.appendChild(spacer);
+
+    var lbl = document.createElement('div');
+    lbl.style.cssText = 'width:' + LABEL_W + ';flex-shrink:0;background:var(--surface);display:flex;align-items:center;padding:0 6px;';
+    var nameSpan = document.createElement('span');
+    nameSpan.style.cssText = 'font-family:Mooli,sans-serif;font-size:12px;color:var(--text-primary);';
+    nameSpan.textContent = person.name;
+    lbl.appendChild(nameSpan);
+    row.appendChild(lbl);
+
+    var grid = document.createElement('div');
+    grid.style.cssText = 'flex:1;display:flex;background:var(--surface);';
+    for (var w = 1; w <= TOTAL_WEEKS; w++) {
+      var c = counts[w] || 0;
+      var cell = document.createElement('div');
+      cell.style.cssText = 'flex:1;display:flex;align-items:center;justify-content:center;min-width:0;';
+      if (c > 0) {
+        var t = maxCount > 1 ? (c - 1) / (maxCount - 1) : 1;
+        // Interpolate circle size 14px (count=1) to 20px (count=max)
+        var size = Math.round(14 + t * 6);
+        var circle = document.createElement('div');
+        circle.style.cssText = 'width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:' + circleColor + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:' + (0.55 + t * 0.45).toFixed(2) + ';';
+        var txt = document.createElement('span');
+        txt.style.cssText = 'font-family:Mooli,sans-serif;font-size:9px;font-weight:700;color:#1a1a2e;line-height:1;';
+        txt.textContent = c;
+        circle.appendChild(txt);
+        cell.appendChild(circle);
+        (function(week) {
+          var names = featureNames[week] || [];
+          cell.style.cursor = 'default';
+          cell.addEventListener('mouseenter', function(e){
+            var tt=document.getElementById('globalTooltip');
+            tt.innerHTML = names.map(function(n){ return '<div>' + n + '</div>'; }).join('');
+            tt.style.display='block'; tt.style.left=(e.clientX+12)+'px'; tt.style.top=(e.clientY-28)+'px';
+          });
+          cell.addEventListener('mousemove',  function(e){ var tt=document.getElementById('globalTooltip'); tt.style.left=(e.clientX+12)+'px'; tt.style.top=(e.clientY-28)+'px'; });
+          cell.addEventListener('mouseleave', function(){ document.getElementById('globalTooltip').style.display='none'; });
+        })(w);
+      }
+      grid.appendChild(cell);
+    }
+    row.appendChild(grid);
+    cont.appendChild(row);
+  });
+
+  // Spacer
+  var sp = document.createElement('div');
+  sp.style.cssText = 'display:flex;height:11px;border-top:1px solid var(--border);';
+  cont.appendChild(sp);
+}
+
+// ── Summary bar chart ─────────────────────────────────────────────────────────
+function buildSummary() {
+  var cont = document.getElementById('summaryRows');
+  if (!cont) return;
+  cont.innerHTML = '';
+
+  var RELEASE_COLORS = ['#e5bfd7','#e5bfd7','#e5bfd7','#e5bfd7','#e5bfd7','#e5bfd7','#e5bfd7'];
+
+  // Header row
+  var hdr = document.createElement('div');
+  hdr.style.cssText = 'display:flex;height:40px;border-bottom:1px solid var(--border);background:var(--surface2);';
+
+  var hdrAc = document.createElement('div');
+  hdrAc.style.cssText = 'width:36px;flex-shrink:0;';
+  hdr.appendChild(hdrAc);
+
+  var hdrLbl = document.createElement('div');
+  hdrLbl.style.cssText = 'width:var(--label-w);flex-shrink:0;display:flex;align-items:center;padding:0 6px;font-family:Gloock,serif;font-size:18px;font-weight:400;color:#1a1a2e;';
+  hdrLbl.textContent = 'Team Capacity';
+  hdr.appendChild(hdrLbl);
+
+  var hdrGrid = document.createElement('div');
+  hdrGrid.style.cssText = 'flex:1;display:flex;';
+  for (var w = 1; w <= TOTAL_WEEKS; w++) {
+    var wc = document.createElement('div');
+    var isSelected = (w === selectedSummaryWeek);
+    wc.style.cssText = 'flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;cursor:pointer;transition:background 0.1s;' +
+      (isSelected ? 'background:rgba(77,120,190,0.18);' : '');
+    if (cycleStartDate) {
+      var wd2 = document.createElement('span');
+      wd2.style.cssText = 'font-family:Mooli,sans-serif;font-size:10px;color:#1a1a2e;pointer-events:none;' +
+        (isSelected ? 'font-weight:700;color:#4d78be;' : '');
+      wd2.textContent = weekDate(w);
+      wc.appendChild(wd2);
+    }
+    (function(week) {
+      wc.addEventListener('click', function() {
+        selectedSummaryWeek = (selectedSummaryWeek === week) ? null : week;
+        buildSummary();
+      });
+    })(w);
+    hdrGrid.appendChild(wc);
+  }
+  hdr.appendChild(hdrGrid);
+  cont.appendChild(hdr);
+
+
+  // Rocket count row — one cell per week, showing rocket+count where releases land
+  var rocketRow = document.createElement('div');
+  rocketRow.style.cssText = 'display:flex;height:32px;border-top:1px solid var(--border);';
+
+  // Action col spacer
+  var rrAc = document.createElement('div');
+  rrAc.style.cssText = 'width:36px;flex-shrink:0;background:var(--surface);';
+  rocketRow.appendChild(rrAc);
+
+  // Label col - 'Releases' label
+  var rrLbl = document.createElement('div');
+  rrLbl.style.cssText = 'width:var(--label-w);flex-shrink:0;background:var(--surface);display:flex;align-items:center;padding:0 6px;';
+  rrLbl.innerHTML = '<span style="font-family:Mooli,sans-serif;font-size:12px;font-weight:400;color:var(--text-primary);">Releases</span>';
+  rocketRow.appendChild(rrLbl);
+
+  var rrGrid = document.createElement('div');
+  rrGrid.style.cssText = 'flex:1;display:flex;';
+  var releaseWeeks2 = {};
+  milestoneState.forEach(function(rms) {
+    var rw = rms[RELEASE_MI].week;
+    releaseWeeks2[rw] = (releaseWeeks2[rw] || 0) + 1;
+  });
+  for (var ww2 = 1; ww2 <= TOTAL_WEEKS; ww2++) {
+    var rrCell = document.createElement('div');
+    rrCell.style.cssText = 'flex:1;display:flex;align-items:center;justify-content:center;min-width:0;' +
+      (ww2 === selectedSummaryWeek ? 'background:rgba(77,120,190,0.10);' : '');
+    if (releaseWeeks2[ww2]) {
+      rrCell.innerHTML = '<div style="width:18px;height:18px;border-radius:50%;background:#fbeb85;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ee5860" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></div><span style="font-family:Mooli,sans-serif;font-size:9px;color:#1a1a2e;font-weight:600;margin-left:2px">' + releaseWeeks2[ww2] + '</span>';
+      (function(w) {
+        var names = [];
+        milestoneState.forEach(function(rms, ri) { if (rms[RELEASE_MI].week === w) names.push(releaseNames[ri]); });
+        if (names.length) {
+          rrCell.style.cursor = 'default';
+          rrCell.addEventListener('mouseenter', function(e) { var tt=document.getElementById('globalTooltip'); tt.innerHTML=names.join('<br>'); tt.style.display='block'; tt.style.left=(e.clientX+12)+'px'; tt.style.top=(e.clientY-28)+'px'; });
+          rrCell.addEventListener('mousemove',  function(e) { var tt=document.getElementById('globalTooltip'); tt.style.left=(e.clientX+12)+'px'; tt.style.top=(e.clientY-28)+'px'; });
+          rrCell.addEventListener('mouseleave', function()  { document.getElementById('globalTooltip').style.display='none'; });
+        }
+      })(ww2);
+    }
+    rrGrid.appendChild(rrCell);
+  }
+
+  rocketRow.appendChild(rrGrid);
+  cont.appendChild(rocketRow);
+
+
+
+  // One row per release
+  // Mini SVGs for overview milestone icons (16px circle)
+for (var r = 0; r < NUM_RELEASES; r++) {
+    var earliest = 999, latest = 0;
+    barState[r].forEach(function(b) {
+      if (b.isGroup) {
+        b.subBars.forEach(function(sb) {
+          if (sb.startWeek < earliest) earliest = sb.startWeek;
+          if (sb.endWeek   > latest)   latest   = sb.endWeek;
+        });
+      } else {
+        if (b.startWeek < earliest) earliest = b.startWeek;
+        if (b.endWeek   > latest)   latest   = b.endWeek;
+      }
+    });
+
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;height:32px;border-top:1px solid var(--border);';
+
+    // Action col with up/down buttons
+    var ac = document.createElement('div');
+    ac.style.cssText = 'width:36px;flex-shrink:0;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;opacity:0;transition:opacity 0.15s;';
+    (function(acEl) {
+      acEl.addEventListener('mouseenter', function(){ acEl.style.opacity='1'; });
+      acEl.addEventListener('mouseleave', function(){ acEl.style.opacity='0'; });
+    })(ac);
+    var upBtn = document.createElement('button');
+    upBtn.style.cssText = 'width:20px;height:13px;border:none;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;background:#7ac2d7;color:#edb98d;padding:0;line-height:1;';
+    upBtn.innerHTML = '&#9650;';
+    upBtn.title = 'Move up';
+    var downBtn = document.createElement('button');
+    downBtn.style.cssText = 'width:20px;height:13px;border:none;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;background:#e4b9ff;color:#ee6327;padding:0;line-height:1;';
+    downBtn.innerHTML = '&#9660;';
+    downBtn.title = 'Move down';
+    (function(ri) {
+      upBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (ri === 0) return;
+        var swapArr = function(arr) { var tmp = arr[ri]; arr[ri] = arr[ri-1]; arr[ri-1] = tmp; };
+        swapArr(releaseNames); swapArr(barState); swapArr(milestoneState);
+        swapArr(canonicalBarState); swapArr(canonicalMilestoneState);
+        swapArr(overviewBarState); swapArr(savedDetailBarState);
+        swapArr(overviewBarStateAtLastLeave); swapArr(resourceState); swapArr(kanbanState);
+        buildRows(); buildSummary(); buildKanban();
+      });
+      downBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (ri >= NUM_RELEASES - 1) return;
+        var swapArr = function(arr) { var tmp = arr[ri]; arr[ri] = arr[ri+1]; arr[ri+1] = tmp; };
+        swapArr(releaseNames); swapArr(barState); swapArr(milestoneState);
+        swapArr(canonicalBarState); swapArr(canonicalMilestoneState);
+        swapArr(overviewBarState); swapArr(savedDetailBarState);
+        swapArr(overviewBarStateAtLastLeave); swapArr(resourceState); swapArr(kanbanState);
+        buildRows(); buildSummary(); buildKanban();
+      });
+    })(r);
+    ac.appendChild(upBtn);
+    ac.appendChild(downBtn);
+    row.appendChild(ac);
+
+    // Label col — name only, editable inline
+    var lbl = document.createElement('div');
+    lbl.style.cssText = 'width:var(--label-w);flex-shrink:0;background:var(--surface);display:flex;align-items:center;padding:0 6px;overflow:hidden;';
+    var nSpan = document.createElement('div');
+    nSpan.contentEditable = 'true';
+    nSpan.spellcheck = false;
+    nSpan.style.cssText = "font-family:Mooli,sans-serif;font-size:12px;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;outline:none;cursor:text;min-width:0;flex:1;";
+    nSpan.textContent = releaseNames[r];
+    (function(ri) {
+      nSpan.addEventListener('blur', function() {
+        releaseNames[ri] = nSpan.textContent.trim();
+        var ganttName = document.getElementById('release-name-' + ri);
+        if (ganttName) ganttName.textContent = releaseNames[ri];
+        debouncedSaveRelease(releaseIds[ri], 300);
+        buildKanban();
+      });
+      nSpan.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); nSpan.blur(); } });
+      nSpan.addEventListener('mousedown', function(e) { e.stopPropagation(); });
+      nSpan.addEventListener('click', function(e) { e.stopPropagation(); });
+    })(r);
+    lbl.appendChild(nSpan);
+    row.appendChild(lbl);
+
+    // Grid
+    var grid = document.createElement('div');
+    grid.style.cssText = 'position:relative;flex:1;display:flex;background:var(--surface);';
+    for (var ww = 1; ww <= TOTAL_WEEKS; ww++) {
+      var gc = document.createElement('div');
+      gc.style.cssText = 'flex:1;min-width:0;' + (ww === selectedSummaryWeek ? 'background:rgba(77,120,190,0.10);' : '');
+      grid.appendChild(gc);
+    }
+
+    var rowColor = RELEASE_COLORS[r % RELEASE_COLORS.length];
+
+    if (overviewMode === 'full') {
+      // Single empty bar spanning full release
+      var sbar = document.createElement('div');
+      var leftPct  = weekToX(earliest);
+      var widthPct = (latest - earliest + 1) / TOTAL_WEEKS * 100;
+      sbar.style.cssText =
+        'position:absolute;top:50%;transform:translateY(-50%);height:18px;border-radius:4px;' +
+        'left:calc(' + leftPct + '% + 2px);' +
+        'width:calc(' + widthPct + '% - 6px);' +
+        'background:' + rowColor + ';pointer-events:none;';
+      grid.appendChild(sbar);
+
+      // No milestone icons in Features overview mode
+
+
+
+
+    } else {
+      // Team bar mode — 'product' shows strategy+launch, others show single team
+      var teamIds = overviewMode === 'product' ? ['strategy','launch'] : [overviewMode];
+      teamIds.forEach(function(tid) {
+        var ti2 = TEAM_DEFS.findIndex(function(t){ return t.id === tid; });
+        if (ti2 === -1) return;
+        var bSt = barState[r][ti2];
+        var bStart2 = 999, bEnd2 = 0;
+        if (bSt.isGroup) {
+          bSt.subBars.forEach(function(sb) {
+            if (sb.startWeek < bStart2) bStart2 = sb.startWeek;
+            if (sb.endWeek   > bEnd2)   bEnd2   = sb.endWeek;
+          });
+        } else { bStart2 = bSt.startWeek; bEnd2 = bSt.endWeek; }
+        if (bStart2 > bEnd2) return;
+        var lp3 = weekToX(bStart2);
+        var wp3 = (bEnd2 - bStart2 + 1) / TOTAL_WEEKS * 100;
+        var sb3 = document.createElement('div');
+        var teamColorVal = (overviewMode === 'product' && tid === 'launch') ? lightenColor(rowColor, 0.33) : rowColor;
+        sb3.style.cssText =
+          'position:absolute;top:50%;transform:translateY(-50%);height:18px;border-radius:4px;' +
+          'left:calc(' + lp3 + '% + 2px);' +
+          'width:calc(' + wp3 + '% - 4px);' +
+          'background:' + teamColorVal + ';pointer-events:none;';
+        grid.appendChild(sb3);
+      });
+    }
+
+    row.appendChild(grid);
+
+    cont.appendChild(row);
+  }
+
+  // Thin spacer row at bottom
+  var spacerRow = document.createElement('div');
+  spacerRow.style.cssText = 'display:flex;height:11px;border-top:1px solid var(--border);';
+  cont.appendChild(spacerRow);
+
+  buildCapacity();
+  buildPipeline();
+}
+
+// ── Row reorder drag ──────────────────────────────────────────────────────────
+var rowDragSrc = null;
+
+function onRowDrop(e, targetR) {
+  e.preventDefault();
+  if (rowDragSrc === null || rowDragSrc === targetR) return;
+  document.querySelectorAll('.release-row').forEach(function(rr) { rr.classList.remove('row-drag-over'); });
+
+  var src = rowDragSrc;
+  function moveItem(arr, from, to) {
+    var item = arr.splice(from, 1)[0];
+    arr.splice(to, 0, item);
+  }
+  moveItem(releaseNames,               src, targetR);
+  moveItem(barState,                   src, targetR);
+  moveItem(milestoneState,             src, targetR);
+  moveItem(canonicalBarState,          src, targetR);
+  moveItem(canonicalMilestoneState,    src, targetR);
+  moveItem(overviewBarState,           src, targetR);
+  moveItem(savedDetailBarState,        src, targetR);
+  moveItem(overviewBarStateAtLastLeave, src, targetR);
+  moveItem(resourceState,              src, targetR);
+  moveItem(kanbanState,                src, targetR);
+
+  rowDragSrc = null;
+  buildRows();
+  buildSummary();
+  buildKanban();
+  apiReorder();
+}
+
+
+// ── Add / Delete / Insert releases ───────────────────────────────────────────
+function newReleaseData() {
+  return {
+    name: 'New Release',
+    bars: TEAM_DEFS.map(function(t) {
+      if (t.subBars) return { isGroup:true, subBars: t.subBars.map(function(sb) { return { startWeek:sb.startWeek, endWeek:sb.endWeek }; }) };
+      return { startWeek:t.startWeek, endWeek:t.endWeek };
+    }),
+    milestones: DEFAULT_MILESTONES.map(function(m) { return { week: m.week }; })
+  };
+}
+
+function insertRelease(at) {
+  fetch('/project-planner/api/releases', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ position: at, name: 'New Project' })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(newRow) {
+    NUM_RELEASES++;
+    releaseIds.splice(at, 0, newRow.id);
+    releaseNames.splice(at, 0, newRow.name);
+    var d = newReleaseData();
+    barState.splice(at, 0, d.bars);
+    milestoneState.splice(at, 0, d.milestones);
+    canonicalBarState.splice(at, 0, deepCopyBarState(d.bars));
+    canonicalMilestoneState.splice(at, 0, deepCopyMilestoneState(d.milestones));
+    overviewBarState.splice(at, 0, computeOverviewBars(at));
+    savedDetailBarState.splice(at, 0, deepCopyOneLevelBarState(d.bars));
+    overviewBarStateAtLastLeave.splice(at, 0, computeOverviewBars(at).map(function(b){ return { startWeek:b.startWeek, endWeek:b.endWeek }; }));
+    resourceState.splice(at, 0, newDefaultResource());
+    kanbanState.splice(at, 0, 'Idea');
+    if (selectedR !== null && selectedR >= at) selectedR++;
+    buildRows(); buildSummary(); buildHeader(); buildKanban();
+  })
+  .catch(function(e) { console.error('Insert release failed', e); });
+}
+
+function addRelease() { insertRelease(NUM_RELEASES); }
+
+function deleteRelease(r) {
+  if (NUM_RELEASES <= 1) return;
+  var id = releaseIds[r];
+  fetch('/project-planner/api/releases/' + id, { method: 'DELETE' })
+    .catch(function(e) { console.error('Delete release failed', e); });
+  NUM_RELEASES--;
+  releaseIds.splice(r, 1);
+  releaseNames.splice(r, 1);
+  barState.splice(r, 1);
+  milestoneState.splice(r, 1);
+  overviewBarState.splice(r, 1);
+  savedDetailBarState.splice(r, 1);
+  overviewBarStateAtLastLeave.splice(r, 1);
+  resourceState.splice(r, 1);
+  kanbanState.splice(r, 1);
+  if (selectedR === r) { selectedR = null; selectedTi = null; selectedSi = null; showEmptyDetail(); }
+  else if (selectedR > r) selectedR--;
+  buildRows(); buildSummary(); buildHeader(); buildKanban();
+}
+
+function resetAll() {
+  // Full reload from API — discards any unsaved in-memory changes
+  loadFromAPI();
+}
+
+function resetRow(r) {
+  barState[r] = TEAM_DEFS.map(function(t) {
+    if (t.subBars) return { isGroup:true, subBars: t.subBars.map(function(sb) { return { startWeek:sb.startWeek, endWeek:sb.endWeek }; }) };
+    return { startWeek:t.startWeek, endWeek:t.endWeek };
+  });
+  milestoneState[r] = DEFAULT_MILESTONES.map(function(m) { return { week: m.week }; });
+  canonicalBarState[r] = deepCopyBarState(barState[r]);
+  canonicalMilestoneState[r] = deepCopyMilestoneState(milestoneState[r]);
+  overviewBarState[r] = computeOverviewBars(r);
+  savedDetailBarState[r] = deepCopyOneLevelBarState(barState[r]);
+  overviewBarStateAtLastLeave[r] = overviewBarState[r].map(function(b){ return { startWeek:b.startWeek, endWeek:b.endWeek }; });
+  debouncedSaveRelease(releaseIds[r], 100);
+  buildRows(); buildSummary();
+}
+
+function computeWeekW() {
+  const inner = document.getElementById('chartInner');
+  const labelW = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--label-w'));
+  WEEK_W = (inner.offsetWidth - labelW) / TOTAL_WEEKS;
+}
+
+function setDefaultResources() {
+  resourceState = [
+    // 0: Plaid Connections Issues
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: [] },
+    // 1: Core Data Quality Strengthening
+    { engineers: ['Tim','Brian'], designer: '', needsDataEng: false, needsBiAnalyst: false, users: ['Engineering'] },
+    // 2: Resource Management
+    { engineers: ['Tim'], designer: 'Maria', needsDataEng: false, needsBiAnalyst: false, users: ['Creator Accountants','Historical Cleanup','Tax','Payroll','Customer Success','Sales'] },
+    // 3: Employee Work Queue
+    { engineers: ['Anton'], designer: 'Maria', needsDataEng: false, needsBiAnalyst: false, users: ['Creator Accountants','Historical Cleanup','Tax','Payroll','Customer Success','Sales'] },
+    // 4: Tight V6 Adoption
+    { engineers: ['Anton'], designer: '', needsDataEng: false, needsBiAnalyst: false, users: ['Engineering'] },
+    // 5: Bookkeeper Super View
+    { engineers: ['Anton'], designer: 'Maria', needsDataEng: false, needsBiAnalyst: false, users: ['Historical Cleanup','Creator Accountants'] },
+    // 6: Onboarding Architecture Refactor
+    { engineers: ['David'], designer: '', needsDataEng: false, needsBiAnalyst: false, users: ['Engineering'] },
+    // 7: Onboarding Workflows Dashboard
+    { engineers: ['David'], designer: 'Farhan', needsDataEng: false, needsBiAnalyst: false, users: [] },
+    // 8: Social OAuth
+    { engineers: ['Kevin','Jason'], designer: '', needsDataEng: true, needsBiAnalyst: false, users: ['Data'] },
+    // 9: MVP: Activate Affiliates
+    { engineers: ['David'], designer: '', needsDataEng: false, needsBiAnalyst: false, users: ['Marketing','Customers'] },
+    // 10: Customer Dashboard
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: [] },
+    // 11: Data Warehouse — HubSpot Emails(+) Store
+    { engineers: [], designer: '', needsDataEng: true, needsBiAnalyst: false, users: ['Data'] },
+    // 12: Data Warehouse — Tight Data Store
+    { engineers: [], designer: '', needsDataEng: true, needsBiAnalyst: false, users: ['Data'] },
+    // 13: Client Health Dashboard
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: true, users: ['Managers'] },
+    // 14: Address NWRA Agent Issues
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: [] },
+    // 15: Gusto Embedded
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: ['Payroll','Customers'] },
+    // 16: Tax Recommendation Engine
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: ['Tax','Customers'] },
+    // 17: Data Cleanup
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: ['Data','Engineering'] },
+    // 18: Ticketing / Comms
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: ['Creator Accountants','Historical Cleanup','Payroll','Tax','Customers'] },
+    // 19: Customer Product Management
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: [] },
+    // 20: Cancellations
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: [] },
+    // 21: Delinquency
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: [] },
+    // 22: Optimized Navigation Project
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: [] },
+    // 23: Centralized Doc Center
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: ['Creator Accountants','Historical Cleanup','Payroll','Tax','Customers'] },
+    // 24: Self Serve Sign Up
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: ['Customers'] },
+    // 25: Creator Financial IQ
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: ['Customers'] },
+    // 26: AI P&L Checker
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: [] },
+    // 27: Affiliate Program Overhaul
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: [] },
+    // 28: Internal AI Assistant
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: [] },
+    // 29: CJAR Comms
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: [] },
+    // 30: Design System Remediation
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: [] },
+    // 31: Resource Library
+    { engineers: [], designer: '', needsDataEng: false, needsBiAnalyst: false, users: [] }
+  ];
+  while (resourceState.length < NUM_RELEASES) {
+    resourceState.push(newDefaultResource());
+  }
+}
+
+function applyAPIState(state) {
+  NUM_RELEASES = state.releases.length;
+  releaseIds    = state.releases.map(function(r) { return r.id; });
+  releaseNames  = state.releases.map(function(r) { return r.name; });
+  kanbanState   = state.releases.map(function(r) { return r.kanban_col || 'Idea'; });
+  barState      = state.releases.map(function(r) { return r.bar_state; });
+  milestoneState = state.releases.map(function(r) { return r.milestone_state; });
+  resourceState = state.releases.map(function(r) {
+    return {
+      engineers:      r.engineers     || [],
+      designer:       r.designer      || '',
+      needsDataEng:   !!r.needs_data_eng,
+      needsBiAnalyst: !!r.needs_bi_analyst,
+      users:          r.users         || []
+    };
+  });
+  if (state.cycle_start_date) {
+    document.getElementById('cycleStartInput').value = state.cycle_start_date;
+    cycleStartDate = new Date(state.cycle_start_date + 'T12:00:00');
+  }
+  canonicalBarState = [];
+  canonicalMilestoneState = [];
+  for (var rr = 0; rr < NUM_RELEASES; rr++) {
+    if (barState[rr])      canonicalBarState[rr]      = deepCopyBarState(barState[rr]);
+    if (milestoneState[rr]) canonicalMilestoneState[rr] = deepCopyMilestoneState(milestoneState[rr]);
+  }
+}
+
+function renderAll() {
+  initOverviewBarState();
+  savedDetailBarState = barState.map(function(row) { return deepCopyOneLevelBarState(row); });
+  overviewBarStateAtLastLeave = overviewBarState.map(function(row) {
+    return row.map(function(b) { return { startWeek:b.startWeek, endWeek:b.endWeek }; });
+  });
+  buildReleaseInputs(); computeWeekW(); computeTodayWeek(); buildHeader(); buildRows(); buildSummary();
+  var dp = document.getElementById('detailPanel');
+  if (dp) dp.style.display = 'none';
+  buildKanban();
+}
+
+function loadFromAPI() {
+  fetch('/project-planner/api/state')
+    .then(function(res) { return res.json(); })
+    .then(function(state) {
+      initBarState(); // sets up default structure
+      applyAPIState(state);
+      renderAll();
+    })
+    .catch(function(e) {
+      console.error('Failed to load state from API:', e);
+      // Fallback: render with defaults
+      initBarState();
+      renderAll();
+    });
+}
+
+function init() {
+  initBarState();
+  loadFromAPI();
+}
+
+window.addEventListener('resize', function() {
+  computeWeekW(); buildHeader(); buildRows(); buildSummary();
+});
+
+init();
+
+// ── Kanban board ──────────────────────────────────────────────────────────────
+const KANBAN_COLUMNS = ['Idea', 'Tech Debt', 'Scoped', 'In Design', 'In Build', 'In QA', 'Complete', 'Deferred'];
+const KANBAN_COL_COLORS = { 'Idea':'#f29ec6', 'Tech Debt':'#f4af97', 'Scoped':'#b16eac', 'In Design':'#9ca7de', 'In Build':'#9fc6c6', 'In QA':'#a8d4a8', 'Complete':'#7bc9a0', 'Deferred':'#d4d4d4' };
+const KANBAN_DOT_COLORS = ['#e5bfd7','#e5bfd7','#e5bfd7','#e5bfd7','#e5bfd7','#e5bfd7','#e5bfd7'];
+
+let kanbanState = []; // kanbanState[r] = column name string
+let kanbanDragR = null;
+
+function initKanbanState() {
+  var IN_QA_DEFAULTS       = new Set([1,2,3,4,5,6,8,9]);
+  var IN_BUILD_DEFAULTS    = new Set([0]);
+  var SCOPED_DEFAULTS      = new Set([15,16]);
+  var COMPLETE_DEFAULTS    = new Set([11,12,13]);
+  var DEFERRED_DEFAULTS    = new Set([7,10,25,26]);
+  var TECH_DEBT_DEFAULTS   = new Set([14,17]);
+  while (kanbanState.length < NUM_RELEASES) {
+    var idx = kanbanState.length;
+    var col = 'Idea';
+    if (IN_QA_DEFAULTS.has(idx))    col = 'In QA';
+    if (IN_BUILD_DEFAULTS.has(idx)) col = 'In Build';
+    if (SCOPED_DEFAULTS.has(idx))   col = 'Scoped';
+    if (COMPLETE_DEFAULTS.has(idx)) col = 'Complete';
+    if (DEFERRED_DEFAULTS.has(idx)) col = 'Deferred';
+    if (TECH_DEBT_DEFAULTS.has(idx)) col = 'Tech Debt';
+    kanbanState.push(col);
+  }
+  kanbanState = kanbanState.slice(0, NUM_RELEASES);
+}
+
+function buildKanban() {
+  var board = document.getElementById('kanbanBoard');
+  if (!board) return;
+  initKanbanState();
+  board.innerHTML = '';
+
+  KANBAN_COLUMNS.forEach(function(colName) {
+    var colEl = document.createElement('div');
+    colEl.className = 'kanban-col';
+
+    var hdr = document.createElement('div');
+    hdr.className = 'kanban-col-header';
+    var dot = document.createElement('div');
+    dot.style.cssText = 'width:9px;height:9px;border-radius:50%;background:' + (KANBAN_COL_COLORS[colName] || '#ddd') + ';flex-shrink:0;';
+    var titleEl = document.createElement('span');
+    titleEl.className = 'kanban-col-title';
+    titleEl.textContent = colName;
+    var count = kanbanState.filter(function(c){ return c === colName; }).length;
+    var countEl = document.createElement('span');
+    countEl.className = 'kanban-col-count';
+    countEl.textContent = count;
+    hdr.appendChild(dot); hdr.appendChild(titleEl); hdr.appendChild(countEl);
+    colEl.appendChild(hdr);
+
+    var cardsEl = document.createElement('div');
+    cardsEl.className = 'kanban-cards';
+    cardsEl.dataset.col = colName;
+
+    cardsEl.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      cardsEl.classList.add('drag-over');
+    });
+    cardsEl.addEventListener('dragleave', function(e) {
+      if (!cardsEl.contains(e.relatedTarget)) cardsEl.classList.remove('drag-over');
+    });
+    cardsEl.addEventListener('drop', function(e) {
+      e.preventDefault();
+      cardsEl.classList.remove('drag-over');
+      if (kanbanDragR !== null) {
+        kanbanState[kanbanDragR] = colName;
+        var savedR = kanbanDragR;
+        debouncedSaveRelease(releaseIds[savedR], 100);
+        kanbanDragR = null;
+        buildKanban();
+      }
+    });
+
+    for (var r = 0; r < NUM_RELEASES; r++) {
+      if (kanbanState[r] !== colName) continue;
+      (function(ri) {
+        var card = document.createElement('div');
+        card.className = 'kanban-card';
+        card.draggable = true;
+        card.style.background = KANBAN_DOT_COLORS[ri % KANBAN_DOT_COLORS.length];
+        var n = document.createElement('span');
+        n.className = 'kanban-card-name';
+        n.textContent = releaseNames[ri];
+        card.appendChild(n);
+        card.addEventListener('dragstart', function(e) {
+          kanbanDragR = ri;
+          card.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+        });
+        card.addEventListener('dragend', function() {
+          card.classList.remove('dragging');
+          kanbanDragR = null;
+        });
+        cardsEl.appendChild(card);
+      })(r);
+    }
+
+    colEl.appendChild(cardsEl);
+    board.appendChild(colEl);
+  });
+}
+
+</body>
+</html>

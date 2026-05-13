@@ -9,8 +9,11 @@ import os
 from flask import Flask, jsonify, request, render_template, g
 
 app = Flask(__name__)
-DATABASE = os.path.join(os.path.dirname(__file__), 'planner.db')
 SCHEMA_VERSION = 48
+
+_db_url = os.environ.get("DATABASE_URL", "sqlite:////data/planner.db")
+# Strip the sqlite:/// prefix to get the file path (sqlite:////abs → /abs)
+DATABASE = _db_url[len("sqlite:///"):]
 
 # ── Database helpers ──────────────────────────────────────────────────────────
 
@@ -317,6 +320,7 @@ def reorder_releases():
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 
+init_db()
+
 if __name__ == "__main__":
-    init_db()
     app.run(debug=True, port=5000)

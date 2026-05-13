@@ -208,6 +208,11 @@ def row_to_dict(row):
 
 # ── Routes ────────────────────────────────────────────────────────────────────
 
+@app.route("/project-planner/health")
+def health():
+    return "OK", 200
+
+
 @app.route("/project-planner")
 def index():
     return render_template("index.html")

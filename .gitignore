@@ -7,3 +7,5 @@
 **/dist
 .claude
 **/.claude
+__pycache__
+**/__pycache__

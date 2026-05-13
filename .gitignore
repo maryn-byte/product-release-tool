@@ -1,0 +1,7 @@
+*.db
+*venv
+*.venv
+*build
+*dist
+**/build
+**/dist

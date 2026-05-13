@@ -2171,7 +2171,7 @@
         needs_bi_analyst: !!(resourceState[r] && resourceState[r].needsBiAnalyst),
         users: (resourceState[r] && resourceState[r].users) || [],
       };
-      fetch('/api/releases/' + releaseId, {
+      fetch('/project-planner/api/releases/' + releaseId, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -2180,7 +2180,7 @@
 
     function apiSaveDate() {
       var val = document.getElementById('cycleStartInput').value;
-      fetch('/api/state/date', {
+      fetch('/project-planner/api/state/date', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cycle_start_date: val })
@@ -2188,7 +2188,7 @@
     }
 
     function apiReorder() {
-      fetch('/api/releases/reorder', {
+      fetch('/project-planner/api/releases/reorder', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ order: releaseIds })
@@ -2862,7 +2862,7 @@
     }
 
     function insertRelease(at) {
-      fetch('/api/releases', {
+      fetch('/project-planner/api/releases', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ position: at, name: 'New Project' })
@@ -2893,7 +2893,7 @@
     function deleteRelease(r) {
       if (NUM_RELEASES <= 1) return;
       var id = releaseIds[r];
-      fetch('/api/releases/' + id, { method: 'DELETE' })
+      fetch('/project-planner/api/releases/' + id, { method: 'DELETE' })
         .catch(function (e) { console.error('Delete release failed', e); });
       NUM_RELEASES--;
       releaseIds.splice(r, 1);
@@ -3049,7 +3049,7 @@
     }
 
     function loadFromAPI() {
-      fetch('/api/state')
+      fetch('/project-planner/api/state')
         .then(function (res) { return res.json(); })
         .then(function (state) {
           initBarState(); // sets up default structure

@@ -7,9 +7,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Mutable data (SQLite database) lives here; mount a volume to persist it
-VOLUME ["/data"]
-
 # SQLite database URL — override with -e DATABASE_URL=sqlite:////your/path/db
 ENV DATABASE_URL=sqlite:////data/planner.db
 

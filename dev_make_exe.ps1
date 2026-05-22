@@ -1,0 +1,1 @@
+Invoke-P2EXE -InputFile ".\dev_launch.ps1" -OutputFile ".C:\Users\cookie\Desktop\project_planner.exe"

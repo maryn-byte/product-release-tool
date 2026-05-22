@@ -9,6 +9,7 @@ import os
 from flask import Flask, jsonify, request, render_template, g
 
 app = Flask(__name__)
+app.config["TEMPLATES_AUTO_RELOAD"] = True 
 SCHEMA_VERSION = 48
 
 _db_url = os.environ.get("DATABASE_URL", "sqlite:////data/planner.db")

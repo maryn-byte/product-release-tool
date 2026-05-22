@@ -5,6 +5,7 @@ for /f "delims=" %%E in ('echo prompt $E^| cmd') do set "ESC=%%E"
 set "SCRIPT_DIR=%~dp0"
 set "AWS_PROFILE=cf-production"
 set "DOCKER_DESKTOP_EXE=%ProgramFiles%\Docker\Docker\Docker Desktop.exe"
+set "DOCKER_CLI_EXE=%ProgramFiles%\Docker\Docker\DockerCli.exe"
 set "REPO=626635437662.dkr.ecr.us-east-2.amazonaws.com/project-planner"
 set "REGION=us-east-2"
 for /f "tokens=1 delims=/" %%A in ("%REPO%") do set "REGISTRY=%%A"
@@ -100,6 +101,7 @@ popd
 call :ok "Deployment completed successfully."
 
 :end
+call :shutdown_docker
 echo.
 if "%EXIT_CODE%"=="0" (
     call :ok "Done! Press any key to close this window..."
@@ -124,4 +126,19 @@ exit /b 0
 
 :err
 echo %ESC%[91m[ERROR]%ESC%[0m %~1
+exit /b 0
+
+:shutdown_docker
+call :info "Closing Docker Desktop to free up memory..."
+if exist "%DOCKER_CLI_EXE%" (
+    "%DOCKER_CLI_EXE%" -Shutdown >nul 2>nul
+)
+taskkill /IM "Docker Desktop.exe" /F >nul 2>nul
+taskkill /IM "com.docker.backend.exe" /F >nul 2>nul
+taskkill /IM "com.docker.build.exe" /F >nul 2>nul
+taskkill /IM "vpnkit.exe" /F >nul 2>nul
+wsl -t docker-desktop >nul 2>nul
+wsl -t docker-desktop-data >nul 2>nul
+wsl --shutdown >nul 2>nul
+call :ok "Docker Desktop and WSL have been closed."
 exit /b 0

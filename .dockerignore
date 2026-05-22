@@ -1,0 +1,23 @@
+# Python
+.venv
+__pycache__
+*.pyc
+*.pyo
+
+# Dev environment
+.claude
+.git
+.gitignore
+.python-version
+
+# Local database — mounted at runtime via DATABASE_URL
+planner.db
+
+# Lock file not used by the Docker pip install
+uv.lock
+
+# Dev/deploy scripts — not needed inside the image
+*.bat
+*.ps1
+*.sh
+CLAUDE.md

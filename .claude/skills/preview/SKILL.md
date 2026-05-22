@@ -1,27 +1,11 @@
 ---
 name: preview
-description: Ensure the Project Planner dev server is running and open in Chrome. Use this skill whenever you make any code changes to this project, whenever verifying that a feature works, or whenever the user asks to run or preview the app. Never open index.html directly. Also use this skill when the user asks to stop, shut down, or kill the dev server.
+description: Show the Project Planner app running live in Chrome. Only use this skill when the user explicitly asks to see or interact with the running app — e.g. "show me the app", "open the preview", "show me the full app", "show me the interactive preview". Do NOT invoke automatically after code changes or for verification.
 ---
 
 # Preview Dev Server
 
-Ensure the dev server is running and the app is open in the browser. No sidebar preview panel — the browser is the view.
-
-## Shutdown
-
-If the user wants to stop, shut down, or kill the server, run this and skip everything below:
-
-```powershell
-$conn = Get-NetTCPConnection -LocalPort 5000 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
-if ($conn) {
-    Stop-Process -Id $conn.OwningProcess -Force
-    Write-Output "stopped"
-} else {
-    Write-Output "not running"
-}
-```
-
-Tell the user the server has been stopped, or that it wasn't running.
+Launch the dev server (if not already running) and open the app in Chrome.
 
 ## Launch / refresh
 

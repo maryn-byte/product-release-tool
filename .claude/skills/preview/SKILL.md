@@ -1,15 +1,15 @@
 ---
 name: preview
-description: Launch or shut down the Project Planner dev server, and open it interactively in the sidebar. This is the REQUIRED way to show changes in this project — use it whenever you would normally open a static HTML file to show the user a change, whenever verifying that a feature works, whenever the user asks to run or preview the app, or any time you want to confirm something looks correct in the browser. Never open index.html directly as a file preview when this skill can be used instead. Also use this skill when the user asks to stop, shut down, or kill the dev server.
+description: Ensure the Project Planner dev server is running and open in Chrome. Use this skill whenever you make any code changes to this project, whenever verifying that a feature works, or whenever the user asks to run or preview the app. Never open index.html directly. Also use this skill when the user asks to stop, shut down, or kill the dev server.
 ---
 
 # Preview Dev Server
 
-Show a running, interactive instance of the app in the sidebar whenever verifying or demonstrating changes. Can also shut the server down cleanly.
+Ensure the dev server is running and the app is open in the browser. No sidebar preview panel — the browser is the view.
 
 ## Shutdown
 
-If the user wants to stop, shut down, or kill the server, run this and skip the launch steps below:
+If the user wants to stop, shut down, or kill the server, run this and skip everything below:
 
 ```powershell
 $conn = Get-NetTCPConnection -LocalPort 5000 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
@@ -23,7 +23,7 @@ if ($conn) {
 
 Tell the user the server has been stopped, or that it wasn't running.
 
-## Launch steps
+## Launch / refresh
 
 ### 1. Check if the server is already running
 
@@ -38,18 +38,18 @@ try {
 
 ### 2a. If stopped — launch the server
 
-Tell the user you're starting the dev server, then open a new terminal window with the launch script:
+The launch script starts Flask and opens a browser tab automatically. Run it in a new visible terminal:
 
 ```powershell
-$workDir = (Get-Location).Path
+$workDir = "C:\Users\cooki\Documents\GitHub\projectplanner"
 if (Get-Command wt.exe -ErrorAction SilentlyContinue) {
-    Start-Process wt.exe -ArgumentList "cmd /c `"$workDir\windows_launch.bat`""
+    Start-Process wt.exe -ArgumentList "--startingDirectory `"$workDir`" cmd /c `"$workDir\windows_launch.bat`""
 } else {
     Start-Process cmd.exe -ArgumentList "/c `"$workDir\windows_launch.bat`"" -WorkingDirectory $workDir
 }
 ```
 
-Then poll until the server responds (up to 30 seconds):
+Then poll until ready (up to 30 seconds):
 
 ```powershell
 $ready = $false
@@ -57,19 +57,28 @@ for ($i = 0; $i -lt 60; $i++) {
     Start-Sleep -Milliseconds 500
     try {
         Invoke-WebRequest -Uri "http://127.0.0.1:5000/" -UseBasicParsing -TimeoutSec 1 | Out-Null
-        $ready = $true
-        break
+        $ready = $true; break
     } catch {}
 }
-Write-Output $(if ($ready) { "ready" } else { "timeout" })
+if ($ready) { Write-Output "ready" } else { Write-Output "timeout" }
 ```
 
-If the result is `timeout`, tell the user the server didn't respond within 30 seconds and ask them to check the terminal window for errors.
+If `timeout`, tell the user the server didn't start within 30 seconds and ask them to check the terminal window for errors. Do not proceed.
 
-### 2b. If already running — skip launch
+The browser tab is already open — the launch script handles that. Done.
 
-The server is up. Proceed directly to step 3 — no new terminal needed.
+### 2b. If already running — refresh the existing Chrome tab
 
-### 3. Open in the sidebar
+The server is up. Refresh the tab using the Chrome MCP tools:
 
-Call `preview_start` with name `"project-planner"`. This loads `http://127.0.0.1:5000/` in the interactive sidebar preview where the user can click around and save state.
+1. Call `mcp__Claude_in_Chrome__list_connected_browsers` — if a browser is connected, continue to step 2. If not, fall back to opening a new tab (step 3).
+
+2. Call `mcp__Claude_in_Chrome__tabs_context_mcp` to find the tab whose URL contains `127.0.0.1:5000`. Then call `mcp__Claude_in_Chrome__javascript_tool` with `tabId` set to that tab and `text` set to `location.reload()`.
+
+3. If no connected browser or no matching tab, open a new tab as fallback:
+
+```powershell
+Start-Process "http://127.0.0.1:5000/"
+```
+
+Done.

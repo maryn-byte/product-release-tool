@@ -17,8 +17,8 @@ for ($i = 0; $i -lt 30; $i++) {
     Start-Sleep -Milliseconds 500
     try {
         Invoke-WebRequest -Uri $url -UseBasicParsing | Out-Null
-        # Open or refresh the Chrome tab — never creates a duplicate
-        & "$repo\.claude\hooks\open-or-refresh.ps1"
+        # Open or refresh in the dedicated dev Chrome window — never duplicates
+        & "$repo\.claude\hooks\open-or-refresh.ps1" -Wait
         break
     } catch {
     }

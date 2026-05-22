@@ -1,69 +1,104 @@
-# Navigates to http://127.0.0.1:5000/ without ever creating a duplicate tab.
-# If multiple tabs exist at that URL, all extras are closed and the first is reloaded.
-# A new tab is only opened when no such tab exists at all.
+# Refreshes or opens the app in the dedicated dev Chrome window.
+#
+# Dev Chrome uses its own --user-data-dir so it is always a separate process
+# from the user's regular Chrome, meaning --remote-debugging-port=9222 reliably
+# takes effect regardless of whether regular Chrome is open.
+#
+# DUPLICATE TAB PREVENTION
+# The URL is never passed to Start-Process. Chrome opening is just "start the
+# window"; tab creation happens only via CDP once Chrome is ready. This means
+# even if this script is called multiple times in quick succession (e.g. rapid
+# PostToolUse hooks), at most one app tab is ever created.
 
-$url = 'http://127.0.0.1:5000/'
+param(
+    # When set, wait up to 15 s for Chrome to finish starting before returning.
+    # Use this for explicit invocations (skill, launch script) where the caller
+    # needs to know Chrome is actually ready. Omit for hook invocations so the
+    # hook returns immediately and doesn't block Claude between edits.
+    [switch]$Wait
+)
 
-# 1. Chrome DevTools Protocol — works silently without stealing focus.
-#    CDP reports the URL even for error pages, so this catches tabs that loaded
-#    while the server was down (e.g. "ERR_CONNECTION_REFUSED").
-$handled = $false
-try {
-    $tabs     = Invoke-RestMethod -Uri 'http://localhost:9222/json' -TimeoutSec 1 -ErrorAction Stop
-    $appTabs  = @($tabs | Where-Object { $_.url -like '*127.0.0.1:5000*' })
+$url        = 'http://127.0.0.1:5000/'
+$projectDir = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+$devProfile = Join-Path $projectDir '.claude\chrome-dev-profile'
+$chromeExe  = @(
+    "$env:LOCALAPPDATA\Google\Chrome\Application\chrome.exe",
+    "$env:ProgramFiles\Google\Chrome\Application\chrome.exe",
+    "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe"
+) | Where-Object { Test-Path $_ } | Select-Object -First 1
 
-    if ($appTabs.Count -gt 0) {
-        $primary = $appTabs[0]
+# Tries CDP, manages tabs, returns $true on success.
+# Polls for up to $seconds if CDP isn't immediately available.
+function Invoke-CdpManage([int]$seconds = 0) {
+    $deadline = (Get-Date).AddSeconds($seconds)
+    do {
+        try {
+            $tabs    = Invoke-RestMethod 'http://127.0.0.1:9222/json' -TimeoutSec 1 -ErrorAction Stop
+            $appTabs = @($tabs | Where-Object { $_.url -like '*127.0.0.1:5000*' })
 
-        # Close every duplicate tab (all except the first)
-        $appTabs | Select-Object -Skip 1 | ForEach-Object {
-            Invoke-RestMethod -Uri "http://localhost:9222/json/close/$($_.id)" `
-                -ErrorAction SilentlyContinue | Out-Null
-        }
+            if ($appTabs.Count -gt 0) {
+                # Close every duplicate, keep the first
+                $appTabs | Select-Object -Skip 1 | ForEach-Object {
+                    Invoke-RestMethod "http://localhost:9222/json/close/$($_.id)" `
+                        -ErrorAction SilentlyContinue | Out-Null
+                }
+                # Reload the surviving tab
+                $primary = $appTabs[0]
+                if ($primary.webSocketDebuggerUrl) {
+                    $ws  = New-Object System.Net.WebSockets.ClientWebSocket
+                    $cts = New-Object System.Threading.CancellationTokenSource
+                    $cts.CancelAfter(3000)
+                    $ws.ConnectAsync([uri]$primary.webSocketDebuggerUrl, $cts.Token).Wait()
+                    $bytes = [System.Text.Encoding]::UTF8.GetBytes(
+                        '{"id":1,"method":"Page.reload","params":{}}')
+                    $ws.SendAsync([ArraySegment[byte]]$bytes,
+                        [System.Net.WebSockets.WebSocketMessageType]::Text,
+                        $true, $cts.Token).Wait()
+                    $ws.CloseAsync(
+                        [System.Net.WebSockets.WebSocketCloseStatus]::NormalClosure,
+                        '', [System.Threading.CancellationToken]::None).Wait()
+                }
+            } else {
+                # Dev Chrome is open but the app tab was closed — reopen it
+                Invoke-RestMethod "http://localhost:9222/json/new?$url" -Method PUT `
+                    -TimeoutSec 2 -ErrorAction SilentlyContinue | Out-Null
+            }
+            return $true
+        } catch {}
 
-        # Reload the surviving tab via WebSocket
-        if ($primary.webSocketDebuggerUrl) {
-            $ws  = New-Object System.Net.WebSockets.ClientWebSocket
-            $cts = New-Object System.Threading.CancellationTokenSource
-            $cts.CancelAfter(3000)
-            $ws.ConnectAsync([uri]$primary.webSocketDebuggerUrl, $cts.Token).Wait()
-            $bytes = [System.Text.Encoding]::UTF8.GetBytes('{"id":1,"method":"Page.reload","params":{}}')
-            $ws.SendAsync([ArraySegment[byte]]$bytes,
-                [System.Net.WebSockets.WebSocketMessageType]::Text, $true, $cts.Token).Wait()
-            $ws.CloseAsync([System.Net.WebSockets.WebSocketCloseStatus]::NormalClosure,
-                '', [System.Threading.CancellationToken]::None).Wait()
-        }
-        $handled = $true
-    }
-} catch {}
+        if ((Get-Date) -lt $deadline) { Start-Sleep -Milliseconds 500 }
+    } while ((Get-Date) -lt $deadline)
 
-# 2. WScript fallback — briefly steals focus, but avoids opening a new tab.
-#    Only fires if CDP is unavailable (Chrome not launched with --remote-debugging-port).
-#    Matches on "127.0.0.1" so it catches both the running app and error pages.
-if (-not $handled) {
-    $chrome = Get-Process 'chrome' -ErrorAction SilentlyContinue |
-        Where-Object { $_.MainWindowTitle -ne '' -and $_.MainWindowTitle -match '127\.0\.0\.1' } |
-        Select-Object -First 1
-    if ($chrome) {
-        $shell = New-Object -ComObject WScript.Shell
-        $shell.AppActivate($chrome.Id) | Out-Null
-        Start-Sleep -Milliseconds 200
-        $shell.SendKeys('{F5}')
-        $handled = $true
-    }
+    return $false
 }
 
-# 3. No existing tab found — open Chrome for the first time with debug port enabled.
-if (-not $handled) {
-    $chromePaths = @(
-        "$env:LOCALAPPDATA\Google\Chrome\Application\chrome.exe",
-        "$env:ProgramFiles\Google\Chrome\Application\chrome.exe",
-        "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe"
+# ── 1. Fast path: CDP already up (dev Chrome running and ready) ───────────────
+if (Invoke-CdpManage -seconds 0) { return }
+
+# ── 2. Port 9222 is bound but CDP HTTP not ready yet (Chrome still starting) ──
+# Return immediately (hook case) or wait (explicit invocation).
+$port9222Bound = $null -ne (
+    Get-NetTCPConnection -LocalPort 9222 -State Listen -ErrorAction SilentlyContinue |
+    Select-Object -First 1)
+
+if ($port9222Bound) {
+    if ($Wait) { Invoke-CdpManage -seconds 15 | Out-Null }
+    # else: hook fires again on the next edit and will catch CDP when it's ready
+    return
+}
+
+# ── 3. Dev Chrome is not running — launch it ─────────────────────────────────
+# IMPORTANT: do NOT pass $url here. Passing a URL causes Chrome to open it as a
+# new tab if the process is already running (e.g. called twice in quick
+# succession). Tab creation is handled by CDP in Invoke-CdpManage instead.
+if ($chromeExe) {
+    Start-Process $chromeExe -ArgumentList (
+        "--user-data-dir=`"$devProfile`"",
+        '--remote-debugging-port=9222',
+        '--no-first-run',
+        '--no-default-browser-check'
     )
-    $chromeExe = $chromePaths | Where-Object { Test-Path $_ } | Select-Object -First 1
-    if ($chromeExe) {
-        Start-Process $chromeExe -ArgumentList '--remote-debugging-port=9222', $url
-    } else {
-        Start-Process $url
-    }
+    if ($Wait) { Invoke-CdpManage -seconds 15 | Out-Null }
+} else {
+    Start-Process $url
 }

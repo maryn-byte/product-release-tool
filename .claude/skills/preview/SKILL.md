@@ -72,7 +72,7 @@ The browser tab is already open — the launch script handles that. Done.
 The server is up. Always run the helper script — it closes duplicate tabs and reloads the surviving one via CDP, with no risk of opening a new tab:
 
 ```powershell
-& "C:\Users\cooki\Documents\GitHub\projectplanner\.claude\hooks\open-or-refresh.ps1"
+& ".claude\hooks\open-or-refresh.ps1"
 ```
 
 Done.

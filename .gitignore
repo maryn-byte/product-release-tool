@@ -6,5 +6,6 @@
 **/build
 **/dist
 .claude/worktrees/
+.claude/chrome-dev-profile/
 __pycache__
 **/__pycache__

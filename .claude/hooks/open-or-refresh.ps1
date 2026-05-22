@@ -27,6 +27,12 @@ $chromeExe  = @(
     "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe"
 ) | Where-Object { Test-Path $_ } | Select-Object -First 1
 
+# Activate a tab by ID via CDP REST (brings it to the foreground).
+function Invoke-CdpActivate([string]$id) {
+    Invoke-RestMethod "http://127.0.0.1:9222/json/activate/$id" `
+        -TimeoutSec 2 -ErrorAction SilentlyContinue | Out-Null
+}
+
 # Tries CDP, manages tabs, returns $true on success.
 # Polls for up to $seconds if CDP isn't immediately available.
 function Invoke-CdpManage([int]$seconds = 0) {
@@ -39,7 +45,7 @@ function Invoke-CdpManage([int]$seconds = 0) {
             if ($appTabs.Count -gt 0) {
                 # Close every duplicate, keep the first
                 $appTabs | Select-Object -Skip 1 | ForEach-Object {
-                    Invoke-RestMethod "http://localhost:9222/json/close/$($_.id)" `
+                    Invoke-RestMethod "http://127.0.0.1:9222/json/close/$($_.id)" `
                         -ErrorAction SilentlyContinue | Out-Null
                 }
                 # Reload the surviving tab
@@ -58,10 +64,15 @@ function Invoke-CdpManage([int]$seconds = 0) {
                         [System.Net.WebSockets.WebSocketCloseStatus]::NormalClosure,
                         '', [System.Threading.CancellationToken]::None).Wait()
                 }
+                # Bring the tab to the foreground
+                Invoke-CdpActivate $primary.id
             } else {
                 # Dev Chrome is open but the app tab was closed — reopen it
-                Invoke-RestMethod "http://localhost:9222/json/new?$url" -Method PUT `
-                    -TimeoutSec 2 -ErrorAction SilentlyContinue | Out-Null
+                $newTab = Invoke-RestMethod "http://127.0.0.1:9222/json/new?$url" -Method PUT `
+                    -TimeoutSec 2 -ErrorAction SilentlyContinue
+                if ($newTab -and $newTab.id) {
+                    Invoke-CdpActivate $newTab.id
+                }
             }
             return $true
         } catch {}

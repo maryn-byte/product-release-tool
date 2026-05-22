@@ -8,13 +8,33 @@ import sqlite3
 import os
 from flask import Flask, jsonify, request, render_template, g
 
+
+def normalize_base_path(path):
+    if not path:
+        return ""
+    normalized = "/" + path.strip("/")
+    return "" if normalized == "/" else normalized
+
+
 app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True 
+app.config["APP_BASE_PATH"] = normalize_base_path(os.environ.get("APP_BASE_PATH", ""))
 SCHEMA_VERSION = 48
 
 _db_url = os.environ.get("DATABASE_URL", "sqlite:////data/planner.db")
 # Strip the sqlite:/// prefix to get the file path (sqlite:////abs → /abs)
 DATABASE = _db_url[len("sqlite:///"):]
+
+
+@app.context_processor
+def inject_app_base_path():
+    configured = app.config.get("APP_BASE_PATH", "")
+    runtime = normalize_base_path(request.script_root)
+    if configured:
+        base_path = configured
+    else:
+        base_path = runtime
+    return {"app_base_path": base_path}
 
 # ── Database helpers ──────────────────────────────────────────────────────────
 

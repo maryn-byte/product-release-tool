@@ -9,6 +9,7 @@ COPY . .
 
 # SQLite database URL — override with -e DATABASE_URL=sqlite:////your/path/db
 ENV DATABASE_URL=sqlite:////data/planner.db
+ENV APP_BASE_PATH=/project-planner
 
 EXPOSE 5000
 

@@ -5,7 +5,6 @@
 *dist
 **/build
 **/dist
-.claude
-**/.claude
+.claude/worktrees/
 __pycache__
 **/__pycache__

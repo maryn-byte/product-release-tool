@@ -13,3 +13,6 @@ ENV DATABASE_URL=sqlite:////data/planner.db
 EXPOSE 5000
 
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "app:app"]
+## Local Prod-Like
+# docker build -t project-planner .
+# docker run -p 5000:5000 -v planner-data:/data project-planner

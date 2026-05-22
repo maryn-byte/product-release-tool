@@ -4,23 +4,27 @@ setlocal
 set "SCRIPT_DIR=%~dp0"
 set "AWS_PROFILE=cf-production"
 set "DOCKER_DESKTOP_EXE=%ProgramFiles%\Docker\Docker\Docker Desktop.exe"
+set "EXIT_CODE=0"
 
 where docker >nul 2>nul
 if errorlevel 1 (
     echo Docker CLI was not found on PATH.
-    exit /b 1
+    set "EXIT_CODE=1"
+    goto end
 )
 
 where aws >nul 2>nul
 if errorlevel 1 (
     echo AWS CLI was not found on PATH.
-    exit /b 1
+    set "EXIT_CODE=1"
+    goto end
 )
 
 where bash >nul 2>nul
 if errorlevel 1 (
     echo bash was not found on PATH. Install Git Bash or another bash provider.
-    exit /b 1
+    set "EXIT_CODE=1"
+    goto end
 )
 
 echo Checking Docker Desktop...
@@ -32,7 +36,8 @@ if errorlevel 1 (
     ) else (
         echo Docker Desktop is not running, and its default executable path was not found:
         echo   %DOCKER_DESKTOP_EXE%
-        exit /b 1
+        set "EXIT_CODE=1"
+        goto end
     )
 )
 
@@ -44,7 +49,8 @@ if not errorlevel 1 goto docker_ready
 
 if %DOCKER_WAIT_SECONDS% geq 120 (
     echo Docker did not become ready within 120 seconds.
-    exit /b 1
+    set "EXIT_CODE=1"
+    goto end
 )
 
 timeout /t 2 /nobreak >nul
@@ -58,7 +64,8 @@ echo Logging into AWS with profile %AWS_PROFILE%...
 aws sso login --profile "%AWS_PROFILE%"
 if errorlevel 1 (
     echo AWS login failed.
-    exit /b 1
+    set "EXIT_CODE=1"
+    goto end
 )
 
 echo Running deploy.sh with profile %AWS_PROFILE%...
@@ -69,8 +76,13 @@ popd
 
 if not "%DEPLOY_EXIT%"=="0" (
     echo deploy.sh failed with exit code %DEPLOY_EXIT%.
-    exit /b %DEPLOY_EXIT%
+    set "EXIT_CODE=%DEPLOY_EXIT%"
+    goto end
 )
 
 echo Deployment completed successfully.
-exit /b 0
+
+:end
+echo.
+pause
+exit /b %EXIT_CODE%

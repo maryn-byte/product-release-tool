@@ -17,18 +17,8 @@ for ($i = 0; $i -lt 30; $i++) {
     Start-Sleep -Milliseconds 500
     try {
         Invoke-WebRequest -Uri $url -UseBasicParsing | Out-Null
-        # Launch Chrome with remote debugging so the hook can refresh without stealing focus
-        $chromePaths = @(
-            "$env:LOCALAPPDATA\Google\Chrome\Application\chrome.exe",
-            "$env:ProgramFiles\Google\Chrome\Application\chrome.exe",
-            "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe"
-        )
-        $chromeExe = $chromePaths | Where-Object { Test-Path $_ } | Select-Object -First 1
-        if ($chromeExe) {
-            Start-Process $chromeExe -ArgumentList "--remote-debugging-port=9222", $url
-        } else {
-            Start-Process $url
-        }
+        # Open or refresh the Chrome tab — never creates a duplicate
+        & "$repo\.claude\hooks\open-or-refresh.ps1"
         break
     } catch {
     }

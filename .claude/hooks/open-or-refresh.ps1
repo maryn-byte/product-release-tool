@@ -1,6 +1,6 @@
 # Navigates to http://127.0.0.1:5000/ without ever creating a duplicate tab.
-# If a Chrome tab already exists at that URL (even showing a connection error),
-# it reloads that tab. A new tab is only opened when no such tab exists at all.
+# If multiple tabs exist at that URL, all extras are closed and the first is reloaded.
+# A new tab is only opened when no such tab exists at all.
 
 $url = 'http://127.0.0.1:5000/'
 
@@ -9,18 +9,30 @@ $url = 'http://127.0.0.1:5000/'
 #    while the server was down (e.g. "ERR_CONNECTION_REFUSED").
 $handled = $false
 try {
-    $tabs = Invoke-RestMethod -Uri 'http://localhost:9222/json' -TimeoutSec 1 -ErrorAction Stop
-    $tab = $tabs | Where-Object { $_.url -like '*127.0.0.1:5000*' } | Select-Object -First 1
-    if ($tab -and $tab.webSocketDebuggerUrl) {
-        $ws  = New-Object System.Net.WebSockets.ClientWebSocket
-        $cts = New-Object System.Threading.CancellationTokenSource
-        $cts.CancelAfter(3000)
-        $ws.ConnectAsync([uri]$tab.webSocketDebuggerUrl, $cts.Token).Wait()
-        $bytes = [System.Text.Encoding]::UTF8.GetBytes('{"id":1,"method":"Page.reload","params":{}}')
-        $ws.SendAsync([ArraySegment[byte]]$bytes,
-            [System.Net.WebSockets.WebSocketMessageType]::Text, $true, $cts.Token).Wait()
-        $ws.CloseAsync([System.Net.WebSockets.WebSocketCloseStatus]::NormalClosure,
-            '', [System.Threading.CancellationToken]::None).Wait()
+    $tabs     = Invoke-RestMethod -Uri 'http://localhost:9222/json' -TimeoutSec 1 -ErrorAction Stop
+    $appTabs  = @($tabs | Where-Object { $_.url -like '*127.0.0.1:5000*' })
+
+    if ($appTabs.Count -gt 0) {
+        $primary = $appTabs[0]
+
+        # Close every duplicate tab (all except the first)
+        $appTabs | Select-Object -Skip 1 | ForEach-Object {
+            Invoke-RestMethod -Uri "http://localhost:9222/json/close/$($_.id)" `
+                -ErrorAction SilentlyContinue | Out-Null
+        }
+
+        # Reload the surviving tab via WebSocket
+        if ($primary.webSocketDebuggerUrl) {
+            $ws  = New-Object System.Net.WebSockets.ClientWebSocket
+            $cts = New-Object System.Threading.CancellationTokenSource
+            $cts.CancelAfter(3000)
+            $ws.ConnectAsync([uri]$primary.webSocketDebuggerUrl, $cts.Token).Wait()
+            $bytes = [System.Text.Encoding]::UTF8.GetBytes('{"id":1,"method":"Page.reload","params":{}}')
+            $ws.SendAsync([ArraySegment[byte]]$bytes,
+                [System.Net.WebSockets.WebSocketMessageType]::Text, $true, $cts.Token).Wait()
+            $ws.CloseAsync([System.Net.WebSockets.WebSocketCloseStatus]::NormalClosure,
+                '', [System.Threading.CancellationToken]::None).Wait()
+        }
         $handled = $true
     }
 } catch {}

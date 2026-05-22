@@ -69,16 +69,10 @@ The browser tab is already open — the launch script handles that. Done.
 
 ### 2b. If already running — refresh the existing Chrome tab
 
-The server is up. Refresh the tab using the Chrome MCP tools:
-
-1. Call `mcp__Claude_in_Chrome__list_connected_browsers` — if a browser is connected, continue to step 2. If not, fall back to opening a new tab (step 3).
-
-2. Call `mcp__Claude_in_Chrome__tabs_context_mcp` to find the tab whose URL contains `127.0.0.1:5000`. Then call `mcp__Claude_in_Chrome__javascript_tool` with `tabId` set to that tab and `text` set to `location.reload()`.
-
-3. If no connected browser or no matching tab, open a new tab as fallback:
+The server is up. Always run the helper script — it closes duplicate tabs and reloads the surviving one via CDP, with no risk of opening a new tab:
 
 ```powershell
-Start-Process "http://127.0.0.1:5000/"
+& "C:\Users\cooki\Documents\GitHub\projectplanner\.claude\hooks\open-or-refresh.ps1"
 ```
 
 Done.

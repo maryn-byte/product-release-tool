@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\cooki\\Documents\\GitHub\\projectplanner\\.claude\\hooks\\ensure-preview.ps1\""
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \".claude\\hooks\\ensure-preview.ps1\""
           }
         ]
       }

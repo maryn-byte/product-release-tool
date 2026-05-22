@@ -3,11 +3,18 @@ setlocal
 for /f "delims=" %%E in ('echo prompt $E^| cmd') do set "ESC=%%E"
 
 set "SCRIPT_DIR=%~dp0"
+
+:: ============================================================
+:: PROJECT CONFIGURATION — update these three lines for each
+:: new project before running a deployment for the first time.
+:: ============================================================
 set "AWS_PROFILE=cf-production"
-set "DOCKER_DESKTOP_EXE=%ProgramFiles%\Docker\Docker\Docker Desktop.exe"
-set "DOCKER_CLI_EXE=%ProgramFiles%\Docker\Docker\DockerCli.exe"
 set "REPO=626635437662.dkr.ecr.us-east-2.amazonaws.com/project-planner"
 set "REGION=us-east-2"
+:: ============================================================
+
+set "DOCKER_DESKTOP_EXE=%ProgramFiles%\Docker\Docker\Docker Desktop.exe"
+set "DOCKER_CLI_EXE=%ProgramFiles%\Docker\Docker\DockerCli.exe"
 for /f "tokens=1 delims=/" %%A in ("%REPO%") do set "REGISTRY=%%A"
 set "EXIT_CODE=0"
 

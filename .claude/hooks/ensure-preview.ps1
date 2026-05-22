@@ -1,5 +1,7 @@
+# Resolve project root from this script's location (.claude/hooks/ -> project root)
+$d = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+
 $conn = Get-NetTCPConnection -LocalPort 5000 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
-$d = 'C:\Users\cooki\Documents\GitHub\projectplanner'
 
 if (-not $conn) {
     # Server not running — start it (launch script opens Chrome with debug port)
@@ -27,9 +29,9 @@ if (-not $conn) {
     } catch {}
 
     if (-not $refreshed) {
-        # CDP not available (Chrome not launched with --remote-debugging-port) — fall back to WScript
+        # CDP not available — fall back to WScript (briefly steals focus)
         $chrome = Get-Process 'chrome' -ErrorAction SilentlyContinue |
-            Where-Object { $_.MainWindowTitle -ne '' -and $_.MainWindowTitle -match 'Project Planner|127\.0\.0\.1:5000' } |
+            Where-Object { $_.MainWindowTitle -ne '' -and $_.MainWindowTitle -match '127\.0\.0\.1:5000' } |
             Select-Object -First 1
         if ($chrome) {
             $shell = New-Object -ComObject WScript.Shell

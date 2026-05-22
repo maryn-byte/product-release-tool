@@ -4,6 +4,9 @@ setlocal
 set "SCRIPT_DIR=%~dp0"
 set "AWS_PROFILE=cf-production"
 set "DOCKER_DESKTOP_EXE=%ProgramFiles%\Docker\Docker\Docker Desktop.exe"
+set "REPO=626635437662.dkr.ecr.us-east-2.amazonaws.com/project-planner"
+set "REGION=us-east-2"
+for /f "tokens=1 delims=/" %%A in ("%REPO%") do set "REGISTRY=%%A"
 set "EXIT_CODE=0"
 
 where docker >nul 2>nul
@@ -16,13 +19,6 @@ if errorlevel 1 (
 where aws >nul 2>nul
 if errorlevel 1 (
     echo AWS CLI was not found on PATH.
-    set "EXIT_CODE=1"
-    goto end
-)
-
-where bash >nul 2>nul
-if errorlevel 1 (
-    echo bash was not found on PATH. Install Git Bash or another bash provider.
     set "EXIT_CODE=1"
     goto end
 )
@@ -68,17 +64,34 @@ if errorlevel 1 (
     goto end
 )
 
-echo Running deploy.sh with profile %AWS_PROFILE%...
+echo Logging Docker into ECR registry %REGISTRY%...
 pushd "%SCRIPT_DIR%"
-bash -lc "export AWS_PROFILE=%AWS_PROFILE%; ./deploy.sh"
-set "DEPLOY_EXIT=%ERRORLEVEL%"
-popd
-
-if not "%DEPLOY_EXIT%"=="0" (
-    echo deploy.sh failed with exit code %DEPLOY_EXIT%.
-    set "EXIT_CODE=%DEPLOY_EXIT%"
+aws ecr get-login-password --region "%REGION%" --profile "%AWS_PROFILE%" | docker login --username AWS --password-stdin "%REGISTRY%"
+if errorlevel 1 (
+    echo ECR Docker login failed.
+    set "EXIT_CODE=1"
+    popd
     goto end
 )
+
+echo Building Docker image %REPO%:latest...
+docker build -t "%REPO%:latest" .
+if errorlevel 1 (
+    echo Docker build failed.
+    set "EXIT_CODE=1"
+    popd
+    goto end
+)
+
+echo Pushing Docker image %REPO%:latest...
+docker push "%REPO%:latest"
+if errorlevel 1 (
+    echo Docker push failed.
+    set "EXIT_CODE=1"
+    popd
+    goto end
+)
+popd
 
 echo Deployment completed successfully.
 

@@ -17,7 +17,7 @@ Launch `windows_deploy.bat` in a new visible terminal window so the user can wat
 $scriptPath = (Resolve-Path "windows_deploy.bat").Path
 $workDir = (Get-Location).Path
 if (Get-Command wt.exe -ErrorAction SilentlyContinue) {
-    Start-Process wt.exe -ArgumentList "cmd /c `"$scriptPath`""
+    Start-Process wt.exe -ArgumentList "--startingDirectory `"$workDir`" cmd /c `"$scriptPath`""
 } else {
     Start-Process cmd.exe -ArgumentList "/c `"$scriptPath`"" -WorkingDirectory $workDir
 }
